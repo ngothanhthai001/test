@@ -119,14 +119,14 @@ class Process
         Auth $_auth,
         HistoryFactory $historyFactory
     ) {
-        $this->_storeManager  = $storeManager;
-        $this->_resource      = $resource;
-        $this->_dateTime      = $dateTime;
-        $this->_localeDate    = $localeDate;
-        $this->_collection    = $collectionFactory;
-        $this->_dataHelper    = $dataHelper;
-        $this->_logger        = $logger;
-        $this->_auth          = $_auth;
+        $this->_storeManager = $storeManager;
+        $this->_resource = $resource;
+        $this->_dateTime = $dateTime;
+        $this->_localeDate = $localeDate;
+        $this->_collection = $collectionFactory;
+        $this->_dataHelper = $dataHelper;
+        $this->_logger = $logger;
+        $this->_auth = $_auth;
         $this->historyFactory = $historyFactory;
     }
 
@@ -147,19 +147,19 @@ class Process
     public function expireGiftCard()
     {
         $connection = $this->_getConnection();
-        $tableName  = $this->_resource->getTableName('mageplaza_giftcard');
+        $tableName = $this->_resource->getTableName('mageplaza_giftcard');
         /** @var Website $website */
         foreach ($this->_storeManager->getWebsites(true) as $website) {
-            $timestamp    = $this->_localeDate->scopeTimeStamp($website->getDefaultStore());
-            $currDate     = $this->_dateTime->formatDate($timestamp, false);
+            $timestamp = $this->_localeDate->scopeTimeStamp($website->getDefaultStore());
+            $currDate = $this->_dateTime->formatDate($timestamp, false);
             $currDateExpr = $connection->quote($currDate);
-            $dataFormat   = $connection->getDateFormatSql($currDateExpr, '%Y-%m-%d');
+            $dataFormat = $connection->getDateFormatSql($currDateExpr, '%Y-%m-%d');
 
             // timestamp is locale based
             $where = [
-                'status'          => Status::STATUS_ACTIVE,
+                'status' => Status::STATUS_ACTIVE,
                 'store_id IN (?)' => $website->getStoreIds(),
-                'expired_at < ?'  => $dataFormat
+                'expired_at < ?' => $dataFormat
             ];
 
             $giftCardIds = $connection->select()->from([$tableName], ['giftcard_id'])
@@ -198,7 +198,7 @@ class Process
      */
     public function sendToRecipient()
     {
-        $now        = date('Y-m-d', strtotime('+1 day'));
+        $now = date('Y-m-d', strtotime('+1 day'));
         $collection = $this->_collection->create()
             ->addFieldToFilter('status', Status::STATUS_ACTIVE)
             ->addFieldToFilter('is_sent', 0)
@@ -209,10 +209,10 @@ class Process
 
         /** @var GiftCard $giftCard */
         foreach ($collection as $giftCard) {
-            $timezone     = $giftCard->getTimezone()
+            $timezone = $giftCard->getTimezone()
                 ? new DateTimeZone($giftCard->getTimezone())
                 : $this->_dataHelper->getGiftCardTimeZone($giftCard);
-            $currentDate  = (new DateTime('', $timezone))->format('Y-m-d');
+            $currentDate = (new DateTime(null, $timezone))->format('Y-m-d');
             $deliveryDate = (new DateTime($giftCard->getDeliveryDate()))->format('Y-m-d');
             if ($deliveryDate === $currentDate) {
                 try {

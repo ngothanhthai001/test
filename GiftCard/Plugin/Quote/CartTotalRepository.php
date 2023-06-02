@@ -150,7 +150,10 @@ class CartTotalRepository
 
         $customerBalance = $this->checkoutHelper->getCustomerBalance($quote->getCustomerId());
         $maxUsed         = min($customerBalance, $this->checkoutHelper->getTotalAmountForDiscount($quote, true));
-
+        $enableGiftCredit = $this->checkoutHelper->canUsedCredit() && $enableGiftCard && ($maxUsed > 0.0001);
+        if($quote->getCouponCode()){
+            $enableGiftCard = $enableGiftCredit = false;
+        }
         return [
             'enableGiftCard'   => !$this->checkoutHelper->isUsedCouponBox() && $enableGiftCard,
             'enableMultiple'   => $this->checkoutHelper->isUsedMultipleCode(),

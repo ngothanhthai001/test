@@ -45,7 +45,7 @@ class Import extends AbstractModel
      */
     public function processDataBunch($rawData)
     {
-        $bunch      = [];
+        $bunch = [];
         $colHeaders = $this->getColHeaders($rawData);
 
         if ($absentColumns = array_diff($this->_columnNames, $colHeaders)) {

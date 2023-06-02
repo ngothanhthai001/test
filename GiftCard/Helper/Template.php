@@ -284,8 +284,8 @@ class Template extends Data
             if ($mergeCss) {
                 $css = '';
                 if ($isPrint && isset($field['padding'])) {
-                    $field['height'] -= (float) $field['padding'] * 2;
-                    $field['width']  -= (float) $field['padding'] * 2;
+                    $field['height'] -= (float)$field['padding'] * 2;
+                    $field['width']  -= (float)$field['padding'] * 2;
                 }
 
                 foreach ($field as $key => $value) {
@@ -317,10 +317,8 @@ class Template extends Data
                 case 'image':
                     if (count($images)) {
                         $field['src'] = $images[0]['src'];
-                    } elseif ($this->_getRequest()->getFullActionName() === "mpgiftcard_template_preview") {
-                        unset($design[$id]);
                     } else {
-                        $field['src'] = null;
+                        unset($design[$id]);
                     }
                     break;
                 case 'logo':
@@ -352,10 +350,10 @@ class Template extends Data
         $card = array_shift($design);
 
         return [
-            'id'        => (int) $template['template_id'],
+            'id'        => (int)$template['template_id'],
             'name'      => $template['name'],
             'title'     => $template['title'],
-            'canUpload' => (bool) $template['can_upload'],
+            'canUpload' => (bool)$template['can_upload'],
             'card'      => $card,
             'design'    => $design,
             'images'    => $images,
@@ -782,7 +780,7 @@ class Template extends Data
      */
     protected function _prepareFile($file)
     {
-        $file     = ltrim(($file ? str_replace('\\', '/', $file) : ""), '/');
+        $file     = ltrim(str_replace('\\', '/', $file), '/');
         $pathInfo = $this->file->getPathInfo($file);
 
         if (isset($pathInfo['extension']) && $pathInfo['extension'] === 'tmp') {
@@ -1098,7 +1096,7 @@ class Template extends Data
      */
     public function uploadImageBase64($file)
     {
-        $imgBase64    = preg_replace('#^data:image/\w+;base64,#i', '', $file['base64_encoded_data']);
+        $imgBase64 = preg_replace('#^data:image/\w+;base64,#i', '', $file['base64_encoded_data']);
         $fileContent  = base64_decode($imgBase64, true);
         $tmpDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::SYS_TMP);
         $fileName     = $file['name'];

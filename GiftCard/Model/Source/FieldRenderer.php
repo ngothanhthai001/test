@@ -30,16 +30,16 @@ use Magento\Framework\Option\ArrayInterface;
  */
 class FieldRenderer extends AbstractModel implements ArrayInterface
 {
-    const AMOUNT    = 'amount';
-    const METHOD    = 'delivery_method';
-    const ADDRESS   = 'delivery_address';
-    const DATE      = 'delivery_date';
-    const TIMEZONE  = 'timezone';
-    const SENDER    = 'sender';
+    const AMOUNT = 'amount';
+    const METHOD = 'delivery_method';
+    const ADDRESS = 'delivery_address';
+    const DATE = 'delivery_date';
+    const TIMEZONE = 'timezone';
+    const SENDER = 'sender';
     const RECIPIENT = 'recipient';
-    const MESSAGE   = 'message';
-    const TEMPLATE  = 'template';
-    const IMAGE     = 'image';
+    const MESSAGE = 'message';
+    const TEMPLATE = 'template';
+    const IMAGE = 'image';
 
     /**
      * Retrieve option array
@@ -49,14 +49,14 @@ class FieldRenderer extends AbstractModel implements ArrayInterface
     public static function getOptionArray()
     {
         return [
-            self::AMOUNT    => __('Gift Card Amount'),
-            self::SENDER    => __('Sender'),
+            self::AMOUNT => __('Gift Card Amount'),
+            self::SENDER => __('Sender'),
             self::RECIPIENT => __('Recipient'),
-            self::METHOD    => __('Delivery Method'),
-            self::ADDRESS   => __('Delivery To'),
-            self::MESSAGE   => __('Message'),
-            self::TEMPLATE  => __('Template'),
-            self::DATE      => __('Delivery Date')
+            self::METHOD => __('Delivery Method'),
+            self::ADDRESS => __('Delivery To'),
+            self::MESSAGE => __('Message'),
+            self::TEMPLATE => __('Template'),
+            self::DATE => __('Delivery Date')
         ];
     }
 
@@ -66,7 +66,7 @@ class FieldRenderer extends AbstractModel implements ArrayInterface
     public static function getFullOptionArray()
     {
         return array_merge(self::getOptionArray(), [
-            self::IMAGE    => __('Template Image'),
+            self::IMAGE => __('Template Image'),
             self::TIMEZONE => __('Timezone')
         ]);
     }

@@ -53,6 +53,20 @@ interface GiftCodeInterface
     const EXTRA_CONTENT      = 'extra_content';
     const EXPIRED_AT         = 'expired_at'; // yes
     const CREATED_AT         = 'created_at';
+    const CURRENT_AMOUNT     = 'current_amount';
+    const OLD_CURRENT_AMOUNT = 'old_current_amount';
+
+    /**
+     * @return string
+     */
+    public function getCurrentAmount();
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function setCurrentAmount($value);
 
     /**
      * @return string
@@ -329,4 +343,16 @@ interface GiftCodeInterface
      * @return $this
      */
     public function setCreatedAt($value);
+
+    /**
+     * @return string
+     */
+    public function getOldCurrentAmount();
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function setOldCurrentAmount($value);
 }

@@ -89,7 +89,7 @@ class Transport implements TransportInterface
         ScopeConfigInterface $scopeConfig,
         $parameters = null
     ) {
-        $this->isSetReturnPath = (int) $scopeConfig->getValue(
+        $this->isSetReturnPath = (int)$scopeConfig->getValue(
             self::XML_PATH_SENDING_SET_RETURN_PATH,
             ScopeInterface::SCOPE_STORE
         );
@@ -99,7 +99,7 @@ class Transport implements TransportInterface
         );
 
         $this->zendTransport = new Sendmail($parameters);
-        $this->message       = $message;
+        $this->message = $message;
     }
 
     /**

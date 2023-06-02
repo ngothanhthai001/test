@@ -70,7 +70,7 @@ class MassDelete extends Code
      */
     public function execute()
     {
-        $collection  = $this->filter->getCollection($this->_getCodeCollection());
+        $collection = $this->filter->getCollection($this->_getCodeCollection());
         $codeDeleted = 0;
         foreach ($collection->getItems() as $giftCard) {
             $giftCard->delete();

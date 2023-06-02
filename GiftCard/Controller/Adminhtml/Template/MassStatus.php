@@ -74,7 +74,7 @@ class MassStatus extends Template
     public function execute()
     {
         $collection = $this->filter->getCollection($this->_getTemplateCollection());
-        $status     = (int) $this->getRequest()->getParam('status');
+        $status = (int)$this->getRequest()->getParam('status');
 
         $updated = 0;
         foreach ($collection as $template) {

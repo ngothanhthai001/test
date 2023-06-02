@@ -99,13 +99,13 @@ class CouponPost implements ObserverInterface
         CartRepositoryInterface $quoteRepository,
         LoggerInterface $logger
     ) {
-        $this->_url             = $url;
-        $this->escaper          = $escaper;
-        $this->messageManager   = $managerInterface;
+        $this->_url = $url;
+        $this->escaper = $escaper;
+        $this->messageManager = $managerInterface;
         $this->_giftcardFactory = $giftcardFactory;
-        $this->_dataHelper      = $dataHelper;
-        $this->quoteRepository  = $quoteRepository;
-        $this->logger           = $logger;
+        $this->_dataHelper = $dataHelper;
+        $this->quoteRepository = $quoteRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -127,8 +127,8 @@ class CouponPost implements ObserverInterface
         $action = $observer->getEvent()->getControllerAction();
 
         /** @var RequestInterface $request */
-        $request    = $observer->getEvent()->getRequest();
-        $couponCode = (int) $request->getParam('remove') === 1 ? '' : trim($request->getParam('coupon_code'));
+        $request = $observer->getEvent()->getRequest();
+        $couponCode = (int)$request->getParam('remove') === 1 ? '' : trim($request->getParam('coupon_code'));
 
         if ($couponCode === '') {
             /** @var Quote $quote */

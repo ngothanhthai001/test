@@ -69,9 +69,9 @@ class GiftTemplateManagement extends AbstractManagement implements GiftTemplateM
         TemplateFactory $templateFactory,
         TemplateHelper $templateHelper
     ) {
-        $this->templateFactory     = $templateFactory;
+        $this->templateFactory = $templateFactory;
         $this->searchResultFactory = $searchResultFactory;
-        $this->templateHelper      = $templateHelper;
+        $this->templateHelper = $templateHelper;
 
         parent::__construct($templateFieldsFactory, $collectionProcessor);
     }

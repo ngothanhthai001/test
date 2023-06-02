@@ -83,7 +83,7 @@ class MassSend extends Code
     public function execute()
     {
         $collection = $this->filter->getCollection($this->_getCodeCollection());
-        $codeSent   = 0;
+        $codeSent = 0;
 
         /** @var GiftCard $giftCard */
         foreach ($collection->getItems() as $giftCard) {

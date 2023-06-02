@@ -22,6 +22,7 @@
 namespace Mageplaza\GiftCard\Model\Api;
 
 use Exception;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -39,6 +40,13 @@ use Mageplaza\GiftCard\Model\GiftCardFactory;
  */
 class CouponManagement implements CouponManagementInterface
 {
+    /**
+     * Core event manager proxy
+     *
+     * @var ManagerInterface
+     */
+    protected $_eventManager;
+
     /**
      * Quote repository.
      *
@@ -58,18 +66,20 @@ class CouponManagement implements CouponManagementInterface
 
     /**
      * CouponManagement constructor.
-     *
+     * @param ManagerInterface $eventManager
      * @param CartRepositoryInterface $quoteRepository
      * @param Checkout $helper
      * @param GiftCardFactory $giftCardFactory
      */
     public function __construct(
+        ManagerInterface $eventManager,
         CartRepositoryInterface $quoteRepository,
         Checkout $helper,
         GiftCardFactory $giftCardFactory
     ) {
-        $this->quoteRepository  = $quoteRepository;
-        $this->_helper          = $helper;
+        $this->_eventManager = $eventManager;
+        $this->quoteRepository = $quoteRepository;
+        $this->_helper = $helper;
         $this->_giftCardFactory = $giftCardFactory;
     }
 
@@ -125,6 +135,11 @@ class CouponManagement implements CouponManagementInterface
             throw new NoSuchEntityException(__('Coupon code is not valid'));
         }
 
+        $this->_eventManager->dispatch(
+            'checkout_cart_coupons_add_after',
+            ['coupon' => $couponCode]
+        );
+
         return true;
     }
 
@@ -160,7 +175,10 @@ class CouponManagement implements CouponManagementInterface
         if (!$isRemovedGiftCard && ($quote->getCouponCode() !== '')) {
             throw new CouldNotDeleteException(__('Could not delete coupon code'));
         }
-
+        $this->_eventManager->dispatch(
+            'checkout_cart_coupons_set_after',
+            ['cart' => $this, 'coupon' => $couponCode]
+        );
         return true;
     }
 

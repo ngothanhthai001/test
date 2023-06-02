@@ -74,10 +74,10 @@ class DownloadSample extends Action
         ComponentRegistrar $componentRegistrar,
         ReadFactory $readFactory
     ) {
-        $this->fileFactory        = $fileFactory;
-        $this->resultRawFactory   = $resultRawFactory;
+        $this->fileFactory = $fileFactory;
+        $this->resultRawFactory = $resultRawFactory;
         $this->componentRegistrar = $componentRegistrar;
-        $this->readFactory        = $readFactory;
+        $this->readFactory = $readFactory;
 
         parent::__construct($context);
     }
@@ -91,11 +91,11 @@ class DownloadSample extends Action
      */
     public function execute()
     {
-        $fileName         = 'mp_gift_code_pool.csv';
-        $moduleDir        = $this->componentRegistrar->getPath(ComponentRegistrar::MODULE, 'Mageplaza_GiftCard');
+        $fileName = 'mp_gift_code_pool.csv';
+        $moduleDir = $this->componentRegistrar->getPath(ComponentRegistrar::MODULE, 'Mageplaza_GiftCard');
         $fileAbsolutePath = $moduleDir . '/Files/Sample/' . $fileName;
-        $directoryRead    = $this->readFactory->create($moduleDir);
-        $filePath         = $directoryRead->getRelativePath($fileAbsolutePath);
+        $directoryRead = $this->readFactory->create($moduleDir);
+        $filePath = $directoryRead->getRelativePath($fileAbsolutePath);
 
         if (!$directoryRead->isFile($filePath)) {
             throw new NoSuchEntityException(__('There is no file: %file', ['file' => $filePath]));

@@ -66,7 +66,7 @@ class Balance extends Template
         Registry $registry,
         array $data = []
     ) {
-        $this->_helper       = $dataHelper;
+        $this->_helper = $dataHelper;
         $this->_coreRegistry = $registry;
 
         parent::__construct($context, $data);

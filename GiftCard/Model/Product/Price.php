@@ -45,11 +45,11 @@ class Price extends CatalogPrice
         $finalPrice = $this->getPrice($product);
         if ($product->hasCustomOptions()) {
             $amount = $product->getCustomOption('amount');
-            $amount = (float) ($amount ? $amount->getValue() : 0);
+            $amount = (float)($amount ? $amount->getValue() : 0);
 
             $rangeAmount = $product->getCustomOption('range_amount');
             if ($rangeAmount && $rangeAmount->getValue()) {
-                $priceRate  = $product->getPriceRate() ?: 100;
+                $priceRate = $product->getPriceRate() ?: 100;
                 $finalPrice = $amount * $priceRate / 100;
             } else {
                 $attribute = $product->getResource()->getAttribute('gift_card_amounts');
@@ -57,7 +57,7 @@ class Price extends CatalogPrice
                 $allowAmounts = $product->load($product->getId())->getGiftCardAmounts();
 
                 foreach ($allowAmounts as $amountValue) {
-                    if ((float) $amountValue['amount'] === $amount) {
+                    if ((float)$amountValue['amount'] === $amount) {
                         $finalPrice = $amountValue['price'];
                         break;
                     }

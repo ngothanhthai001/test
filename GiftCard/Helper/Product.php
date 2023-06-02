@@ -124,13 +124,13 @@ class Product extends Data
         Transaction $transaction
     ) {
         $this->_giftCardFactory = $giftCardFactory;
-        $this->_escaper         = $escaper;
-        $this->renderer         = $renderer;
-        $this->localeFormat     = $localeFormat;
-        $this->timezoneSource   = $timezoneSource;
-        $this->deliveryMethods  = $deliveryMethods;
-        $this->creditFactory    = $creditFactory;
-        $this->transaction      = $transaction;
+        $this->_escaper = $escaper;
+        $this->renderer = $renderer;
+        $this->localeFormat = $localeFormat;
+        $this->timezoneSource = $timezoneSource;
+        $this->deliveryMethods = $deliveryMethods;
+        $this->creditFactory = $creditFactory;
+        $this->transaction = $transaction;
 
         parent::__construct($context, $objectManager, $storeManager, $localeDate, $customerSession);
     }
@@ -173,26 +173,26 @@ class Product extends Data
             $customerName = $billing->getFirstname() . ' ' . $billing->getLastname();
         }
         $giftCardData = [
-            'pattern'               => $options['pattern'],
-            'balance'               => $options[FieldRenderer::AMOUNT],
-            'status'                => Status::STATUS_ACTIVE,
-            'can_redeem'            => $options['can_redeem'],
-            'store_id'              => $order->getStoreId(),
-            'expire_after'          => $options['expire_after'],
-            'template_id'           => isset($options[FieldRenderer::TEMPLATE]) ? $options[FieldRenderer::TEMPLATE] : '',
-            'image'                 => isset($options[FieldRenderer::IMAGE]) ? $options[FieldRenderer::IMAGE] : '',
-            'template_fields'       => [
-                'sender'    => isset($options[FieldRenderer::SENDER])
+            'pattern' => $options['pattern'],
+            'balance' => $options[FieldRenderer::AMOUNT],
+            'status' => Status::STATUS_ACTIVE,
+            'can_redeem' => $options['can_redeem'],
+            'store_id' => $order->getStoreId(),
+            'expire_after' => $options['expire_after'],
+            'template_id' => isset($options[FieldRenderer::TEMPLATE]) ? $options[FieldRenderer::TEMPLATE] : '',
+            'image' => isset($options[FieldRenderer::IMAGE]) ? $options[FieldRenderer::IMAGE] : '',
+            'template_fields' => [
+                'sender' => isset($options[FieldRenderer::SENDER])
                     ? $options[FieldRenderer::SENDER]
                     : $customerName,
                 'recipient' => isset($options[FieldRenderer::RECIPIENT]) ? $options[FieldRenderer::RECIPIENT] : '',
-                'message'   => isset($options[FieldRenderer::MESSAGE]) ? $options[FieldRenderer::MESSAGE] : ''
+                'message' => isset($options[FieldRenderer::MESSAGE]) ? $options[FieldRenderer::MESSAGE] : ''
             ],
-            'order_item_id'         => $orderItem->getId(),
-            'order_increment_id'    => $order->getIncrementId(),
-            'delivery_method'       => $options[FieldRenderer::METHOD],
-            'action_vars'           => [
-                'auth'               => $customerName,
+            'order_item_id' => $orderItem->getId(),
+            'order_increment_id' => $order->getIncrementId(),
+            'delivery_method' => $options[FieldRenderer::METHOD],
+            'action_vars' => [
+                'auth' => $customerName,
                 'order_increment_id' => $order->getIncrementId()
             ],
             'conditions_serialized' => $this->getProdAttrVal($orderItem->getProduct(), GiftCard::FIELD_CONDITIONS)
@@ -217,17 +217,17 @@ class Product extends Data
         $timezone = null;
         if (isset($options[FieldRenderer::TIMEZONE])) {
             $giftCardData['timezone'] = $options[FieldRenderer::TIMEZONE];
-            $timezone                 = new DateTimeZone($options[FieldRenderer::TIMEZONE]);
+            $timezone = new DateTimeZone($options[FieldRenderer::TIMEZONE]);
         }
 
         if (isset($options[FieldRenderer::DATE])) {
             $giftCardData['delivery_date'] = $options[FieldRenderer::DATE];
-        } elseif ((int) $options[FieldRenderer::METHOD] !== DeliveryMethods::METHOD_POST) {
-            $giftCardData['delivery_date']     = (new DateTime('', $timezone))->format('Y-m-d');
+        } elseif ((int)$options[FieldRenderer::METHOD] !== DeliveryMethods::METHOD_POST) {
+            $giftCardData['delivery_date'] = (new DateTime(null, $timezone))->format('Y-m-d');
             $giftCardData['send_to_recipient'] = true;
         }
 
-        if (isset($options['expire_after']) && $options['expire_after'] > 0) {
+        if(isset($options['expire_after']) && $options['expire_after'] > 0) {
             $giftCardData['expired_at'] = (new DateTime(
                 '+' . $options['expire_after'] . ' day',
                 $timezone
@@ -235,11 +235,11 @@ class Product extends Data
         }
 
         $availableQty = $orderItem->getQtyOrdered() - $orderItem->getQtyRefunded() - count($giftCardIds);
-        $qty          = $qty === null ? $availableQty : min($qty, $availableQty);
+        $qty = $qty === null ? $availableQty : min($qty, $availableQty);
 
         while ($qty--) {
             try {
-                $giftCard      = $this->_giftCardFactory->create()->addData($giftCardData)->save();
+                $giftCard = $this->_giftCardFactory->create()->addData($giftCardData)->save();
                 $giftCardIds[] = $giftCard->getId();
             } catch (Exception $e) {
                 $this->_logger->error($e->getMessage());
@@ -282,7 +282,7 @@ class Product extends Data
         $options = $orderItem->getProductOptions();
 
         $RefundableGiftCardIds = isset($options['refundable_gift_card']) ? $options['refundable_gift_card'] : [];
-        $giftCardIds           = isset($options['giftcards']) ? $options['giftcards'] : [];
+        $giftCardIds = isset($options['giftcards']) ? $options['giftcards'] : [];
         if (!($countGiftCard = count($RefundableGiftCardIds))) {
             $this->_logger->error(__('Gift card is not available for refund. Item id #%1', $orderItem->getId()));
 
@@ -290,7 +290,7 @@ class Product extends Data
         }
         $qty = min($qty, $countGiftCard);
         while ($qty--) {
-            $id       = array_shift($RefundableGiftCardIds);
+            $id = array_shift($RefundableGiftCardIds);
             $giftCard = $this->_giftCardFactory->create()->load($id);
             if (!$giftCard->getId()) {
                 continue;
@@ -377,11 +377,11 @@ class Product extends Data
             }
             switch ($option) {
                 case FieldRenderer::AMOUNT:
-                    $value = $this->convertPrice($value, true, false, $scope);
+                    $value = $this->convertPrice($value, true, true, $scope);
                     break;
                 case FieldRenderer::METHOD:
                     $methodOptions = DeliveryMethods::getMethodOptionArray();
-                    $value         = $methodOptions[$value];
+                    $value = $methodOptions[$value];
                     break;
                 case FieldRenderer::TEMPLATE:
                     $template = $this->getTemplateHelper()->getTemplateById($value);
@@ -413,41 +413,39 @@ class Product extends Data
             ? $product->getPreconfiguredValues()->getData()
             : [];
 
-        $enableDeliveryDate = (int) $product->getGiftCardType() !== DeliveryMethods::TYPE_PRINT
+        $enableDeliveryDate = (int)$product->getGiftCardType() !== DeliveryMethods::TYPE_PRINT
             && $this->getProductConfig('enable_delivery_date');
 
         $expiredDay = $product->getExpireAfterDay();
         if ($expiredDay === self::VALUE_USE_CONFIG) {
             $expiredDay = $this->getProductConfig('expire_after_day');
         }
-        $giftcodePattern = $product->getGiftCodePattern() === "use_config" ? $this->getCodePattern() : $product->getGiftCodePattern();
 
         $information = [
-            'productId'          => $product->getId(),
-            'giftcodePattern'    => $giftcodePattern,
-            'currencyRate'       => $this->getPriceCurrency()->convert(1),
-            'priceFormat'        => $this->localeFormat->getPriceFormat(),
-            'amounts'            => $product->getGiftCardAmounts() ?: [],
-            'delivery'           => $this->deliveryMethods->getDeliveryMethod(
+            'productId' => $product->getId(),
+            'currencyRate' => $this->getPriceCurrency()->convert(1),
+            'priceFormat' => $this->localeFormat->getPriceFormat(),
+            'amounts' => $product->getGiftCardAmounts() ?: [],
+            'delivery' => $this->deliveryMethods->getDeliveryMethod(
                 $product->getGiftCardType(),
                 $deliveryParam
             ),
             'enableDeliveryDate' => $enableDeliveryDate,
-            'timezone'           => [
-                'enable'  => $enableDeliveryDate && $this->getProductConfig('enable_timezone'),
+            'timezone' => [
+                'enable' => $enableDeliveryDate && $this->getProductConfig('enable_timezone'),
                 'options' => $this->timezoneSource->toOptionArray(),
-                'value'   => $this->getConfigValue('general/locale/timezone')
+                'value' => $this->getConfigValue('general/locale/timezone')
             ],
-            'fileUploadUrl'      => $this->_urlBuilder->getUrl('mpgiftcard/template/upload'),
-            'messageMaxChar'     => $this->getMessageMaxChar(),
-            'uploadTooltip'      => __(
+            'fileUploadUrl' => $this->_urlBuilder->getUrl('mpgiftcard/template/upload'),
+            'messageMaxChar' => $this->getMessageMaxChar(),
+            'uploadTooltip' => __(
                 'Acceptable formats are jpg, png and gif. Limit Image Size Upload (%1MB)',
                 $this->getMaxFileSize()
             ),
-            'expire_after'       => $expiredDay
+            'expire_after' => $expiredDay
         ];
 
-        if ((boolean) $product->getAllowAmountRange()) {
+        if ((boolean)$product->getAllowAmountRange()) {
             $minAmount = $product->getMinAmount();
             $minAmount = (!$minAmount || $minAmount < 0) ? 0 : $minAmount;
 
@@ -457,8 +455,8 @@ class Product extends Data
             $priceRate = $product->getPriceRate() ?: 100;
 
             $information['openAmount'] = [
-                'min'  => $minAmount,
-                'max'  => $maxAmount,
+                'min' => $minAmount,
+                'max' => $maxAmount,
                 'rate' => $priceRate,
             ];
         }
@@ -478,28 +476,28 @@ class Product extends Data
             return [];
         }
 
-        $emailEnable       = $this->getEmailConfig('enable');
+        $emailEnable = $this->getEmailConfig('enable');
         $creditEmailEnable = $this->getEmailConfig('credit/enable');
 
         $creditAccount = $this->creditFactory->create()
             ->load($customer->getId(), 'customer_id');
-        $code          = $this->_getRequest()->getParam('code');
+        $code = $this->_getRequest()->getParam('code');
 
         return [
-            'baseUrl'        => $this->_urlBuilder->getBaseUrl(),
-            'customerEmail'  => $customer->getEmail(),
-            'code'           => $code,
-            'balance'        => $this->getCustomerBalance($customer->getId()),
-            'transactions'   => $this->transaction->getTransactionsForCustomer($customer->getId()),
-            'giftCardLists'  => $this->_giftCardFactory->create()->getGiftCardListForCustomer($customer->getId()),
-            'isEnableCredit' => (bool) $this->getGeneralConfig('enable_credit'),
-            'notification'   => [
-                'enable'               => $emailEnable,
-                'creditEnable'         => $creditEmailEnable,
-                'creditNotification'   => $creditAccount->getCreditNotification() === null
-                    ? true : (boolean) $creditAccount->getCreditNotification(),
+            'baseUrl' => $this->_urlBuilder->getBaseUrl(),
+            'customerEmail' => $customer->getEmail(),
+            'code' => $code,
+            'balance' => $this->getCustomerBalance($customer->getId()),
+            'transactions' => $this->transaction->getTransactionsForCustomer($customer->getId()),
+            'giftCardLists' => $this->_giftCardFactory->create()->getGiftCardListForCustomer($customer->getId()),
+            'isEnableCredit' => (bool)$this->getGeneralConfig('enable_credit'),
+            'notification' => [
+                'enable' => $emailEnable,
+                'creditEnable' => $creditEmailEnable,
+                'creditNotification' => $creditAccount->getCreditNotification() === null
+                    ? true : (boolean)$creditAccount->getCreditNotification(),
                 'giftcardNotification' => $creditAccount->getGiftcardNotification() === null
-                    ? true : (boolean) $creditAccount->getGiftcardNotification()
+                    ? true : (boolean)$creditAccount->getGiftcardNotification()
             ]
         ];
     }

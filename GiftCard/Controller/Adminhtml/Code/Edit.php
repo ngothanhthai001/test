@@ -66,9 +66,9 @@ class Edit extends Code
         Registry $registry,
         Data $giftcardHelper
     ) {
-        $this->registry        = $registry;
+        $this->registry = $registry;
         $this->_giftcardHelper = $giftcardHelper;
-        $this->_poolFactory    = $poolFactory;
+        $this->_poolFactory = $poolFactory;
 
         parent::__construct($context, $resultPageFactory, $giftCardFactory);
     }
@@ -99,8 +99,8 @@ class Edit extends Code
 
         if ($poolId = $giftCard->getPoolId()) {
             $pool = $this->_poolFactory->create()->load($poolId);
-            if ((int) $pool->getStatus() === PoolStatus::STATUS_INACTIVE
-                && (int) $giftCard->getStatus() === CardStatus::STATUS_ACTIVE) {
+            if ((int)$pool->getStatus() === PoolStatus::STATUS_INACTIVE
+                && (int)$giftCard->getStatus() === CardStatus::STATUS_ACTIVE) {
                 $this->messageManager->addNoticeMessage(__('This code is disabled by Pool "%1"', $pool->getName()));
             }
         }

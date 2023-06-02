@@ -57,9 +57,9 @@ class RemoveTmpImages
         Template $templateHelper,
         File $driverFile
     ) {
-        $this->_helper        = $templateHelper;
+        $this->_helper = $templateHelper;
         $this->mediaDirectory = $templateHelper->getMediaDirectory();
-        $this->driverFile     = $driverFile;
+        $this->driverFile = $driverFile;
     }
 
     /**
@@ -84,7 +84,7 @@ class RemoveTmpImages
             if ($this->mediaDirectory->isDirectory($item)) {
                 $this->readDir($item);
             } else {
-                $file     = $this->mediaDirectory->getAbsolutePath($item);
+                $file = $this->mediaDirectory->getAbsolutePath($item);
                 $fileData = $this->driverFile->stat($file);
                 if (isset($fileData['mtime']) && $fileData['mtime'] < strtotime('-3days')) {
                     $this->mediaDirectory->delete($item);

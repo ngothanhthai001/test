@@ -40,30 +40,30 @@ class Item
      */
     public function aroundCalcRowTotal(CreditmemoItem $item, Closure $proceed)
     {
-        $orderItem   = $item->getOrderItem();
-        $giftCards   = $orderItem->getProductOptionByCode('giftcards') ?: [];
+        $orderItem = $item->getOrderItem();
+        $giftCards = $orderItem->getProductOptionByCode('giftcards') ?: [];
         $giftCardQty = count($giftCards);
 
-        $refundableGiftCard    = $orderItem->getProductOptionByCode('refundable_gift_card') ?: [];
+        $refundableGiftCard = $orderItem->getProductOptionByCode('refundable_gift_card') ?: [];
         $refundableGiftCardQty = count($refundableGiftCard);
 
         if ($giftCardQty === $refundableGiftCardQty || !$giftCardQty || $orderItem->getProductType() !== 'mpgiftcard') {
             return $proceed();
         }
 
-        $rate                 = $refundableGiftCardQty / $giftCardQty;
-        $creditmemo           = $item->getCreditmemo();
+        $rate = $refundableGiftCardQty / $giftCardQty;
+        $creditmemo = $item->getCreditmemo();
         $orderItemQtyInvoiced = $orderItem->getQtyInvoiced();
 
-        $rowTotal            = ($orderItem->getRowInvoiced() - $orderItem->getAmountRefunded()) * $rate;
-        $baseRowTotal        = ($orderItem->getBaseRowInvoiced() - $orderItem->getBaseAmountRefunded()) * $rate;
-        $rowTotalInclTax     = $orderItem->getRowTotalInclTax() * $rate;
+        $rowTotal = ($orderItem->getRowInvoiced() - $orderItem->getAmountRefunded()) * $rate;
+        $baseRowTotal = ($orderItem->getBaseRowInvoiced() - $orderItem->getBaseAmountRefunded()) * $rate;
+        $rowTotalInclTax = $orderItem->getRowTotalInclTax() * $rate;
         $baseRowTotalInclTax = $orderItem->getBaseRowTotalInclTax() * $rate;
 
         $qty = $this->processQty($item);
         if ($orderItemQtyInvoiced > 0 && $qty >= 0 && !$item->isLast()) {
             $availableQty = $orderItemQtyInvoiced - $orderItem->getQtyRefunded();
-            $rowTotal     = $creditmemo->roundPrice($rowTotal / $availableQty * $qty);
+            $rowTotal = $creditmemo->roundPrice($rowTotal / $availableQty * $qty);
             $baseRowTotal = $creditmemo->roundPrice($baseRowTotal / $availableQty * $qty, 'base');
         }
         $item->setRowTotal($rowTotal);
@@ -91,7 +91,7 @@ class Item
     private function processQty($item)
     {
         $orderItem = $item->getOrderItem();
-        $qty       = max(0, $item->getQty());
+        $qty = max(0, $item->getQty());
         if ($this->isQtyAvailable($qty, $orderItem)) {
             return $qty;
         }

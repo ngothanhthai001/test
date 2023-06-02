@@ -66,14 +66,14 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($context->getVersion(), '1.0.3', '<')) {
             $connection->addColumn($setup->getTable('mageplaza_giftcard_pool'), 'conditions_serialized', [
-                'type'    => Table::TYPE_TEXT,
-                'length'  => '2M',
+                'type' => Table::TYPE_TEXT,
+                'length' => '2M',
                 'comment' => 'Condition Serialized',
             ]);
 
             $connection->addColumn($setup->getTable('mageplaza_giftcard'), 'conditions_serialized', [
-                'type'    => Table::TYPE_TEXT,
-                'length'  => '2M',
+                'type' => Table::TYPE_TEXT,
+                'length' => '2M',
                 'comment' => 'Condition Serialized',
             ]);
         }
@@ -93,6 +93,37 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'pool_id',
                 Table::ACTION_NO_ACTION
             );
+        }
+
+        if (version_compare($context->getVersion(), '1.0.9', '<')) {
+            $connection->addColumn($setup->getTable('mageplaza_giftcard_transaction'), 'expired_at', [
+                'type' => Table::TYPE_DATETIME,
+                'nullable' => true,
+                'default' => null,
+                'comment' => 'Expired Date'
+            ]);
+            $connection->addColumn($setup->getTable('mageplaza_giftcard_transaction'), 'current_amount', [
+                'type' => Table::TYPE_DECIMAL,
+                'length' => '12,4',
+                'nullable' => true,
+                'default' => 0.0000,
+                'comment' => 'Amount current'
+            ]);
+            $connection->addColumn($setup->getTable('mageplaza_giftcard_transaction'), 'status', [
+                'type' => Table::TYPE_SMALLINT,
+                null,
+                ['nullable' => false, 'default' => '1'],
+                'comment' => 'Status'
+            ]);
+        }
+        if (version_compare($context->getVersion(), '1.1.0', '<')) {
+            $connection->addColumn($setup->getTable('mageplaza_giftcard_transaction'), 'old_current_amount', [
+                'type' => Table::TYPE_DECIMAL,
+                'length' => '12,4',
+                'nullable' => true,
+                'default' => 0.0000,
+                'comment' => 'Amount Before Checkout'
+            ]);
         }
 
         $setup->endSetup();

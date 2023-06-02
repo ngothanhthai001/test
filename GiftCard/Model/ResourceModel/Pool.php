@@ -50,7 +50,7 @@ class Pool extends AbstractDb
     protected function _beforeSave(AbstractModel $object)
     {
         $required = [
-            'name'    => $object->getName(),
+            'name' => $object->getName(),
             'balance' => $object->getBalance(),
         ];
 

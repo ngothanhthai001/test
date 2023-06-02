@@ -95,9 +95,9 @@ class Send extends Generic implements TabInterface
     ) {
         $this->templateFactory = $templateFactory;
         $this->deliveryMethods = $deliveryMethods;
-        $this->_fieldFactory   = $fieldFactory;
+        $this->_fieldFactory = $fieldFactory;
         $this->_templateHelper = $helperTemplate;
-        $this->timezoneSource  = $timezoneSource;
+        $this->timezoneSource = $timezoneSource;
 
         parent::__construct($context, $registry, $formFactory, $data);
     }
@@ -126,47 +126,47 @@ class Send extends Generic implements TabInterface
         /** Delivery Fieldset */
         $deliveryFieldset = $form->addFieldset('delivery_fieldset', ['legend' => __('Delivery')]);
         $deliveryFieldset->addField('delivery_method', 'select', [
-            'name'   => 'delivery_method',
-            'label'  => __('Delivery Method'),
-            'title'  => __('Delivery Method'),
+            'name' => 'delivery_method',
+            'label' => __('Delivery Method'),
+            'title' => __('Delivery Method'),
             'values' => DeliveryMethods::getMethodOptionArrayForForm()
         ]);
         $deliveryFieldset->addField('recipient_email', 'text', [
-            'name'     => 'recipient_email',
-            'label'    => __('Recipient Email'),
-            'title'    => __('Recipient Email'),
-            'class'    => 'validate-email',
+            'name' => 'recipient_email',
+            'label' => __('Recipient Email'),
+            'title' => __('Recipient Email'),
+            'class' => 'validate-email',
             'required' => true
         ]);
         $deliveryFieldset->addField('recipient_phone', 'text', [
-            'name'     => 'recipient_phone',
-            'label'    => __('Phone Number'),
-            'title'    => __('Phone Number'),
+            'name' => 'recipient_phone',
+            'label' => __('Phone Number'),
+            'title' => __('Phone Number'),
             'required' => true
         ]);
         $deliveryFieldset->addField('customer_email', 'text', [
-            'name'     => 'customer_email',
-            'label'    => __('Customer Email'),
-            'title'    => __('Customer Email'),
-            'class'    => 'validate-email',
+            'name' => 'customer_email',
+            'label' => __('Customer Email'),
+            'title' => __('Customer Email'),
+            'class' => 'validate-email',
             'required' => true
         ]);
         $deliveryFieldset->addField('recipient_address', 'textarea', [
-            'name'  => 'recipient_address',
+            'name' => 'recipient_address',
             'label' => __('Address'),
             'title' => __('Address')
         ]);
         $deliveryFieldset->addField('delivery_date', 'date', [
-            'name'        => 'delivery_date',
-            'label'       => __('Delivery Date'),
-            'title'       => __('Delivery Date'),
-            'class'       => 'validate-date',
+            'name' => 'delivery_date',
+            'label' => __('Delivery Date'),
+            'title' => __('Delivery Date'),
+            'class' => 'validate-date',
             'date_format' => $this->_localeDate->getDateFormat(IntlDateFormatter::MEDIUM)
         ]);
         $deliveryFieldset->addField('timezone', 'select', [
-            'name'   => 'timezone',
-            'label'  => __('Timezone'),
-            'title'  => __('Timezone'),
+            'name' => 'timezone',
+            'label' => __('Timezone'),
+            'title' => __('Timezone'),
             'values' => $this->timezoneSource->toOptionArray()
         ]);
         if (!$model->getTimezone()) {

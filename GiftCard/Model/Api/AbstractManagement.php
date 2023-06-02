@@ -63,7 +63,7 @@ class AbstractManagement
         CollectionProcessorInterface $collectionProcessor
     ) {
         $this->templateFieldsFactory = $templateFieldsFactory;
-        $this->collectionProcessor   = $collectionProcessor;
+        $this->collectionProcessor = $collectionProcessor;
     }
 
     /**

@@ -67,22 +67,22 @@ class CartCoupon
         return $coupon;
     }
 
-    /**
-     * @param Coupon $subject
-     * @param string $html
-     *
-     * @return string
-     * @throws LocalizedException
-     */
-    public function afterToHtml(Coupon $subject, $html)
-    {
-        $giftCardHtml = $subject->getLayout()
-            ->createBlock(
-                Template::class,
-                'mageplaza.gift.card.checkout.cart.coupon'
-            )
-            ->setTemplate('Mageplaza_GiftCard::cart/coupon.phtml');
+    // /**
+    //  * @param Coupon $subject
+    //  * @param string $html
+    //  *
+    //  * @return string
+    //  * @throws LocalizedException
+    //  */
+    // public function afterToHtml(Coupon $subject, $html)
+    // {
+    //     $giftCardHtml = $subject->getLayout()
+    //         ->createBlock(
+    //             Template::class,
+    //             'mageplaza.gift.card.checkout.cart.coupon'
+    //         )
+    //         ->setTemplate('Mageplaza_GiftCard::cart/coupon.phtml');
 
-        return $giftCardHtml->toHtml() . $html;
-    }
+    //     return $giftCardHtml->toHtml() . $html;
+    // }
 }

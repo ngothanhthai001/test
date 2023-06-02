@@ -70,7 +70,7 @@ class Upload extends Action
         parent::__construct($context);
 
         $this->resultRawFactory = $resultRawFactory;
-        $this->_templateHelper  = $templateHelper;
+        $this->_templateHelper = $templateHelper;
     }
 
     /**
@@ -95,7 +95,7 @@ class Upload extends Action
 
             unset($result['tmp_name'], $result['path']);
 
-            $result['url']  = $this->_templateHelper->getTmpMediaUrl($result['file']);
+            $result['url'] = $this->_templateHelper->getTmpMediaUrl($result['file']);
             $result['file'] .= '.tmp';
         } catch (Exception $e) {
             $result = ['error' => $e->getMessage(), 'errorcode' => $e->getCode()];

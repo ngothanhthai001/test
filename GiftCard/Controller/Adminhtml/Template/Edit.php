@@ -57,7 +57,7 @@ class Edit extends Template
         Registry $registry,
         Data $giftcardHelper
     ) {
-        $this->registry        = $registry;
+        $this->registry = $registry;
         $this->_giftcardHelper = $giftcardHelper;
 
         parent::__construct($context, $resultPageFactory, $templateFactory);

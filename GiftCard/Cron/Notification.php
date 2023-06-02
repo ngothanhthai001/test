@@ -68,9 +68,9 @@ class Notification
         CollectionFactory $collectionFactory,
         LoggerInterface $logger
     ) {
-        $this->_helper            = $helper;
+        $this->_helper = $helper;
         $this->_collectionFactory = $collectionFactory;
-        $this->_logger            = $logger;
+        $this->_logger = $logger;
     }
 
     /**
@@ -118,7 +118,7 @@ class Notification
             return $this;
         }
 
-        $dateSent   = date('Y-m-d', strtotime("-{$days} day"));
+        $dateSent = date('Y-m-d', strtotime("-{$days} day"));
         $collection = $this->_collectionFactory->create()
             ->addFieldToFilter('status', Status::STATUS_ACTIVE)
             ->addFieldToFilter('delivery_date', ['notnull' => true])
@@ -145,6 +145,6 @@ class Notification
      */
     private function getEmailDays($type)
     {
-        return (int) $this->_helper->getEmailConfig($type . '/days');
+        return (int)$this->_helper->getEmailConfig($type . '/days');
     }
 }

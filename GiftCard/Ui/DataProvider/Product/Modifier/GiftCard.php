@@ -45,15 +45,15 @@ class GiftCard extends AbstractModifier
     /**
      * Gift Product attributes
      */
-    const FIELD_GIFT_CODE_PATTERN  = 'gift_code_pattern';
-    const FIELD_GIFT_CARD_AMOUNTS  = 'gift_card_amounts';
+    const FIELD_GIFT_CODE_PATTERN = 'gift_code_pattern';
+    const FIELD_GIFT_CARD_AMOUNTS = 'gift_card_amounts';
     const FIELD_ALLOW_AMOUNT_RANGE = 'allow_amount_range';
-    const FIELD_MIN_AMOUNT         = 'min_amount';
-    const FIELD_MAX_AMOUNT         = 'max_amount';
-    const FIELD_EXPIRE_AFTER_DAY   = 'expire_after_day';
-    const FIELD_CAN_REDEEM         = 'can_redeem';
-    const FIELD_PRICE_RATE         = 'price_rate';
-    const FIELD_CONDITIONS         = 'mpgiftcard_conditions';
+    const FIELD_MIN_AMOUNT = 'min_amount';
+    const FIELD_MAX_AMOUNT = 'max_amount';
+    const FIELD_EXPIRE_AFTER_DAY = 'expire_after_day';
+    const FIELD_CAN_REDEEM = 'can_redeem';
+    const FIELD_PRICE_RATE = 'price_rate';
+    const FIELD_CONDITIONS = 'mpgiftcard_conditions';
 
     /**
      * @var LocatorInterface
@@ -94,10 +94,10 @@ class GiftCard extends AbstractModifier
         Product $productHelper,
         RequestInterface $request
     ) {
-        $this->locator        = $locator;
-        $this->arrayManager   = $arrayManager;
+        $this->locator = $locator;
+        $this->arrayManager = $arrayManager;
         $this->_productHelper = $productHelper;
-        $this->request        = $request;
+        $this->request = $request;
     }
 
     /**
@@ -110,16 +110,16 @@ class GiftCard extends AbstractModifier
 
         $gcData = [
             static::FIELD_GIFT_CODE_PATTERN => $this->_productHelper->getCodePattern($storeId),
-            static::FIELD_CAN_REDEEM        => $this->_productHelper->getGeneralConfig('can_redeem', $storeId),
-            static::FIELD_EXPIRE_AFTER_DAY  => $this->_productHelper->getExpireAfterDay($storeId)
+            static::FIELD_CAN_REDEEM => $this->_productHelper->getGeneralConfig('can_redeem', $storeId),
+            static::FIELD_EXPIRE_AFTER_DAY => $this->_productHelper->getExpireAfterDay($storeId)
         ];
         foreach ($gcData as $field => $value) {
             $useConfigValue = $field === self::FIELD_CAN_REDEEM ? Boolean::VALUE_USE_CONFIG : Product::VALUE_USE_CONFIG;
-            $isConfigUsed   = isset($data[$modelId][static::DATA_SOURCE_DEFAULT][$field])
-                && ($data[$modelId][static::DATA_SOURCE_DEFAULT][$field] === (string) $useConfigValue);
+            $isConfigUsed = isset($data[$modelId][static::DATA_SOURCE_DEFAULT][$field])
+                && ($data[$modelId][static::DATA_SOURCE_DEFAULT][$field] === (string)$useConfigValue);
 
             if ($isConfigUsed || !$modelId) {
-                $data[$modelId][static::DATA_SOURCE_DEFAULT][$field]                 = $value;
+                $data[$modelId][static::DATA_SOURCE_DEFAULT][$field] = $value;
                 $data[$modelId][static::DATA_SOURCE_DEFAULT]['use_config_' . $field] = '1';
             }
         }
@@ -162,23 +162,23 @@ class GiftCard extends AbstractModifier
             null,
             'children'
         );
-        $this->_meta   = $this->arrayManager->merge($containerPath, $this->_meta, [
+        $this->_meta = $this->arrayManager->merge($containerPath, $this->_meta, [
             'children' => [
                 static::FIELD_ALLOW_AMOUNT_RANGE => [
                     'arguments' => [
                         'data' => [
                             'config' => [
-                                'dataScope'         => static::FIELD_ALLOW_AMOUNT_RANGE,
+                                'dataScope' => static::FIELD_ALLOW_AMOUNT_RANGE,
                                 'additionalClasses' => 'admin__field-x-small',
-                                'component'         => 'Mageplaza_GiftCard/js/form/element/allow-amount-range',
-                                'componentType'     => Field::NAME,
-                                'prefer'            => 'toggle',
-                                'valueMap'          => [
+                                'component' => 'Mageplaza_GiftCard/js/form/element/allow-amount-range',
+                                'componentType' => Field::NAME,
+                                'prefer' => 'toggle',
+                                'valueMap' => [
                                     'false' => '0',
-                                    'true'  => '1',
+                                    'true' => '1',
                                 ],
-                                'exports'           => [
-                                    'checked'       => '${$.parentName}.' . static::FIELD_ALLOW_AMOUNT_RANGE . ':allowAmountRange',
+                                'exports' => [
+                                    'checked' => '${$.parentName}.' . static::FIELD_ALLOW_AMOUNT_RANGE . ':allowAmountRange',
                                     '__disableTmpl' => ['checked' => false],
                                 ],
                             ],
@@ -201,7 +201,7 @@ class GiftCard extends AbstractModifier
             null,
             'children'
         );
-        $this->_meta      = $this->arrayManager->merge($minContainerPath, $this->_meta, [
+        $this->_meta = $this->arrayManager->merge($minContainerPath, $this->_meta, [
             'arguments' => [
                 'data' => [
                     'config' => [
@@ -209,15 +209,15 @@ class GiftCard extends AbstractModifier
                     ],
                 ],
             ],
-            'children'  => [
+            'children' => [
                 static::FIELD_MIN_AMOUNT => [
                     'arguments' => [
                         'data' => [
                             'config' => [
-                                'label'             => __('Range From'),
+                                'label' => __('Range From'),
                                 'additionalClasses' => 'admin__field-small',
-                                'scopeLabel'        => __('[WEBSITE]'),
-                                'validation'        => [
+                                'scopeLabel' => __('[WEBSITE]'),
+                                'validation' => [
                                     'validate-greater-than-zero' => true
                                 ]
                             ],
@@ -226,15 +226,15 @@ class GiftCard extends AbstractModifier
                 ]
             ]
         ]);
-        $this->_meta      = $this->arrayManager->merge($maxContainerPath, $this->_meta, [
+        $this->_meta = $this->arrayManager->merge($maxContainerPath, $this->_meta, [
             'children' => [
                 static::FIELD_MAX_AMOUNT => [
                     'arguments' => [
                         'data' => [
                             'config' => [
-                                'label'             => __('To'),
+                                'label' => __('To'),
                                 'additionalClasses' => 'admin__field-small admin__field-group-show-label',
-                                'validation'        => [
+                                'validation' => [
                                     'validate-greater-than-zero' => true
                                 ]
                             ],
@@ -243,7 +243,7 @@ class GiftCard extends AbstractModifier
                 ]
             ]
         ]);
-        $this->_meta      = $this->arrayManager->set(
+        $this->_meta = $this->arrayManager->set(
             $minContainerPath . '/children/' . static::FIELD_MAX_AMOUNT,
             $this->_meta,
             $this->arrayManager->get(
@@ -251,7 +251,7 @@ class GiftCard extends AbstractModifier
                 $this->_meta
             )
         );
-        $this->_meta      = $this->arrayManager->remove($maxContainerPath, $this->_meta);
+        $this->_meta = $this->arrayManager->remove($maxContainerPath, $this->_meta);
 
         // price percentage field
         $containerPath = $this->arrayManager->findPath(
@@ -260,19 +260,19 @@ class GiftCard extends AbstractModifier
             null,
             'children'
         );
-        $this->_meta   = $this->arrayManager->merge($containerPath, $this->_meta, [
+        $this->_meta = $this->arrayManager->merge($containerPath, $this->_meta, [
             'children' => [
                 static::FIELD_PRICE_RATE => [
                     'arguments' => [
                         'data' => [
                             'config' => [
-                                'addbefore'         => '%',
+                                'addbefore' => '%',
                                 'additionalClasses' => 'admin__field-small',
-                                'validation'        => ['validate-zero-or-greater' => true],
-                                'service'           => false,
-                                'disabled'          => false,
-                                'globalScope'       => true,
-                                'scopeLabel'        => __('[WEBSITE]')
+                                'validation' => ['validate-zero-or-greater' => true],
+                                'service' => false,
+                                'disabled' => false,
+                                'globalScope' => true,
+                                'scopeLabel' => __('[WEBSITE]')
                             ],
                         ],
                     ],
@@ -299,57 +299,57 @@ class GiftCard extends AbstractModifier
             'arguments' => [
                 'data' => [
                     'config' => [
-                        'componentType'       => 'dynamicRows',
-                        'label'               => __('Gift Card Amount'),
+                        'componentType' => 'dynamicRows',
+                        'label' => __('Gift Card Amount'),
                         'renderDefaultRecord' => false,
-                        'recordTemplate'      => 'record',
-                        'dataScope'           => '',
-                        'dndConfig'           => [
+                        'recordTemplate' => 'record',
+                        'dataScope' => '',
+                        'dndConfig' => [
                             'enabled' => false,
                         ]
                     ]
                 ]
             ],
-            'children'  => [
+            'children' => [
                 'record' => [
                     'arguments' => [
                         'data' => [
                             'config' => [
                                 'componentType' => Container::NAME,
-                                'isTemplate'    => true,
+                                'isTemplate' => true,
                                 'is_collection' => true,
-                                'component'     => 'Magento_Ui/js/dynamic-rows/record',
-                                'dataScope'     => '',
-                                'disabled'      => false,
+                                'component' => 'Magento_Ui/js/dynamic-rows/record',
+                                'dataScope' => '',
+                                'disabled' => false,
                             ]
                         ]
                     ],
-                    'children'  => [
-                        'amount'       => [
+                    'children' => [
+                        'amount' => [
                             'arguments' => [
                                 'data' => [
                                     'config' => [
-                                        'formElement'   => Input::NAME,
+                                        'formElement' => Input::NAME,
                                         'componentType' => Field::NAME,
-                                        'dataType'      => Price::NAME,
-                                        'label'         => __('Amount'),
-                                        'dataScope'     => 'amount',
-                                        'addbefore'     => $this->getStore()->getBaseCurrency()->getCurrencySymbol()
+                                        'dataType' => Price::NAME,
+                                        'label' => __('Amount'),
+                                        'dataScope' => 'amount',
+                                        'addbefore' => $this->getStore()->getBaseCurrency()->getCurrencySymbol()
                                     ]
                                 ]
                             ]
                         ],
-                        'price'        => [
+                        'price' => [
                             'arguments' => [
                                 'data' => [
                                     'config' => [
                                         'componentType' => Field::NAME,
-                                        'formElement'   => Input::NAME,
-                                        'dataType'      => Price::NAME,
-                                        'label'         => __('Price'),
-                                        'enableLabel'   => true,
-                                        'dataScope'     => 'price',
-                                        'addbefore'     => $this->getStore()->getBaseCurrency()->getCurrencySymbol()
+                                        'formElement' => Input::NAME,
+                                        'dataType' => Price::NAME,
+                                        'label' => __('Price'),
+                                        'enableLabel' => true,
+                                        'dataScope' => 'price',
+                                        'addbefore' => $this->getStore()->getBaseCurrency()->getCurrencySymbol()
                                     ]
                                 ]
                             ]
@@ -359,8 +359,8 @@ class GiftCard extends AbstractModifier
                                 'data' => [
                                     'config' => [
                                         'componentType' => 'actionDelete',
-                                        'dataType'      => Text::NAME,
-                                        'label'         => ''
+                                        'dataType' => Text::NAME,
+                                        'label' => ''
                                     ]
                                 ]
                             ]
@@ -387,9 +387,9 @@ class GiftCard extends AbstractModifier
             return $this;
         }
 
-        $validation    = $attribute === self::FIELD_EXPIRE_AFTER_DAY ? ['validate-greater-than-zero' => true] : [];
+        $validation = $attribute === self::FIELD_EXPIRE_AFTER_DAY ? ['validate-greater-than-zero' => true] : [];
         $containerPath = $this->arrayManager->findPath('container_' . $attribute, $this->_meta, null, 'children');
-        $this->_meta   = $this->arrayManager->merge($containerPath, $this->_meta, [
+        $this->_meta = $this->arrayManager->merge($containerPath, $this->_meta, [
             'arguments' => [
                 'data' => [
                     'config' => [
@@ -397,16 +397,16 @@ class GiftCard extends AbstractModifier
                     ],
                 ],
             ],
-            'children'  => [
-                $attribute                 => [
+            'children' => [
+                $attribute => [
                     'arguments' => [
                         'data' => [
                             'config' => [
-                                'dataScope'         => $attribute,
+                                'dataScope' => $attribute,
                                 'additionalClasses' => 'admin__field-medium',
-                                'component'         => 'Mageplaza_GiftCard/js/form/element/text-use-config',
-                                'componentType'     => Field::NAME,
-                                'validation'        => $validation
+                                'component' => 'Mageplaza_GiftCard/js/form/element/text-use-config',
+                                'componentType' => Field::NAME,
+                                'validation' => $validation
                             ],
                         ],
                     ],
@@ -415,21 +415,21 @@ class GiftCard extends AbstractModifier
                     'arguments' => [
                         'data' => [
                             'config' => [
-                                'dataType'      => 'number',
-                                'formElement'   => Checkbox::NAME,
+                                'dataType' => 'number',
+                                'formElement' => Checkbox::NAME,
                                 'componentType' => Field::NAME,
-                                'description'   => __('Use Config Settings'),
-                                'dataScope'     => 'use_config_' . $attribute,
-                                'valueMap'      => [
+                                'description' => __('Use Config Settings'),
+                                'dataScope' => 'use_config_' . $attribute,
+                                'valueMap' => [
                                     'false' => '0',
-                                    'true'  => '1',
+                                    'true' => '1',
                                 ],
-                                'exports'       => [
-                                    'checked'       => '${$.parentName}.' . $attribute . ':isUseConfig',
+                                'exports' => [
+                                    'checked' => '${$.parentName}.' . $attribute . ':isUseConfig',
                                     '__disableTmpl' => ['checked' => false],
                                 ],
-                                'imports'       => [
-                                    'disabled'      => '${$.parentName}.' . $attribute . ':isUseDefault',
+                                'imports' => [
+                                    'disabled' => '${$.parentName}.' . $attribute . ':isUseDefault',
                                     '__disableTmpl' => ['checked' => false],
                                 ]
                             ],
@@ -457,7 +457,7 @@ class GiftCard extends AbstractModifier
         }
 
         $containerPath = $this->arrayManager->findPath('container_' . $attribute, $this->_meta, null, 'children');
-        $this->_meta   = $this->arrayManager->merge($containerPath, $this->_meta, [
+        $this->_meta = $this->arrayManager->merge($containerPath, $this->_meta, [
             'arguments' => [
                 'data' => [
                     'config' => [
@@ -465,19 +465,19 @@ class GiftCard extends AbstractModifier
                     ],
                 ],
             ],
-            'children'  => [
-                $attribute                 => [
+            'children' => [
+                $attribute => [
                     'arguments' => [
                         'data' => [
                             'config' => [
-                                'dataScope'         => $attribute,
+                                'dataScope' => $attribute,
                                 'additionalClasses' => 'admin__field-x-small',
-                                'component'         => 'Magento_Ui/js/form/element/single-checkbox-use-config',
-                                'componentType'     => Field::NAME,
-                                'prefer'            => 'toggle',
-                                'valueMap'          => [
+                                'component' => 'Magento_Ui/js/form/element/single-checkbox-use-config',
+                                'componentType' => Field::NAME,
+                                'prefer' => 'toggle',
+                                'valueMap' => [
                                     'false' => '0',
-                                    'true'  => '1',
+                                    'true' => '1',
                                 ],
                             ],
                         ],
@@ -487,21 +487,21 @@ class GiftCard extends AbstractModifier
                     'arguments' => [
                         'data' => [
                             'config' => [
-                                'dataType'      => 'number',
-                                'formElement'   => Checkbox::NAME,
+                                'dataType' => 'number',
+                                'formElement' => Checkbox::NAME,
                                 'componentType' => Field::NAME,
-                                'description'   => __('Use Config Settings'),
-                                'dataScope'     => 'use_config_' . $attribute,
-                                'valueMap'      => [
+                                'description' => __('Use Config Settings'),
+                                'dataScope' => 'use_config_' . $attribute,
+                                'valueMap' => [
                                     'false' => '0',
-                                    'true'  => '1',
+                                    'true' => '1',
                                 ],
-                                'exports'       => [
-                                    'checked'       => '${$.parentName}.' . $attribute . ':isUseConfig',
+                                'exports' => [
+                                    'checked' => '${$.parentName}.' . $attribute . ':isUseConfig',
                                     '__disableTmpl' => ['checked' => false],
                                 ],
-                                'imports'       => [
-                                    'disabled'      => '${$.parentName}.' . $attribute . ':isUseDefault',
+                                'imports' => [
+                                    'disabled' => '${$.parentName}.' . $attribute . ':isUseDefault',
                                     '__disableTmpl' => ['checked' => false],
                                 ]
                             ],

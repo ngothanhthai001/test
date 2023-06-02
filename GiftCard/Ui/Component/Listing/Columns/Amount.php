@@ -63,7 +63,7 @@ class Amount extends Column
         array $data = []
     ) {
         $this->priceFormatter = $priceFormatter;
-        $this->storeManager   = $storeManager;
+        $this->storeManager = $storeManager;
 
         parent::__construct($context, $uiComponentFactory, $components, $data);
     }
@@ -80,8 +80,8 @@ class Amount extends Column
     {
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as & $item) {
-                $name        = $this->getName();
-                $storeId     = isset($item['store_id']) ? $item['store_id'] : null;
+                $name = $this->getName();
+                $storeId = isset($item['store_id']) ? $item['store_id'] : null;
                 $item[$name] = $this->priceFormatter->format(
                     $item[$name],
                     false,

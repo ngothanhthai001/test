@@ -72,9 +72,9 @@ class Save extends Pool
         TransactionFactory $transactionFactory,
         DataHelper $dataHelper
     ) {
-        $this->_giftCardFactory    = $giftCardFactory;
+        $this->_giftCardFactory = $giftCardFactory;
         $this->_transactionFactory = $transactionFactory;
-        $this->_dataHelper         = $dataHelper;
+        $this->_dataHelper = $dataHelper;
 
         parent::__construct($context, $resultPageFactory, $poolFactory);
     }

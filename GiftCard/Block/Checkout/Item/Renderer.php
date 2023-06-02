@@ -95,7 +95,7 @@ class Renderer extends \Magento\Checkout\Block\Cart\Item\Renderer
     public function getOptionList()
     {
         /** @var Product $helper */
-        $item          = $this->getItem();
+        $item = $this->getItem();
         $customOptions = $this->_productConfig->getCustomOptions($item);
 
         return $this->helper->getOptionList($item, $customOptions);

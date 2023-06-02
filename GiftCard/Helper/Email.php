@@ -27,7 +27,6 @@ use Magento\Customer\Model\CustomerFactory;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Mail\Template\FactoryInterface;
 use Magento\Framework\Mail\TemplateInterface;
@@ -37,7 +36,7 @@ use Magento\Framework\Translate\Inline\StateInterface;
 use Magento\Framework\Validator\EmailAddress;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Mageplaza\GiftCard\Mail\Template\TransportBuilder;
+use Magento\Framework\Mail\Template\TransportBuilder;
 use Mageplaza\GiftCard\Model\Credit;
 use Mageplaza\GiftCard\Model\GiftCard;
 use Spipu\Html2Pdf\Exception\Html2PdfException;
@@ -52,12 +51,12 @@ use Zend_Mime_Decode;
  */
 class Email extends Data
 {
-    const EMAIL_TYPE_DELIVERY      = '';
-    const EMAIL_TYPE_UPDATE        = 'update';
-    const EMAIL_TYPE_EXPIRE        = 'before_expire';
+    const EMAIL_TYPE_DELIVERY = '';
+    const EMAIL_TYPE_UPDATE = 'update';
+    const EMAIL_TYPE_EXPIRE = 'before_expire';
     const EMAIL_TYPE_NOTICE_SENDER = 'notify_sender';
-    const EMAIL_TYPE_UNUSED        = 'after_unused';
-    const EMAIL_TYPE_CREDIT        = 'credit';
+    const EMAIL_TYPE_UNUSED = 'after_unused';
+    const EMAIL_TYPE_CREDIT = 'credit';
 
     /**
      * @var TransportBuilder
@@ -115,11 +114,11 @@ class Email extends Data
         CustomerFactory $customerFactory,
         FactoryInterface $templateFactory
     ) {
-        $this->transportBuilder  = $transportBuilder;
+        $this->transportBuilder = $transportBuilder;
         $this->inlineTranslation = $inlineTranslation;
-        $this->emailAddress      = $emailAddress;
-        $this->customerFactory   = $customerFactory;
-        $this->templateFactory   = $templateFactory;
+        $this->emailAddress = $emailAddress;
+        $this->customerFactory = $customerFactory;
+        $this->templateFactory = $templateFactory;
 
         parent::__construct($context, $objectManager, $storeManager, $localeDate, $customerSession);
     }
@@ -143,23 +142,18 @@ class Email extends Data
         }
 
         $attachment = ($type === self::EMAIL_TYPE_DELIVERY)
-            ? $this->getTemplateHelper()->outputGiftCardPdf($giftCard, 's', TransportBuilder::ATTACHMENT_NAME)
+            ? $this->getTemplateHelper()->outputGiftCardPdf($giftCard, 's', 'gift_card.pdf')
             : null;
 
         $params = $this->prepareEmailParam($giftCard, $params);
-        $emails = $this->getEmail();
-        array_push($emails, $giftCard->getDeliveryAddress());
-
-        foreach ($emails as $email) {
-            $this->sendEmailTemplate(
-                $type,
-                $params['recipient'],
-                $email,
-                $params,
-                $giftCard->getStoreId(),
-                $attachment
-            );
-        }
+        $this->sendEmailTemplate(
+            $type,
+            $params['recipient'],
+            $giftCard->getDeliveryAddress(),
+            $params,
+            $giftCard->getStoreId(),
+            $attachment
+        );
 
         return $this;
     }
@@ -194,46 +188,25 @@ class Email extends Data
         $customer = $this->customerFactory->create();
         $customer->setStore($store)->loadByEmail($customerEmail);
         if ($customer->getId()) {
-            $credit       = $this->objectManager->create(Credit::class)->load($customer->getId(), 'customer_id');
+            $credit = $this->objectManager->create(Credit::class)->load($customer->getId(), 'customer_id');
             $notification = $credit->getGiftcardNotification() === null
-                ? true : (boolean) $credit->getGiftcardNotification();
+                ? true : (boolean)$credit->getGiftcardNotification();
             if (!$notification) {
                 return $this;
             }
         }
 
         $params = $this->prepareEmailParam($giftCard, $params);
-        $emails = $this->getEmail();
-        array_push($emails, $giftCard->getDeliveryAddress());
 
-        foreach ($emails as $email) {
-            $this->sendEmailTemplate(
-                $type,
-                $params['sender'],
-                $email,
-                $params,
-                $store->getId()
-            );
-        }
+        $this->sendEmailTemplate(
+            $type,
+            $params['sender'],
+            $customerEmail,
+            $params,
+            $store->getId()
+        );
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getEmail()
-    {
-        $result = [];
-        if ($this->getEmailConfig('send')) {
-            $emails = explode(',', $this->getEmailConfig('send'));
-            foreach ($emails as $email) {
-                $email    = trim($email);
-                $result[] = $email;
-            }
-        }
-
-        return $result;
     }
 
     /**
@@ -250,14 +223,14 @@ class Email extends Data
             $templateFields = $giftCard->getTemplateFields() ? self::jsonDecode($giftCard->getTemplateFields()) : [];
 
             $this->emailParam[$gcId] = array_merge([
-                'sender'          => isset($templateFields['sender']) ? $templateFields['sender'] : '',
-                'recipient'       => isset($templateFields['recipient']) ? $templateFields['recipient'] : '',
-                'message'         => isset($templateFields['message']) ? $templateFields['message'] : '',
+                'sender' => isset($templateFields['sender']) ? $templateFields['sender'] : '',
+                'recipient' => isset($templateFields['recipient']) ? $templateFields['recipient'] : '',
+                'message' => isset($templateFields['message']) ? $templateFields['message'] : '',
                 'balanceFormated' => $this->convertPrice($giftCard->getBalance(), true, false, $giftCard->getStoreId()),
-                'status_label'    => $giftCard->getStatusLabel(),
-                'expired_date'    => $giftCard->getExpiredAt() ? $this->formatDate($giftCard->getExpiredAt()) : null,
-                'hidden_code'     => $giftCard->getHiddenCode(),
-                'giftcard'        => $giftCard
+                'status_label' => $giftCard->getStatusLabel(),
+                'expired_date' => $this->formatDate($giftCard->getExpiredAt()),
+                'hidden_code' => $giftCard->getHiddenCode(),
+                'giftcard' => $giftCard
             ], $params);
         }
 
@@ -290,7 +263,7 @@ class Email extends Data
         }
 
         $template = $this->getEmailConfig($type ? $type . '/template' : 'template', $storeId);
-        $sender   = $this->getEmailConfig('sender', $storeId);
+        $sender = $this->getEmailConfig('sender', $storeId);
 
         try {
             $transportBuilder = $this->transportBuilder
@@ -299,13 +272,13 @@ class Email extends Data
                 ->setTemplateVars($templateParams)
                 ->setFrom($sender)
                 ->addTo($toEmail, $toName);
-            $transport        = $transportBuilder->getTransport();
+            $transport = $transportBuilder->getTransport();
             if ($attachFile) {
                 $attachPDF = $transportBuilder->addAttachment($attachFile);
                 if ($this->versionCompare('2.2.8')) {
-                    $html    = $transport->getMessage();
+                    $html = $transport->getMessage();
                     $message = Message::fromString($html->getRawMessage());
-                    $body    = $message->getBody();
+                    $body = $message->getBody();
                     if ($this->versionCompare('2.3.3')) {
                         $body = Zend_Mime_Decode::decodeQuotedPrintable($body);
                     }

@@ -30,6 +30,7 @@ use Mageplaza\GiftCard\Helper\Data as DataHelper;
 use Mageplaza\GiftCard\Model\GiftCardFactory;
 use Mageplaza\GiftCard\Model\Transaction\Action;
 use Mageplaza\GiftCard\Model\TransactionFactory;
+use Mageplaza\GiftCard\Model\ResourceModel\Transaction\CollectionFactory;
 
 /**
  * Class SalesConvertQuote
@@ -51,6 +52,10 @@ class SalesConvertQuote implements ObserverInterface
      * @var DataHelper
      */
     protected $_helper;
+    /**
+     * @var CollectionFactory
+     */
+    private $_collectionFactory;
 
     /**
      * SalesConvertQuote constructor.
@@ -58,15 +63,18 @@ class SalesConvertQuote implements ObserverInterface
      * @param GiftCardFactory $giftCardFactory
      * @param TransactionFactory $transactionFactory
      * @param DataHelper $helper
+     * @param CollectionFactory $collectionFactory
      */
     public function __construct(
         GiftCardFactory $giftCardFactory,
         TransactionFactory $transactionFactory,
-        DataHelper $helper
+        DataHelper $helper,
+        CollectionFactory $collectionFactory
     ) {
-        $this->giftCardFactory    = $giftCardFactory;
+        $this->giftCardFactory = $giftCardFactory;
         $this->transactionFactory = $transactionFactory;
-        $this->_helper            = $helper;
+        $this->_helper = $helper;
+        $this->_collectionFactory = $collectionFactory;
     }
 
     /**
@@ -81,7 +89,7 @@ class SalesConvertQuote implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
 
         /** @var Quote $quote */
-        $quote   = $observer->getEvent()->getQuote();
+        $quote = $observer->getEvent()->getQuote();
         $address = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
 
         $giftCardsUsed = $quote->getMpGiftCards();
@@ -109,8 +117,35 @@ class SalesConvertQuote implements ObserverInterface
                     Action::ACTION_SPEND,
                     $baseCreditAmount,
                     $order->getCustomerId(),
+                    $expiredAt = null,
                     ['order_increment_id' => $order->getIncrementId()]
                 );
+            $collection = $this->_collectionFactory->create();
+            $collection->getSelect()
+                ->join(
+                    ['cr' => $collection->getTable('mageplaza_giftcard_credit')],
+                    'main_table.action = 2 AND main_table.current_amount > 0.0001 AND main_table.credit_id = cr.credit_id AND cr.customer_id = ' . $order->getCustomerId(),
+                    ['customer_id']
+                )->order(['expired_at ASC', 'transaction_id ASC']);
+
+            foreach ($collection as $redeemed)
+            {
+                if($redeemed->getStatus() != 5) {
+                    $redeemed->setOldCurrentAmount($redeemed->getCurrentAmount());
+                    if (abs($baseCreditAmount) > 0.0001) {
+                        if (abs($baseCreditAmount) >= $redeemed->getCurrentAmount()) {
+                            $baseCreditAmount = $baseCreditAmount + $redeemed->getCurrentAmount();
+                            $redeemed->setCurrentAmount("0.0000");
+                            $redeemed->setStatus(6);
+                            /** status 6 is used */
+                        } else {
+                            $redeemed->setCurrentAmount($redeemed->getCurrentAmount() + $baseCreditAmount);
+                            $baseCreditAmount = 0.0000;
+                        }
+                    }
+                }
+            }
+            $collection->save();
         }
         $this->_helper->getCheckoutSession()->setGiftCardsData([]);
 

@@ -189,12 +189,7 @@
                     <comment>Email sent to recipient.</comment>
                     <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
                 </field>
-                <field id="send" translate="label comment" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Send To</label>
-                    <backend_model>Mageplaza\GiftCard\Model\Config\Backend\Email</backend_model>
-                    <comment>Separated by comma (,)</comment>
-                </field>
-                <group id="update" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="update" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Gift Card Update Notification</label>
                     <field id="enable" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Enabled</label>
@@ -206,7 +201,7 @@
                         <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
                     </field>
                 </group>
-                <group id="before_expire" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="before_expire" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Before Expired Notification</label>
                     <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Enabled</label>
@@ -222,7 +217,7 @@
                         <validate>validate-number validate-greater-than-zero</validate>
                     </field>
                 </group>
-                <group id="notify_sender" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="notify_sender" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Notify Sender After Gift Card is Sent</label>
                     <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Enabled</label>
@@ -233,7 +228,7 @@
                         <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
                     </field>
                 </group>
-                <group id="after_unused" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="after_unused" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Gift Card Unused Notification</label>
                     <field id="enable" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Enabled</label>
@@ -250,7 +245,7 @@
                         <validate>validate-number validate-greater-than-zero</validate>
                     </field>
                 </group>
-                <group id="credit" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="credit" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Balance Update Notification</label>
                     <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Enabled</label>

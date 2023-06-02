@@ -181,6 +181,8 @@ class Discount extends AbstractTotal
 
             $total->setGrandTotal($total->getGrandTotal() - $totalDiscount);
             $total->setBaseGrandTotal($total->getBaseGrandTotal() - $baseTotalDiscount);
+            $total->setOdGrandTotal($total->getOdGrandTotal() - $totalDiscount);
+            $total->setOdBaseGrandTotal($total->getOdBaseGrandTotal() - $baseTotalDiscount);
         }
 
         $quote->setMpGiftCards(GiftCardCheckoutHelper::jsonEncode($giftCards));
@@ -221,7 +223,11 @@ class Discount extends AbstractTotal
 
         $total->setGrandTotal($total->getGrandTotal() - $creditAmount);
         $total->setBaseGrandTotal($total->getBaseGrandTotal() - $baseCreditAmount);
-
+        $total->setOdGrandTotal($total->getOdGrandTotal() - $creditAmount);
+        $total->setOdBaseGrandTotal($total->getOdBaseGrandTotal() - $baseCreditAmount);
+        if($quote->getCouponCode()){
+            $creditAmount = 0;
+        }
         $quote->setGcCredit($creditAmount);
 
         return $this;
@@ -262,7 +268,7 @@ class Discount extends AbstractTotal
         if ($gcCredit > 0.0001) {
             $totalArray[] = [
                 'code'  => $this->_creditCode,
-                'title' => __('Credit'),
+                'title' => __('Gift Credit'),
                 'value' => -$gcCredit
             ];
         }
@@ -280,7 +286,7 @@ class Discount extends AbstractTotal
      */
     public function getTotalAmountForDiscount(Quote $quote, Total $total)
     {
-        $discountTotal = $total->getBaseGrandTotal() - $total->getBaseTaxAmount();
+        $discountTotal = $total->getBaseGrandTotal();
         if (!$this->_helper->canUsedForShipping($quote->getStoreId())) {
             $discountTotal -= $total->getBaseShippingAmount();
         }

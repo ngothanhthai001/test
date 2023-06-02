@@ -30,15 +30,15 @@ use Mageplaza\GiftCard\Model\Import\GiftCard;
  */
 interface RowValidatorInterface extends ValidatorInterface
 {
-    const ERROR_CODE_IS_EMPTY    = 'codeIsEmpty';
-    const ERROR_DUPLICATE_CODE   = 'duplicatedUrlKey';
+    const ERROR_CODE_IS_EMPTY = 'codeIsEmpty';
+    const ERROR_DUPLICATE_CODE = 'duplicatedUrlKey';
     const ERROR_INVALID_TEMPLATE = 'invalidTemplate';
-    const ERROR_INVALID_STATUS   = 'invalidStatus';
-    const ERROR_INVALID_POOL     = 'invalidPool';
-    const ERROR_INVALID_WEBSITE  = 'invalidWebsite';
-    const ERROR_INVALID_BALANCE  = 'invalidBalance';
-    const ERROR_INVALID_REDEEM   = 'invalidRedeem';
-    const VALUE_ALL              = 'all'; #Value that means all entities (e.g. websites, groups etc.)
+    const ERROR_INVALID_STATUS = 'invalidStatus';
+    const ERROR_INVALID_POOL = 'invalidPool';
+    const ERROR_INVALID_WEBSITE = 'invalidWebsite';
+    const ERROR_INVALID_BALANCE = 'invalidBalance';
+    const ERROR_INVALID_REDEEM = 'invalidRedeem';
+    const VALUE_ALL = 'all'; #Value that means all entities (e.g. websites, groups etc.)
 
     /**
      * Initialize validator

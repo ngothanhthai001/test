@@ -39,7 +39,7 @@ class MultiSelect extends AbstractClass
     public function beforeSave($object)
     {
         $attributeCode = $this->getAttribute()->getName();
-        $data          = $object->getData($attributeCode);
+        $data = $object->getData($attributeCode);
         if (!is_array($data)) {
             $data = [];
         }

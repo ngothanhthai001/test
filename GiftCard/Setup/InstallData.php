@@ -108,13 +108,13 @@ class InstallData implements InstallDataInterface
         TemplateFactory $templateFactory,
         Options $attributeSet
     ) {
-        $this->eavSetupFactory      = $eavSetupFactory;
-        $this->salesSetupFactory    = $salesSetupFactory;
-        $this->quoteSetupFactory    = $quoteSetupFactory;
+        $this->eavSetupFactory = $eavSetupFactory;
+        $this->salesSetupFactory = $salesSetupFactory;
+        $this->quoteSetupFactory = $quoteSetupFactory;
         $this->categorySetupFactory = $categorySetupFactory;
-        $this->blockFactory         = $blockFactory;
-        $this->templateFactory      = $templateFactory;
-        $this->_attributeSet        = $attributeSet;
+        $this->blockFactory = $blockFactory;
+        $this->templateFactory = $templateFactory;
+        $this->_attributeSet = $attributeSet;
     }
 
     /**
@@ -166,87 +166,87 @@ class InstallData implements InstallDataInterface
 
         /** Add Product Attribute */
         $catalogSetup->addAttribute(Product::ENTITY, 'gift_code_pattern', array_merge($this->getDefaultOptions(), [
-            'label'          => 'Gift Code Pattern',
-            'type'           => 'varchar',
-            'input'          => 'text',
-            'backend'        => Pattern::class,
+            'label' => 'Gift Code Pattern',
+            'type' => 'varchar',
+            'input' => 'text',
+            'backend' => Pattern::class,
             'input_renderer' => \Mageplaza\GiftCard\Block\Adminhtml\Product\Helper\Form\Config\Pattern::class,
-            'required'       => true,
-            'sort_order'     => 10
+            'required' => true,
+            'sort_order' => 10
         ]));
         $catalogSetup->addAttribute(Product::ENTITY, 'gift_card_type', array_merge($this->getDefaultOptions(), [
-            'label'      => 'Gift Card Type',
-            'type'       => 'int',
-            'input'      => 'select',
-            'source'     => DeliveryMethods::class,
-            'global'     => ScopedAttributeInterface::SCOPE_GLOBAL,
+            'label' => 'Gift Card Type',
+            'type' => 'int',
+            'input' => 'select',
+            'source' => DeliveryMethods::class,
+            'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
             'sort_order' => 20
         ]));
         $catalogSetup->addAttribute(Product::ENTITY, 'gift_card_amounts', array_merge($this->getDefaultOptions(), [
-            'label'      => 'Gift Card Amounts',
-            'type'       => 'varchar',
-            'input'      => 'text',
-            'backend'    => Amount::class,
-            'global'     => ScopedAttributeInterface::SCOPE_WEBSITE,
+            'label' => 'Gift Card Amounts',
+            'type' => 'varchar',
+            'input' => 'text',
+            'backend' => Amount::class,
+            'global' => ScopedAttributeInterface::SCOPE_WEBSITE,
             'sort_order' => 30
         ]));
         $catalogSetup->addAttribute(Product::ENTITY, 'allow_amount_range', array_merge($this->getDefaultOptions(), [
-            'label'      => 'Allow Amount Range',
-            'type'       => 'int',
-            'input'      => 'select',
-            'source'     => Product\Attribute\Source\Boolean::class,
-            'global'     => ScopedAttributeInterface::SCOPE_WEBSITE,
+            'label' => 'Allow Amount Range',
+            'type' => 'int',
+            'input' => 'select',
+            'source' => Product\Attribute\Source\Boolean::class,
+            'global' => ScopedAttributeInterface::SCOPE_WEBSITE,
             'sort_order' => 40
         ]));
         $catalogSetup->addAttribute(Product::ENTITY, 'min_amount', array_merge($this->getDefaultOptions(), [
-            'label'      => 'Min Amount',
-            'type'       => 'decimal',
-            'input'      => 'price',
-            'backend'    => Price::class,
-            'class'      => 'validate-number',
-            'global'     => ScopedAttributeInterface::SCOPE_WEBSITE,
+            'label' => 'Min Amount',
+            'type' => 'decimal',
+            'input' => 'price',
+            'backend' => Price::class,
+            'class' => 'validate-number',
+            'global' => ScopedAttributeInterface::SCOPE_WEBSITE,
             'sort_order' => 50
         ]));
         $catalogSetup->addAttribute(Product::ENTITY, 'max_amount', array_merge($this->getDefaultOptions(), [
-            'label'      => 'Max Amount',
-            'type'       => 'decimal',
-            'input'      => 'price',
-            'backend'    => Price::class,
-            'class'      => 'validate-number',
-            'global'     => ScopedAttributeInterface::SCOPE_WEBSITE,
+            'label' => 'Max Amount',
+            'type' => 'decimal',
+            'input' => 'price',
+            'backend' => Price::class,
+            'class' => 'validate-number',
+            'global' => ScopedAttributeInterface::SCOPE_WEBSITE,
             'sort_order' => 60
         ]));
         $catalogSetup->addAttribute(Product::ENTITY, 'price_rate', array_merge($this->getDefaultOptions(), [
-            'label'      => 'Price Percentage',
-            'type'       => 'decimal',
-            'input'      => 'text',
-            'class'      => 'validate-number',
-            'global'     => ScopedAttributeInterface::SCOPE_WEBSITE,
+            'label' => 'Price Percentage',
+            'type' => 'decimal',
+            'input' => 'text',
+            'class' => 'validate-number',
+            'global' => ScopedAttributeInterface::SCOPE_WEBSITE,
             'sort_order' => 65
         ]));
         $catalogSetup->addAttribute(Product::ENTITY, 'can_redeem', array_merge($this->getDefaultOptions(), [
-            'label'      => 'Can Redeem',
-            'type'       => 'int',
-            'input'      => 'select',
-            'source'     => Product\Attribute\Source\Boolean::class,
-            'backend'    => Boolean::class,
-            'global'     => ScopedAttributeInterface::SCOPE_WEBSITE,
+            'label' => 'Can Redeem',
+            'type' => 'int',
+            'input' => 'select',
+            'source' => Product\Attribute\Source\Boolean::class,
+            'backend' => Boolean::class,
+            'global' => ScopedAttributeInterface::SCOPE_WEBSITE,
             'sort_order' => 80
         ]));
         $catalogSetup->addAttribute(Product::ENTITY, 'expire_after_day', array_merge($this->getDefaultOptions(), [
-            'label'      => 'Expire After (days)',
-            'type'       => 'varchar',
-            'input'      => 'text',
-            'backend'    => Pattern::class,
-            'global'     => ScopedAttributeInterface::SCOPE_WEBSITE,
+            'label' => 'Expire After (days)',
+            'type' => 'varchar',
+            'input' => 'text',
+            'backend' => Pattern::class,
+            'global' => ScopedAttributeInterface::SCOPE_WEBSITE,
             'sort_order' => 90
         ]));
         $catalogSetup->addAttribute(Product::ENTITY, 'gift_product_template', array_merge($this->getDefaultOptions(), [
-            'label'      => 'Template',
-            'type'       => 'text',
-            'input'      => 'multiselect',
-            'source'     => Template::class,
-            'backend'    => MultiSelect::class,
+            'label' => 'Template',
+            'type' => 'text',
+            'input' => 'multiselect',
+            'source' => Template::class,
+            'backend' => MultiSelect::class,
             'sort_order' => 100
         ]));
 
@@ -257,11 +257,11 @@ class InstallData implements InstallDataInterface
             ->load('gift_card_products', 'identifier');
         if (!$block->getId()) {
             $headBlock = [
-                'title'      => 'Gift Card Product',
+                'title' => 'Gift Card Product',
                 'identifier' => 'gift_card_products',
-                'stores'     => [0],
-                'is_active'  => 1,
-                'content'    => '<p><img src="{{media url="mageplaza/default/gift_product_banner.jpg"}}" alt="Gift Product Banner" width="100%" /></p>'
+                'stores' => [0],
+                'is_active' => 1,
+                'content' => '<p><img src="{{media url="mageplaza/default/gift_product_banner.jpg"}}" alt="Gift Product Banner" width="100%" /></p>'
             ];
             $block->setData($headBlock)->save();
         }
@@ -313,22 +313,22 @@ class InstallData implements InstallDataInterface
     protected function getDefaultOptions()
     {
         return [
-            'group'                   => 'Gift Card Information',
-            'backend'                 => '',
-            'frontend'                => '',
-            'class'                   => '',
-            'source'                  => '',
-            'global'                  => ScopedAttributeInterface::SCOPE_STORE,
-            'visible'                 => true,
-            'required'                => false,
-            'user_defined'            => true,
-            'default'                 => '',
-            'searchable'              => false,
-            'filterable'              => false,
-            'comparable'              => false,
-            'visible_on_front'        => false,
-            'unique'                  => false,
-            'apply_to'                => GiftCard::TYPE_GIFTCARD,
+            'group' => 'Gift Card Information',
+            'backend' => '',
+            'frontend' => '',
+            'class' => '',
+            'source' => '',
+            'global' => ScopedAttributeInterface::SCOPE_STORE,
+            'visible' => true,
+            'required' => false,
+            'user_defined' => true,
+            'default' => '',
+            'searchable' => false,
+            'filterable' => false,
+            'comparable' => false,
+            'visible_on_front' => false,
+            'unique' => false,
+            'apply_to' => GiftCard::TYPE_GIFTCARD,
             'used_in_product_listing' => true
         ];
     }

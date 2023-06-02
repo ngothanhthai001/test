@@ -58,7 +58,7 @@ class Edit extends Pool
         Registry $registry,
         GiftCardHelper $giftCardHelper
     ) {
-        $this->registry        = $registry;
+        $this->registry = $registry;
         $this->_giftCardHelper = $giftCardHelper;
 
         parent::__construct($context, $resultPageFactory, $poolFactory);

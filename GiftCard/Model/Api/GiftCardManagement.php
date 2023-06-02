@@ -41,13 +41,19 @@ use Mageplaza\GiftCard\Model\GiftCardFactory;
 use Mageplaza\GiftCard\Model\Product\DeliveryMethods;
 use Mageplaza\GiftCard\Model\TransactionFactory;
 use Spipu\Html2Pdf\Exception\Html2PdfException;
-
+use Magento\Framework\Event\ManagerInterface;
 /**
  * Class GiftCardManagement
  * @package Mageplaza\GiftCard\Model\Api
  */
 class GiftCardManagement implements GiftCardManagementInterface
 {
+    /**
+     * Core event manager proxy
+     *
+     * @var ManagerInterface
+     */
+    protected $_eventManager;
     /**
      * Quote repository.
      *
@@ -101,6 +107,7 @@ class GiftCardManagement implements GiftCardManagementInterface
      * @param Data $helperData
      * @param File $file
      * @param Escaper $escaper
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         CartRepositoryInterface $quoteRepository,
@@ -110,7 +117,8 @@ class GiftCardManagement implements GiftCardManagementInterface
         RedeemDetailInterfaceFactory $redeemDetailFactory,
         Data $helperData,
         File $file,
-        Escaper $escaper
+        Escaper $escaper,
+        ManagerInterface $eventManager
     ) {
         $this->quoteRepository     = $quoteRepository;
         $this->_checkoutHelper     = $checkoutHelper;
@@ -120,6 +128,7 @@ class GiftCardManagement implements GiftCardManagementInterface
         $this->helperData          = $helperData;
         $this->file                = $file;
         $this->escaper             = $escaper;
+        $this->_eventManager       = $eventManager;
     }
 
     /**
@@ -146,6 +155,11 @@ class GiftCardManagement implements GiftCardManagementInterface
         if (!array_key_exists($code, $giftCardUsed)) {
             throw new NoSuchEntityException(__('Gift Card is not valid'));
         }
+
+        $this->_eventManager->dispatch(
+            'checkout_cart_gift_card_add_after',
+            ['coupon' => $code]
+        );
 
         return true;
     }
@@ -182,6 +196,11 @@ class GiftCardManagement implements GiftCardManagementInterface
         } catch (Exception $e) {
             throw new CouldNotDeleteException(__('Could not cancel gift card'));
         }
+
+        $this->_eventManager->dispatch(
+            'checkout_cart_gift_card_remove_after',
+            ['coupon' => $code]
+        );
 
         return true;
     }
@@ -233,7 +252,7 @@ class GiftCardManagement implements GiftCardManagementInterface
     public function previewEmail($productData)
     {
         $giftCard = $this->_giftCardFactory->create()->addData($productData);
-        $giftCard->setCode($productData['giftcode_pattern']);
+        $giftCard->setCode('XXXX-XXXX-XXXX');
         if (isset($productData['expire_after']) && $productData['expire_after']) {
             $timezone  = new DateTimeZone($productData['timezone']);
             $expiredAt = (
@@ -242,14 +261,14 @@ class GiftCardManagement implements GiftCardManagementInterface
             $giftCard->setExpiredAt($expiredAt);
         }
 
-        $deliveryMethod = (int) $giftCard->getDeliveryMethod();
+        $deliveryMethod = (int)$giftCard->getDeliveryMethod();
 
         $result = '';
         $params = [];
         switch ($deliveryMethod) {
             case DeliveryMethods::METHOD_PRINT:
                 $params['is_print'] = true;
-            // no break
+                // no break
             case DeliveryMethods::METHOD_EMAIL:
                 $templateFields = $giftCard->getTemplateFields()
                     ? Data::jsonDecode($giftCard->getTemplateFields())
@@ -299,34 +318,17 @@ class GiftCardManagement implements GiftCardManagementInterface
      */
     public function getPreviewEmailHtml($emailHtml, $fileUrl)
     {
-        $hideAttachment = <<<SCRIPT
-        <script type="text/javascript">
-            require([
-                'jquery'
-            ], function ($) {
-                if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-                    $('.mp-giftcard-pdf-preview').hide();
-                    $('.mp-giftcard-pdf-download').show();
-                }else{
-                    $('.mp-giftcard-pdf-preview').show();
-                    $('.mp-giftcard-pdf-download').hide();
-                }
-            });
-        </script>
-        SCRIPT;
-
         return '<div class="mp-giftcard-preview-email">'
             . '<div class="mp-email-html">'
             . '<iframe srcdoc="' . $emailHtml . '" style="width: 100%; height: 350px" allowfullscreen></iframe>'
             . '</div>'
             . '<div class="mp-giftcard-html">'
             . '<label>' . __('Attachment') . '</label>'
-            . '<div class="control" style="padding-bottom: 50px;">'
-            . '<iframe class="mp-giftcard-pdf-preview" src="' . $fileUrl . '" style="width: 100%; height: 1000px;zoom: 0.5"></iframe>'
-            . '<a class="mp-giftcard-pdf-download" style="height:100px;" href="' . $fileUrl . '">' . __('Download preview PDF file') . '</a>'
+            . '<div class="control">'
+            . '<iframe src="' . $fileUrl . '" style="width: 50%; height: 1000px;zoom: 0.5"></iframe>'
             . '</div>'
             . '</div>'
-            . '</div>' . $hideAttachment;
+            . '</div>';
     }
 
     /**

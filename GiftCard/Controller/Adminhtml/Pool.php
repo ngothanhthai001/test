@@ -56,7 +56,7 @@ abstract class Pool extends Action
         PoolFactory $poolFactory
     ) {
         $this->resultPageFactory = $resultPageFactory;
-        $this->_poolFactory      = $poolFactory;
+        $this->_poolFactory = $poolFactory;
 
         parent::__construct($context);
     }
@@ -83,9 +83,9 @@ abstract class Pool extends Action
      */
     protected function _initObject()
     {
-        $poolId = (int) $this->getRequest()->getParam('id');
+        $poolId = (int)$this->getRequest()->getParam('id');
         if (!$poolId && $this->getRequest()->getParam('pool_id')) {
-            $poolId = (int) $this->getRequest()->getParam('pool_id');
+            $poolId = (int)$this->getRequest()->getParam('pool_id');
         }
 
         /** @var \Mageplaza\GiftCard\Model\Pool $pool */

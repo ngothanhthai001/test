@@ -32,7 +32,7 @@ class Status implements ArrayInterface
     /**
      * Gift Card Status
      */
-    const STATUS_ACTIVE   = 1;
+    const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 2;
 
     /**
@@ -43,7 +43,7 @@ class Status implements ArrayInterface
     public static function getOptionArray()
     {
         return [
-            self::STATUS_ACTIVE   => __('Active'),
+            self::STATUS_ACTIVE => __('Active'),
             self::STATUS_INACTIVE => __('Inactive')
         ];
     }

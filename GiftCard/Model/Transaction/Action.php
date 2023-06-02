@@ -33,11 +33,12 @@ class Action implements OptionSourceInterface
     /**
      * Gift Card Status
      */
-    const ACTION_ADMIN  = 1;
+    const ACTION_ADMIN = 1;
     const ACTION_REDEEM = 2;
-    const ACTION_SPEND  = 3;
+    const ACTION_SPEND = 3;
     const ACTION_REFUND = 4;
     const ACTION_REVERT = 5;
+    const ACTION_EXPIRE = 6;
 
     /**
      * Retrieve option array
@@ -47,11 +48,12 @@ class Action implements OptionSourceInterface
     public static function getOptionArray()
     {
         return [
-            self::ACTION_ADMIN  => __('Admin'),
-            self::ACTION_SPEND  => __('Spent'),
+            self::ACTION_ADMIN => __('Admin'),
+            self::ACTION_SPEND => __('Spent'),
             self::ACTION_REDEEM => __('Redeemed'),
             self::ACTION_REFUND => __('Refunded'),
-            self::ACTION_REVERT => __('Reverted')
+            self::ACTION_REVERT => __('Reverted'),
+            self::ACTION_EXPIRE => __('Expired')
         ];
     }
 
@@ -120,6 +122,12 @@ class Action implements OptionSourceInterface
                     $extraContent['order_increment_id']
                 ) : __('Revert');
                 break;
+            case self::ACTION_EXPIRE:
+                $message = isset($extraContent['code']) ? __(
+                    'Expire -: %1',
+                    $extraContent['code']
+                ) : __('Expire');
+                break;
             default:
                 break;
         }
@@ -173,6 +181,12 @@ class Action implements OptionSourceInterface
                     'Revert on order #%1',
                     $extraContent['order_increment_id']
                 ) : __('Revert');
+                break;
+            case self::ACTION_EXPIRE:
+                $message = isset($extraContent['expired']) ? __(
+                    'Expired : %1',
+                    $extraContent['expired']
+                ) : __('Expired');
                 break;
             default:
                 break;

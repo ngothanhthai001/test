@@ -74,7 +74,7 @@ class MassStatus extends Code
     public function execute()
     {
         $collection = $this->filter->getCollection($this->_getCodeCollection());
-        $status     = (int) $this->getRequest()->getParam('status');
+        $status = (int)$this->getRequest()->getParam('status');
 
         $codeUpdated = 0;
         foreach ($collection as $giftCard) {

@@ -36,13 +36,13 @@ use Zend\Validator\Date;
  */
 class DeliveryMethods extends AbstractSource
 {
-    const TYPE_EGIFT   = 1;
-    const TYPE_PRINT   = 2;
-    const TYPE_MAIL    = 3;
+    const TYPE_EGIFT = 1;
+    const TYPE_PRINT = 2;
+    const TYPE_MAIL = 3;
     const METHOD_EMAIL = 1;
-    const METHOD_SMS   = 2;
+    const METHOD_SMS = 2;
     const METHOD_PRINT = 3;
-    const METHOD_POST  = 4;
+    const METHOD_POST = 4;
 
     /**
      * @var Data
@@ -78,10 +78,10 @@ class DeliveryMethods extends AbstractSource
         EmailAddress $emailAddress,
         Timezone $timezone
     ) {
-        $this->request      = $request;
-        $this->helper       = $dataHelper;
+        $this->request = $request;
+        $this->helper = $dataHelper;
         $this->emailAddress = $emailAddress;
-        $this->timezone     = $timezone;
+        $this->timezone = $timezone;
     }
 
     /**
@@ -94,7 +94,7 @@ class DeliveryMethods extends AbstractSource
         return [
             self::TYPE_EGIFT => __('eGift'),
             self::TYPE_PRINT => __('Print-at-home'),
-            self::TYPE_MAIL  => __('Mail')
+            self::TYPE_MAIL => __('Mail')
         ];
     }
 
@@ -131,17 +131,17 @@ class DeliveryMethods extends AbstractSource
             case self::TYPE_EGIFT:
                 $methods = [
                     [
-                        'key'    => self::METHOD_EMAIL,
-                        'label'  => $methodLabels[self::METHOD_EMAIL],
+                        'key' => self::METHOD_EMAIL,
+                        'label' => $methodLabels[self::METHOD_EMAIL],
                         'fields' => [
                             'email' => [
-                                'label'       => __('Email'),
-                                'type'        => 'input',
-                                'name'        => 'email',
-                                'value'       => isset($params['email']) ? $params['email'] : '',
+                                'label' => __('Email'),
+                                'type' => 'input',
+                                'name' => 'email',
+                                'value' => isset($params['email']) ? $params['email'] : '',
                                 'placeHolder' => __('Recipient email'),
-                                'class'       => 'validate-email required-entry',
-                                'required'    => true
+                                'class' => 'validate-email required-entry',
+                                'required' => true
                             ]
                         ]
                     ]
@@ -149,18 +149,18 @@ class DeliveryMethods extends AbstractSource
 
                 if ($this->helper->isSmsEnable()) {
                     $methods[] = [
-                        'key'    => self::METHOD_SMS,
-                        'label'  => $methodLabels[self::METHOD_SMS],
+                        'key' => self::METHOD_SMS,
+                        'label' => $methodLabels[self::METHOD_SMS],
                         'fields' => [
                             'phone_number' => [
-                                'label'       => __('Phone Num.'),
-                                'type'        => 'input',
-                                'name'        => 'phone_number',
-                                'value'       => isset($params['phone_number']) ? $params['phone_number'] : '',
+                                'label' => __('Phone Num.'),
+                                'type' => 'input',
+                                'name' => 'phone_number',
+                                'value' => isset($params['phone_number']) ? $params['phone_number'] : '',
                                 'placeHolder' => __('Recipient phone number'),
-                                'class'       => 'delivery-phone-number required-entry',
-                                'required'    => true,
-                                'note'        => __('Enter with country code prefix. Example: +1 for US phone number.')
+                                'class' => 'delivery-phone-number required-entry',
+                                'required' => true,
+                                'note' => __('Enter with country code prefix. Example: +1 for US phone number.')
                             ]
                         ]
                     ];
@@ -169,13 +169,13 @@ class DeliveryMethods extends AbstractSource
             case self::TYPE_PRINT:
                 $methods = [
                     [
-                        'key'    => self::METHOD_PRINT,
-                        'label'  => $methodLabels[self::METHOD_PRINT],
+                        'key' => self::METHOD_PRINT,
+                        'label' => $methodLabels[self::METHOD_PRINT],
                         'fields' => [
                             'label' => [
                                 'label' => '',
-                                'type'  => 'label',
-                                'name'  => 'print_label',
+                                'type' => 'label',
+                                'name' => 'print_label',
                                 'value' => __('You can print gift card on the confirmation email or the Gift Card in your account.'),
                             ]
                         ]
@@ -185,13 +185,13 @@ class DeliveryMethods extends AbstractSource
             default:
                 $methods = [
                     [
-                        'key'    => self::METHOD_POST,
-                        'label'  => $methodLabels[self::METHOD_POST],
+                        'key' => self::METHOD_POST,
+                        'label' => $methodLabels[self::METHOD_POST],
                         'fields' => [
                             'label' => [
                                 'label' => '',
-                                'type'  => 'label',
-                                'name'  => 'post_label',
+                                'type' => 'label',
+                                'name' => 'post_label',
                                 'value' => __('Please input shipping address when checking out.'),
                             ]
                         ]
@@ -236,9 +236,9 @@ class DeliveryMethods extends AbstractSource
     {
         return [
             self::METHOD_EMAIL => __('Email'),
-            self::METHOD_SMS   => __('Text Message'),
+            self::METHOD_SMS => __('Text Message'),
             self::METHOD_PRINT => __('Print At Home'),
-            self::METHOD_POST  => __('Post Office'),
+            self::METHOD_POST => __('Post Office'),
         ];
     }
 

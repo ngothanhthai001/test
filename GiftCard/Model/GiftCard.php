@@ -26,7 +26,6 @@ use DateTime;
 use Exception;
 use IntlDateFormatter;
 use Magento\Customer\Model\CustomerFactory;
-use Magento\Directory\Helper\Data as DirectoryHelper;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\DataObject\IdentityInterface;
@@ -53,6 +52,7 @@ use Mageplaza\GiftCard\Model\ResourceModel\History\Collection;
 use Mageplaza\GiftCard\Model\Source\Status as GcStatus;
 use Spipu\Html2Pdf\Exception\Html2PdfException;
 use Twilio\Exceptions\ConfigurationException;
+use Magento\Directory\Helper\Data as DirectoryHelper;
 
 /**
  * Class GiftCard
@@ -153,6 +153,8 @@ class GiftCard extends AbstractModel implements IdentityInterface, GiftCodeInter
      * @param array $data
      */
     public function __construct(
+        Context $context,
+        Registry $registry,
         DataHelper $dataHelper,
         HistoryFactory $historyFactory,
         Random $mathRandom,
@@ -160,13 +162,11 @@ class GiftCard extends AbstractModel implements IdentityInterface, GiftCodeInter
         StoreManagerInterface $storeManager,
         PoolFactory $poolFactory,
         RuleFactory $ruleFactory,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
         Http $request,
         DateFilter $dateFilter,
         DirectoryHelper $directoryHelper,
-        Context $context,
-        Registry $registry,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->_helper          = $dataHelper;
@@ -330,24 +330,9 @@ class GiftCard extends AbstractModel implements IdentityInterface, GiftCodeInter
             $status = $this->getStatus();
         }
 
-        $allStatus = $this->statusArray();
+        $allStatus = Status::getOptionArray();
 
         return isset($allStatus[$status]) ? $allStatus[$status] : __('Undefined');
-    }
-
-    /**
-     * @return string[]
-     */
-    public function statusArray()
-    {
-        return [
-            Status::STATUS_ACTIVE    => 'Active',
-            Status::STATUS_INACTIVE  => 'Inactive',
-            Status::STATUS_PENDING   => 'Pending',
-            Status::STATUS_USED      => 'Used',
-            Status::STATUS_EXPIRED   => 'Expired',
-            Status::STATUS_CANCELLED => 'Cancelled'
-        ];
     }
 
     /**
@@ -493,7 +478,7 @@ class GiftCard extends AbstractModel implements IdentityInterface, GiftCodeInter
             ) {
                 $this->_historyFactory->create()->setGiftCard($this)->save();
 
-                if (!$this->isObjectNew()) {
+                if (!$this->getData('send_to_recipient') && !$this->isObjectNew()) {
                     $this->sendToRecipient(Email::EMAIL_TYPE_UPDATE);
                 }
             }
@@ -514,11 +499,8 @@ class GiftCard extends AbstractModel implements IdentityInterface, GiftCodeInter
      */
     public function compareData($oldData, $newData)
     {
-        $now = new DateTime();
-        $currentDate = $now->format('Y/m/d');
-
-        return strtotime($oldData[self::DELIVERY_DATE] ?: $currentDate) === strtotime($newData[self::DELIVERY_DATE] ?: $currentDate)
-            && strtotime($oldData[self::EXPIRED_AT] ?: $currentDate) === strtotime($newData[self::EXPIRED_AT] ?: $currentDate)
+        return strtotime($oldData[self::DELIVERY_DATE]) === strtotime($newData[self::DELIVERY_DATE])
+            && strtotime($oldData[self::EXPIRED_AT]) === strtotime($newData[self::EXPIRED_AT])
             && (int) ($oldData[self::BALANCE]) === (int) ($newData[self::BALANCE]);
     }
 
@@ -575,7 +557,7 @@ class GiftCard extends AbstractModel implements IdentityInterface, GiftCodeInter
         $baseExpiredAt = $this->getExpiredAt();
 
         if ($this->hasExpireAfter() && $this->getExpireAfter()) {
-            $datetime     = new DateTime('', $timezone);
+            $datetime     = new DateTime(null, $timezone);
             $expiredAfter = min($this->getExpireAfter(), 36500); // 100 years
             $datetime->add(new DateInterval("P{$expiredAfter}D"));
             $this->setExpiredAt($datetime->format('Y-m-d'));
@@ -587,7 +569,7 @@ class GiftCard extends AbstractModel implements IdentityInterface, GiftCodeInter
                 $this->setExpiredAt($expiredAt->format('Y-m-d'));
 
                 $expiredAtTimestamp = $expiredAt->setTime(23, 59);
-                $nowDayTimestamp    = (new DateTime('', $timezone));
+                $nowDayTimestamp    = (new DateTime(null, $timezone));
 
                 if ($status === Status::STATUS_ACTIVE && $expiredAtTimestamp < $nowDayTimestamp) {
                     $this->setStatus(Status::STATUS_EXPIRED);
@@ -758,7 +740,6 @@ class GiftCard extends AbstractModel implements IdentityInterface, GiftCodeInter
             case DeliveryMethods::METHOD_PRINT:
                 $params['is_print'] = true;
             // Fall-through to send email
-            // no break
             case DeliveryMethods::METHOD_EMAIL:
                 $this->_helper->getEmailHelper()->sendDeliveryEmail($this, $type, $params);
                 break;
@@ -788,6 +769,24 @@ class GiftCard extends AbstractModel implements IdentityInterface, GiftCodeInter
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentAmount()
+    {
+        return $this->getData(self::CURRENT_AMOUNT);
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function setCurrentAmount($value)
+    {
+        return $this->setData(self::CURRENT_AMOUNT, $value);
     }
 
     /**
@@ -1160,5 +1159,23 @@ class GiftCard extends AbstractModel implements IdentityInterface, GiftCodeInter
     public function setCreatedAt($value)
     {
         return $this->setData(self::CREATED_AT, $value);
+    }
+
+    /**
+     * @return string
+     */
+    public function getOldCurrentAmount()
+    {
+        return $this->getData(self::OLD_CURRENT_AMOUNT);
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function setOldCurrentAmount($value)
+    {
+        return $this->setData(self::OLD_CURRENT_AMOUNT, $value);
     }
 }

@@ -409,7 +409,6 @@ define(
              */
             previewGiftCardEmail: function () {
                 previewEmailAction({
-                    'giftcode_pattern': config.information['giftcodePattern'],
                     'template_id': this.activeTemplate().id,
                     'expire_after': productData.expire_after,
                     'balance': this.activeAmount().baseValue,

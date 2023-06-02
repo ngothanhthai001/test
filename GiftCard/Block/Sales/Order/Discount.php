@@ -40,24 +40,24 @@ class Discount extends Template
         $parent = $this->getParentBlock();
         $source = $parent->getSource();
 
-        if ($source->getGiftCardAmount() && abs($source->getGiftCardAmount()) > 0.001) {
+        if (abs($source->getGiftCardAmount()) > 0.001) {
             $parent->addTotal(new DataObject(
                 [
-                    'code'       => 'gift_card',
-                    'value'      => $source->getGiftCardAmount(),
+                    'code' => 'gift_card',
+                    'value' => $source->getGiftCardAmount(),
                     'base_value' => $source->getBaseGiftCardAmount(),
-                    'label'      => __('Gift Cards')
+                    'label' => __('Gift Cards')
                 ]
             ), 'tax');
         }
 
-        if ($source->getGiftCreditAmount() && abs($source->getGiftCreditAmount()) > 0.001) {
+        if (abs($source->getGiftCreditAmount()) > 0.001) {
             $parent->addTotal(new DataObject(
                 [
-                    'code'       => 'gift_credit',
-                    'value'      => $source->getGiftCreditAmount(),
+                    'code' => 'gift_credit',
+                    'value' => $source->getGiftCreditAmount(),
                     'base_value' => $source->getBaseGiftCreditAmount(),
-                    'label'      => __('Gift Credit')
+                    'label' => __('Gift Credit')
                 ]
             ), 'tax');
         }

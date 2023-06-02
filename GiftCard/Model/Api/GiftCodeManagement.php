@@ -81,10 +81,10 @@ class GiftCodeManagement extends AbstractManagement implements GiftCodeManagemen
         CheckCodeInterfaceFactory $checkCodeInterfaceFactory,
         Data $helperData
     ) {
-        $this->giftCardFactory           = $giftCardFactory;
-        $this->searchResultFactory       = $searchResultFactory;
+        $this->giftCardFactory = $giftCardFactory;
+        $this->searchResultFactory = $searchResultFactory;
         $this->checkCodeInterfaceFactory = $checkCodeInterfaceFactory;
-        $this->helperData                = $helperData;
+        $this->helperData = $helperData;
 
         parent::__construct($templateFieldsFactory, $collectionProcessor);
     }
@@ -142,11 +142,11 @@ class GiftCodeManagement extends AbstractManagement implements GiftCodeManagemen
 
         return $this->checkCodeInterfaceFactory->create([
             'data' => [
-                'status'               => $giftCard->getStatus(),
-                'status_label'         => $giftCard->getStatusLabel(),
-                'balance'              => $this->helperData->convertPrice($giftCard->getBalance(), false, false),
-                'balance_formatted'    => $this->helperData->convertPrice($giftCard->getBalance()),
-                'expired_at'           => $giftCard->getExpiredAt(),
+                'status' => $giftCard->getStatus(),
+                'status_label' => $giftCard->getStatusLabel(),
+                'balance' => $this->helperData->convertPrice($giftCard->getBalance(), false, false),
+                'balance_formatted' => $this->helperData->convertPrice($giftCard->getBalance()),
+                'expired_at' => $giftCard->getExpiredAt(),
                 'expired_at_formatted' => $giftCard->getExpiredAt()
                     ? $this->helperData->formatDate($giftCard->getExpiredAt(), IntlDateFormatter::MEDIUM)
                     : __('Permanent')

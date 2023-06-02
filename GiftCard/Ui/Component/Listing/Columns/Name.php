@@ -38,7 +38,7 @@ class Name extends Column
      */
     public function prepareDataSource(array $dataSource)
     {
-        $objects    = [];
+        $objects = [];
         $collection = $this->getData('options')->getAllOptions();
 
         if ($collection) {

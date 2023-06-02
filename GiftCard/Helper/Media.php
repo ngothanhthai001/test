@@ -119,7 +119,7 @@ class Media extends \Mageplaza\Core\Helper\Media
      */
     public function isShowGiftcardImageProduct($storeId = null)
     {
-        return (bool) $this->getConfigValue('mpgiftcard/checkout/show_giftcard_image_product', $storeId);
+        return (bool)$this->getConfigValue('mpgiftcard/checkout/show_giftcard_image_product', $storeId);
     }
 
     /**

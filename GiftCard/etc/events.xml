@@ -30,6 +30,9 @@
     <event name="sales_model_service_quote_submit_failure">
         <observer name="sales_revert_quote_giftcard" instance="Mageplaza\GiftCard\Observer\OrderCancel"/>
     </event>
+    <event name="sales_order_cancel_after">
+        <observer name="sales_revert_quote_giftcard" instance="Mageplaza\GiftCard\Observer\OrderCancel"/>
+    </event>
     <event name="sales_order_save_after">
         <observer name="sales_order_save_after_giftcard" instance="Mageplaza\GiftCard\Observer\OrderSaveAfter"/>
     </event>

@@ -87,11 +87,11 @@ class Check extends Action
     ) {
         parent::__construct($context);
 
-        $this->helper            = $helper;
+        $this->helper = $helper;
         $this->resultJsonFactory = $resultJsonFactory;
-        $this->giftCardFactory   = $giftCardFactory;
-        $this->resultRawFactory  = $resultRawFactory;
-        $this->giftCardHelper    = $giftCardHelper;
+        $this->giftCardFactory = $giftCardFactory;
+        $this->resultRawFactory = $resultRawFactory;
+        $this->giftCardHelper = $giftCardHelper;
     }
 
     /**
@@ -104,7 +104,7 @@ class Check extends Action
      */
     public function execute()
     {
-        $credentials        = null;
+        $credentials = null;
         $httpBadRequestCode = 400;
 
         /** @var Raw $resultRaw */
@@ -124,7 +124,7 @@ class Check extends Action
         }
 
         $response = [
-            'errors'  => false,
+            'errors' => false,
             'message' => __('Gift Card "%1" is available.', $credentials['code'])
         ];
         try {
@@ -134,28 +134,28 @@ class Check extends Action
 
             if ($giftCard->isActive()) {
                 $giftCard->setExpiredAtFormatted($this->giftCardHelper->formatDate(
-                    $giftCard->getExpiredAt() ?: '',
+                    $giftCard->getExpiredAt(),
                     IntlDateFormatter::MEDIUM
                 ))
                     ->setBalanceFormatted($this->giftCardHelper->convertPrice($giftCard->getBalance()))
                     ->setStatusLabel($giftCard->getStatusLabel());
 
-                $response['detail']    = $giftCard->getData();
+                $response['detail'] = $giftCard->getData();
                 $response['canRedeem'] = $giftCard->canRedeem();
             } else {
                 $response = [
-                    'errors'  => true,
+                    'errors' => true,
                     'message' => __('Invalid gift card code.')
                 ];
             }
         } catch (LocalizedException $e) {
             $response = [
-                'errors'  => true,
+                'errors' => true,
                 'message' => $e->getMessage()
             ];
         } catch (Exception $e) {
             $response = [
-                'errors'  => true,
+                'errors' => true,
                 'message' => __('Invalid gift card code.')
             ];
         }

@@ -82,9 +82,9 @@ class Information extends Generic implements TabInterface
         Data $dataHelper,
         array $data = []
     ) {
-        $this->_status     = $statusOptions;
-        $this->_yesno      = $yesno;
-        $this->_fonts      = $fonts;
+        $this->_status = $statusOptions;
+        $this->_yesno = $yesno;
+        $this->_fonts = $fonts;
         $this->_dataHelper = $dataHelper;
 
         parent::__construct($context, $registry, $formFactory, $data);
@@ -109,39 +109,39 @@ class Information extends Generic implements TabInterface
         }
 
         $fieldset->addField('name', 'text', [
-            'name'     => 'name',
-            'label'    => __('Template Name'),
-            'title'    => __('Template Name'),
+            'name' => 'name',
+            'label' => __('Template Name'),
+            'title' => __('Template Name'),
             'required' => true
         ]);
         $fieldset->addField('status', 'select', [
-            'name'   => 'status',
-            'label'  => __('Status'),
-            'title'  => __('Status'),
+            'name' => 'status',
+            'label' => __('Status'),
+            'title' => __('Status'),
             'values' => $this->_status->toOptionArray()
         ]);
         $fieldset->addField('can_upload', 'select', [
-            'name'   => 'can_upload',
-            'label'  => __('Allow Upload Image'),
-            'title'  => __('Allow Upload Image'),
+            'name' => 'can_upload',
+            'label' => __('Allow Upload Image'),
+            'title' => __('Allow Upload Image'),
             'values' => $this->_yesno->toOptionArray()
         ]);
         $fieldset->addField('title', 'text', [
-            'name'     => 'title',
-            'label'    => __('Gift Card Title'),
-            'title'    => __('Gift Card Title'),
-            'note'     => 'The title of Gift Cards which using this template.',
+            'name' => 'title',
+            'label' => __('Gift Card Title'),
+            'title' => __('Gift Card Title'),
+            'note' => 'The title of Gift Cards which using this template.',
             'required' => true
         ]);
         $fieldset->addField('font_family', 'select', [
-            'name'     => 'font_family',
-            'label'    => __('Font Family'),
-            'title'    => __('Font Family'),
+            'name' => 'font_family',
+            'label' => __('Font Family'),
+            'title' => __('Font Family'),
             'required' => true,
-            'values'   => $this->_fonts->toOptionArray()
+            'values' => $this->_fonts->toOptionArray()
         ]);
         $fieldset->addField('background_image', 'image', [
-            'name'  => 'background_image',
+            'name' => 'background_image',
             'label' => __('Background Image'),
             'title' => __('Background Image')
         ]);
@@ -149,17 +149,17 @@ class Information extends Generic implements TabInterface
             'name' => 'background_image_src'
         ]);
         $fieldset->addField('note', 'textarea', [
-            'name'  => 'note',
+            'name' => 'note',
             'label' => __('Gift Card Note'),
             'title' => __('Gift Card Note')
         ]);
 
         if (!$model->getId()) {
             $model->addData([
-                'status'      => Status::STATUS_ACTIVE,
-                'title'       => __('Gift Card'),
+                'status' => Status::STATUS_ACTIVE,
+                'title' => __('Gift Card'),
                 'font_family' => 'pdfatimes',
-                'note'        => $this->_dataHelper->getTemplateConfig('note')
+                'note' => $this->_dataHelper->getTemplateConfig('note')
             ]);
         }
 

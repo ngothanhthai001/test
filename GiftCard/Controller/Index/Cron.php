@@ -63,9 +63,9 @@ class Cron extends Action
         Notification $cronNotification,
         Process $cronProcess
     ) {
-        $this->pageFactory  = $resultPageFactory;
+        $this->pageFactory = $resultPageFactory;
         $this->notification = $cronNotification;
-        $this->process      = $cronProcess;
+        $this->process = $cronProcess;
 
         parent::__construct($context);
     }

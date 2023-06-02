@@ -60,7 +60,7 @@ class ToOrderItem
         LoggerInterface $logger
     ) {
         $this->_dataHelper = $dataHelper;
-        $this->logger      = $logger;
+        $this->logger = $logger;
     }
 
     /**
@@ -91,7 +91,7 @@ class ToOrderItem
             }
         }
 
-        $canRedeem = (int) $product->getCanRedeem();
+        $canRedeem = (int)$product->getCanRedeem();
         if ($canRedeem === Boolean::VALUE_USE_CONFIG) {
             $canRedeem = $this->_dataHelper->getGeneralConfig('can_redeem', $orderItem->getStore());
         }
@@ -127,14 +127,14 @@ class ToOrderItem
 
                 $fileName = substr($image, 0, $pos);
                 $filePath = $templateHelper->getTmpMediaPath($fileName);
-                $file     = $mediaDirectory->getRelativePath($filePath);
+                $file = $mediaDirectory->getRelativePath($filePath);
                 if ($mediaDirectory->isFile($file)) {
-                    $pathInfo       = pathinfo($file);
-                    $fileName       = Uploader::getCorrectFileName($pathInfo['basename']);
+                    $pathInfo = pathinfo($file);
+                    $fileName = Uploader::getCorrectFileName($pathInfo['basename']);
                     $dispretionPath = Uploader::getDispretionPath($fileName);
-                    $fileName       = $dispretionPath . '/' . $fileName;
+                    $fileName = $dispretionPath . '/' . $fileName;
 
-                    $fileName        = $templateHelper->getNotDuplicatedFilename($fileName, $dispretionPath);
+                    $fileName = $templateHelper->getNotDuplicatedFilename($fileName, $dispretionPath);
                     $destinationFile = $templateHelper->getMediaPath($fileName);
 
                     try {

@@ -67,8 +67,8 @@ class Grid extends Action
         LayoutFactory $layoutFactory
     ) {
         $this->resultLayoutFactory = $layoutFactory;
-        $this->_coreRegistry       = $registry;
-        $this->_poolFactory        = $poolFactory;
+        $this->_coreRegistry = $registry;
+        $this->_poolFactory = $poolFactory;
 
         parent::__construct($context);
     }
@@ -92,9 +92,9 @@ class Grid extends Action
      */
     protected function initCurrentPool()
     {
-        $poolId = (int) $this->getRequest()->getParam('id');
+        $poolId = (int)$this->getRequest()->getParam('id');
         if (!$poolId && $this->getRequest()->getParam('pool_id')) {
-            $poolId = (int) $this->getRequest()->getParam('pool_id');
+            $poolId = (int)$this->getRequest()->getParam('pool_id');
         }
 
         /** @var Pool $pool */

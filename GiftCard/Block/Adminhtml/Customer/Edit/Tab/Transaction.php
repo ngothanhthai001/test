@@ -75,8 +75,8 @@ class Transaction extends Extended
         array $data = []
     ) {
         $this->_collectionFactory = $collectionFactory;
-        $this->_coreRegistry      = $registry;
-        $this->_helper            = $dataHelper;
+        $this->_coreRegistry = $registry;
+        $this->_helper = $dataHelper;
 
         parent::__construct($context, $backendHelper, $data);
     }
@@ -132,50 +132,50 @@ class Transaction extends Extended
     protected function _prepareColumns()
     {
         $this->addColumn('transaction_id', [
-            'header'           => __('#'),
-            'index'            => 'transaction_id',
+            'header' => __('#'),
+            'index' => 'transaction_id',
             'header_css_class' => 'col-id',
             'column_css_class' => 'col-id'
         ]);
 
         $this->addColumn('created_at', [
-            'header'           => __('Date'),
-            'type'             => 'datetime',
-            'index'            => 'created_at',
+            'header' => __('Date'),
+            'type' => 'datetime',
+            'index' => 'created_at',
             'header_css_class' => 'col-date',
             'column_css_class' => 'col-date'
         ]);
 
         $this->addColumn('action', [
-            'header'  => __('Action'),
-            'index'   => 'action',
-            'type'    => 'options',
+            'header' => __('Action'),
+            'index' => 'action',
+            'type' => 'options',
             'options' => Action::getOptionArray()
         ]);
 
         $customer = $this->_helper->getCustomer($this->getCustomerId());
 
         $this->addColumn('balance', [
-            'header'        => __('Balance'),
-            'filter'        => false,
-            'align'         => 'right',
-            'index'         => 'balance',
-            'type'          => 'price',
+            'header' => __('Balance'),
+            'filter' => false,
+            'align' => 'right',
+            'index' => 'balance',
+            'type' => 'price',
             'currency_code' => $customer->getStore()->getBaseCurrencyCode()
         ]);
 
         $this->addColumn('amount', [
-            'header'        => __('Amount Change'),
-            'filter'        => false,
-            'align'         => 'right',
-            'index'         => 'amount',
-            'type'          => 'price',
+            'header' => __('Amount Change'),
+            'filter' => false,
+            'align' => 'right',
+            'index' => 'amount',
+            'type' => 'price',
             'currency_code' => $customer->getStore()->getBaseCurrencyCode()
         ]);
 
         $this->addColumn('detail', [
-            'header'   => __('Detail'),
-            'filter'   => false,
+            'header' => __('Detail'),
+            'filter' => false,
             'sortable' => false,
             'renderer' => DetailRenderer::class,
         ]);

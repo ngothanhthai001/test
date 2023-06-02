@@ -101,13 +101,13 @@ class Redeem extends Action
         DataHelper $giftCardHelper,
         Session $customerSession
     ) {
-        $this->helper             = $helper;
-        $this->resultJsonFactory  = $resultJsonFactory;
-        $this->giftCardFactory    = $giftCardFactory;
+        $this->helper = $helper;
+        $this->resultJsonFactory = $resultJsonFactory;
+        $this->giftCardFactory = $giftCardFactory;
         $this->transactionFactory = $transactionFactory;
-        $this->resultRawFactory   = $resultRawFactory;
-        $this->customerSession    = $customerSession;
-        $this->giftCardHelper     = $giftCardHelper;
+        $this->resultRawFactory = $resultRawFactory;
+        $this->customerSession = $customerSession;
+        $this->giftCardHelper = $giftCardHelper;
 
         parent::__construct($context);
     }
@@ -122,7 +122,7 @@ class Redeem extends Action
      */
     public function execute()
     {
-        $credentials        = null;
+        $credentials = null;
         $httpBadRequestCode = 400;
 
         /** @var Raw $resultRaw */
@@ -142,7 +142,7 @@ class Redeem extends Action
         }
 
         $response = [
-            'errors'  => false,
+            'errors' => false,
             'message' => __('Redeeming Gift Card "%1" successfully.', $credentials['code'])
         ];
         try {
@@ -159,21 +159,22 @@ class Redeem extends Action
             /** @var Transaction $transaction */
             $transaction = $this->transactionFactory->create()->redeemGiftCard($customer, $giftCard);
 
-            $response['balance']      = $this->giftCardHelper->getCustomerBalance($customer, true, true);
+            $response['balance'] = $this->giftCardHelper->getCustomerBalance($customer, true, true);
             $response['transactions'] = $transaction->getTransactionsForCustomer($customer->getId());
+            $response['redeemed'] = $transaction->getRedeemedForCustomer($customer->getId());
 
             $customerIds = $giftCard->getCustomerIds() ? explode(',', $giftCard->getCustomerIds()) : [];
-            if (count($customerIds) && in_array((string) $customer->getId(), $customerIds, true)) {
+            if (count($customerIds) && in_array((string)$customer->getId(), $customerIds, true)) {
                 $response['giftCardLists'] = $giftCard->getGiftCardListForCustomer($customer->getId());
             }
         } catch (LocalizedException $e) {
             $response = [
-                'errors'  => true,
+                'errors' => true,
                 'message' => $e->getMessage()
             ];
         } catch (Exception $e) {
             $response = [
-                'errors'  => true,
+                'errors' => true,
                 'message' => __('Invalid gift card code.' . $e->getMessage())
             ];
         }

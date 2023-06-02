@@ -39,7 +39,7 @@ class Form extends Generic
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create([
             'data' => [
-                'id'     => 'edit_form',
+                'id' => 'edit_form',
                 'action' => $this->getUrl('*/*/save'),
                 'method' => 'post'
             ]

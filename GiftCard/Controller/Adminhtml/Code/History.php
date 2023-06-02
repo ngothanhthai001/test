@@ -61,7 +61,7 @@ class History extends Code
         Registry $registry,
         LayoutFactory $resultLayoutFactory
     ) {
-        $this->registry            = $registry;
+        $this->registry = $registry;
         $this->resultLayoutFactory = $resultLayoutFactory;
 
         parent::__construct($context, $resultPageFactory, $giftCardFactory);

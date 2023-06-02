@@ -102,16 +102,6 @@ class View extends AbstractView
     }
 
     /**
-     * @return bool
-     */
-    public function isInstock()
-    {
-        $product = $this->getProduct();
-
-        return (bool) $product->getQuantityAndStockStatus()['is_in_stock'];
-    }
-
-    /**
      * @return array
      */
     public function getTemplates()
@@ -158,10 +148,6 @@ class View extends AbstractView
                 ->addFieldToFilter('status', Status::STATUS_ACTIVE);
             foreach ($templates->getItems() as $template) {
                 $resultTemplates[$template->getId()] = $this->templateHelper->prepareTemplateData($template->getData());
-
-                if ($giftCodePattern = $this->getProduct()->getGiftCodePattern()) {
-                    $resultTemplates[$template->getId()]['giftCodePattern'] = $giftCodePattern;
-                }
             }
         }
 

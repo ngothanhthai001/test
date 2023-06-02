@@ -68,7 +68,7 @@ class ExportCouponsCsv extends Pool
         FileFactory $fileFactory
     ) {
         $this->_coreRegistry = $registry;
-        $this->_fileFactory  = $fileFactory;
+        $this->_fileFactory = $fileFactory;
 
         parent::__construct($context, $resultPageFactory, $poolFactory);
     }

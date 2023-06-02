@@ -67,8 +67,8 @@ class Upload extends Action
         Data $helperData
     ) {
         $this->resultRawFactory = $resultRawFactory;
-        $this->_templateHelper  = $helperData->getTemplateHelper();
-        $this->helperData       = $helperData;
+        $this->_templateHelper = $helperData->getTemplateHelper();
+        $this->helperData = $helperData;
 
         parent::__construct($context);
     }
@@ -88,7 +88,7 @@ class Upload extends Action
             $maxFileSize = $this->helperData->getMaxFileSize();
             if ($uploader->getFileSize() > $maxFileSize * 1024 * 1024) {
                 return $this->getRawResponse([
-                    'error'         => 1,
+                    'error' => 1,
                     'error_message' => __('File you are trying to upload exceeds maximum file size limit.')
                 ]);
             }
@@ -104,7 +104,7 @@ class Upload extends Action
 
             unset($result['tmp_name'], $result['path']);
 
-            $result['url']  = $this->_templateHelper->getTmpMediaUrl($result['file']);
+            $result['url'] = $this->_templateHelper->getTmpMediaUrl($result['file']);
             $result['file'] .= '.tmp';
         } catch (Exception $e) {
             $result = ['error' => $e->getMessage(), 'errorcode' => $e->getCode()];

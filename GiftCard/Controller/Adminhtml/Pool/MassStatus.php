@@ -74,7 +74,7 @@ class MassStatus extends Pool
     public function execute()
     {
         $collection = $this->filter->getCollection($this->_getPoolCollection());
-        $status     = (int) $this->getRequest()->getParam('status');
+        $status = (int)$this->getRequest()->getParam('status');
 
         $updated = 0;
         /** @var \Mageplaza\GiftCard\Model\Pool $pool */

@@ -71,8 +71,8 @@ class GiftPoolManagement extends AbstractManagement implements GiftPoolManagemen
         PoolFactory $poolFactory,
         GiftCardFactory $giftCardFactory
     ) {
-        $this->poolFactory         = $poolFactory;
-        $this->giftCardFactory     = $giftCardFactory;
+        $this->poolFactory = $poolFactory;
+        $this->giftCardFactory = $giftCardFactory;
         $this->searchResultFactory = $searchResultFactory;
         parent::__construct($templateFieldsFactory, $collectionProcessor);
     }
@@ -127,8 +127,8 @@ class GiftPoolManagement extends AbstractManagement implements GiftPoolManagemen
         $giftCard = $this->giftCardFactory->create()
             ->setData($pool->getData())
             ->addData([
-                'pattern'     => $pattern,
-                'pool_id'     => $pool->getId(),
+                'pattern' => $pattern,
+                'pool_id' => $pool->getId(),
                 'action_vars' => Data::jsonEncode(['pool_id' => $pool->getId()])
             ]);
 

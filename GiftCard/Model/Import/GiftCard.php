@@ -50,14 +50,14 @@ class GiftCard extends AbstractEntity
     /**
      * Columns
      */
-    const COL_CODE        = 'code';
-    const COL_BALANCE     = 'balance';
-    const COL_STATUS      = 'status';
-    const COL_CAN_REDEEM  = 'can_redeem';
-    const COL_STORE_ID    = 'store_id';
+    const COL_CODE = 'code';
+    const COL_BALANCE = 'balance';
+    const COL_STATUS = 'status';
+    const COL_CAN_REDEEM = 'can_redeem';
+    const COL_STORE_ID = 'store_id';
     const COL_TEMPLATE_ID = 'template_id';
-    const COL_POOL_ID     = 'pool_id';
-    const COL_EXPIRED_AT  = 'expired_at';
+    const COL_POOL_ID = 'pool_id';
+    const COL_EXPIRED_AT = 'expired_at';
 
     /** @inheritdoc */
     protected $masterAttributeCode = 'code';
@@ -69,14 +69,14 @@ class GiftCard extends AbstractEntity
      */
     protected $_messageTemplates
         = [
-            ValidatorInterface::ERROR_CODE_IS_EMPTY    => 'Code is empty',
-            ValidatorInterface::ERROR_DUPLICATE_CODE   => 'Gift Code is duplicated',
-            ValidatorInterface::ERROR_INVALID_POOL     => 'Pool in\'t exist',
+            ValidatorInterface::ERROR_CODE_IS_EMPTY => 'Code is empty',
+            ValidatorInterface::ERROR_DUPLICATE_CODE => 'Gift Code is duplicated',
+            ValidatorInterface::ERROR_INVALID_POOL => 'Pool in\'t exist',
             ValidatorInterface::ERROR_INVALID_TEMPLATE => 'Template in\'t exist',
-            ValidatorInterface::ERROR_INVALID_WEBSITE  => 'Website in\'t exist',
-            ValidatorInterface::ERROR_INVALID_STATUS   => 'Status not exist',
-            ValidatorInterface::ERROR_INVALID_BALANCE  => 'Balance must be a number and greater than 0',
-            ValidatorInterface::ERROR_INVALID_REDEEM   => 'Redeem must be 0 or 1'
+            ValidatorInterface::ERROR_INVALID_WEBSITE => 'Website in\'t exist',
+            ValidatorInterface::ERROR_INVALID_STATUS => 'Status not exist',
+            ValidatorInterface::ERROR_INVALID_BALANCE => 'Balance must be a number and greater than 0',
+            ValidatorInterface::ERROR_INVALID_REDEEM => 'Redeem must be 0 or 1'
         ];
 
     /**
@@ -180,12 +180,12 @@ class GiftCard extends AbstractEntity
         TemplateCollection $template,
         array $data = []
     ) {
-        $this->_auth           = $auth;
-        $this->giftCardModel   = $giftCardModel;
-        $this->date            = $date;
+        $this->_auth = $auth;
+        $this->giftCardModel = $giftCardModel;
+        $this->date = $date;
         $this->storeRepository = $storeRepository;
-        $this->pool            = $pool;
-        $this->template        = $template;
+        $this->pool = $pool;
+        $this->template = $template;
 
         parent::__construct($string, $scopeConfig, $importFactory, $resourceHelper, $resource, $errorAggregator, $data);
     }
@@ -236,7 +236,7 @@ class GiftCard extends AbstractEntity
         }
 
         //Validate Status
-        if (!in_array((int) $rowData[self::COL_STATUS], Status::getStatus(), true)) {
+        if (!in_array((int)$rowData[self::COL_STATUS], Status::getStatus(), true)) {
             $this->addRowError(ValidatorInterface::ERROR_INVALID_STATUS, $rowNum);
         }
 
@@ -247,7 +247,7 @@ class GiftCard extends AbstractEntity
         }
 
         //Validate Redeem
-        $canRedeem = (int) $rowData[self::COL_CAN_REDEEM];
+        $canRedeem = (int)$rowData[self::COL_CAN_REDEEM];
         if ($canRedeem !== 0 && $canRedeem !== 1) {
             $this->addRowError(ValidatorInterface::ERROR_INVALID_REDEEM, $rowNum);
         }
@@ -335,7 +335,7 @@ class GiftCard extends AbstractEntity
             foreach ($bunch as $rowNum => $rowData) {
                 $this->validateRow($rowData, $rowNum);
                 if (!$this->getErrorAggregator()->isRowInvalid($rowNum)) {
-                    $rowCode    = $rowData[self::COL_CODE];
+                    $rowCode = $rowData[self::COL_CODE];
                     $listCode[] = $rowCode;
                 }
                 if ($this->getErrorAggregator()->hasToBeTerminated()) {
@@ -371,18 +371,18 @@ class GiftCard extends AbstractEntity
                     continue;
                 }
 
-                $rowCode                = $rowData[self::COL_CODE];
-                $listCode[]             = $rowCode;
+                $rowCode = $rowData[self::COL_CODE];
+                $listCode[] = $rowCode;
                 $entityList[$rowCode][] = [
-                    self::COL_CODE        => $rowData[self::COL_CODE],
-                    self::COL_BALANCE     => $rowData[self::COL_BALANCE],
-                    self::COL_STATUS      => $rowData[self::COL_STATUS],
-                    self::COL_CAN_REDEEM  => $rowData[self::COL_CAN_REDEEM],
-                    self::COL_STORE_ID    => $rowData[self::COL_STORE_ID],
+                    self::COL_CODE => $rowData[self::COL_CODE],
+                    self::COL_BALANCE => $rowData[self::COL_BALANCE],
+                    self::COL_STATUS => $rowData[self::COL_STATUS],
+                    self::COL_CAN_REDEEM => $rowData[self::COL_CAN_REDEEM],
+                    self::COL_STORE_ID => $rowData[self::COL_STORE_ID],
                     self::COL_TEMPLATE_ID => $rowData[self::COL_TEMPLATE_ID],
-                    self::COL_POOL_ID     => $rowData[self::COL_POOL_ID],
-                    self::COL_EXPIRED_AT  => $rowData[self::COL_EXPIRED_AT],
-                    'extra_content'       => Data::jsonEncode(['auth' => $this->_auth->getUser()->getName()])
+                    self::COL_POOL_ID => $rowData[self::COL_POOL_ID],
+                    self::COL_EXPIRED_AT => $rowData[self::COL_EXPIRED_AT],
+                    'extra_content' => Data::jsonEncode(['auth' => $this->_auth->getUser()->getName()])
                 ];
             }
             if ($behavior === Import::BEHAVIOR_REPLACE) {
@@ -420,10 +420,10 @@ class GiftCard extends AbstractEntity
             }
 
             if ($entityIn) {
-                if ($this->getBehavior() == Import::BEHAVIOR_APPEND) {
+                if($this->getBehavior() == Import::BEHAVIOR_APPEND){
                     $this->updateItemsCounterStats($entityIn);
-                } else {
-                    $this->updateItemsCounterStats([], $entityIn);
+                }else{
+                    $this->updateItemsCounterStats([],$entityIn);
                 }
 
                 $this->_connection->insertOnDuplicate($this->getGiftCardTable(), $entityIn, [
@@ -480,7 +480,7 @@ class GiftCard extends AbstractEntity
      */
     public function getStoresId()
     {
-        $stores    = $this->storeRepository->getList();
+        $stores = $this->storeRepository->getList();
         $storeList = [];
         foreach ($stores as $store) {
             if ($storeId = $store->getId()) {

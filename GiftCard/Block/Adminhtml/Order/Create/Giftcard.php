@@ -82,7 +82,7 @@ class Giftcard extends AbstractCreate
         array $data = []
     ) {
         $this->_checkoutHelper = $checkoutHelper;
-        $this->_localeFormat   = $localeFormat;
+        $this->_localeFormat = $localeFormat;
 
         parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $data);
     }
@@ -126,7 +126,7 @@ class Giftcard extends AbstractCreate
      */
     public function enableCredit()
     {
-        return $this->_checkoutHelper->canUsedCredit() && $this->canUseGiftCard() && (boolean) $this->getMaxUsed();
+        return $this->_checkoutHelper->canUsedCredit() && $this->canUseGiftCard() && (boolean)$this->getMaxUsed();
     }
 
     /**
@@ -147,8 +147,8 @@ class Giftcard extends AbstractCreate
     public function getCreditData()
     {
         return $this->escapeHtml(CheckoutHelper::jsonEncode([
-            'creditUsed'  => $this->_checkoutHelper->getGiftCreditUsed($this->getQuote()),
-            'maxUsed'     => $this->getMaxUsed(),
+            'creditUsed' => $this->_checkoutHelper->getGiftCreditUsed($this->getQuote()),
+            'maxUsed' => $this->getMaxUsed(),
             'priceFormat' => $this->_localeFormat->getPriceFormat(null, $this->getQuote()->getQuoteCurrencyCode())
         ]));
     }
@@ -173,7 +173,7 @@ class Giftcard extends AbstractCreate
     protected function getMaxUsed()
     {
         if (!$this->maxCreditUsed) {
-            $balance    = $this->getCustomerBalance();
+            $balance = $this->getCustomerBalance();
             $orderTotal = $this->_checkoutHelper->getTotalAmountForDiscount($this->getQuote(), true);
 
             $this->maxCreditUsed = min($orderTotal, $balance);

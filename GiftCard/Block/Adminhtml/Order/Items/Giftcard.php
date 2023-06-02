@@ -70,7 +70,7 @@ class Giftcard extends Name
         GiftCardFactory $giftCardFactory,
         array $data = []
     ) {
-        $this->_gcHelper        = $gcProductHelper;
+        $this->_gcHelper = $gcProductHelper;
         $this->_giftCardFactory = $giftCardFactory;
 
         parent::__construct($context, $stockRegistry, $stockConfiguration, $registry, $optionFactory, $data);
@@ -93,7 +93,7 @@ class Giftcard extends Name
         $totalCodes = $item->getQtyOrdered() - $item->getQtyRefunded() - $item->getQtyCanceled();
         if ($totalCodes) {
             $giftCardCodes = [];
-            $giftCards     = $this->_giftCardFactory->create()->getCollection()
+            $giftCards = $this->_giftCardFactory->create()->getCollection()
                 ->addFieldToFilter(
                     'giftcard_id',
                     ['in' => $item->getProductOptionByCode('giftcards')]
@@ -101,7 +101,7 @@ class Giftcard extends Name
             foreach ($giftCards->getItems() as $giftCard) {
                 $code = $giftCard->getCode();
                 if ($this->getRequest()->getFullActionName() === 'sales_order_creditmemo_new') {
-                    if ((int) $giftCard->getStatus() === Status::STATUS_CANCELLED) {
+                    if ((int)$giftCard->getStatus() === Status::STATUS_CANCELLED) {
                         $code .= __(' (Cancelled)');
                     } elseif ($giftCard->getInitBalance() !== $giftCard->getBalance()) {
                         $code .= __(' (Used)');
@@ -114,8 +114,8 @@ class Giftcard extends Name
                 $giftCardCodes[] = __('N/A');
             }
             $giftCardOptions[] = [
-                'label'       => __('Gift Codes'),
-                'value'       => implode('<br />', $giftCardCodes),
+                'label' => __('Gift Codes'),
+                'value' => implode('<br />', $giftCardCodes),
                 'custom_view' => true,
             ];
         }

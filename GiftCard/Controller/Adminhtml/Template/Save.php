@@ -63,7 +63,7 @@ class Save extends \Mageplaza\GiftCard\Controller\Adminhtml\Template
         Template $templateHelper
     ) {
         $this->_templateHelper = $templateHelper;
-        $this->mediaDirectory  = $templateHelper->getMediaDirectory();
+        $this->mediaDirectory = $templateHelper->getMediaDirectory();
 
         parent::__construct($context, $resultPageFactory, $templateFactory);
     }
@@ -74,8 +74,8 @@ class Save extends \Mageplaza\GiftCard\Controller\Adminhtml\Template
      */
     public function execute()
     {
-        $data       = $this->getRequest()->getPostValue();
-        $templateId = (int) $this->getRequest()->getParam('id');
+        $data = $this->getRequest()->getPostValue();
+        $templateId = (int)$this->getRequest()->getParam('id');
         if ($data) {
             $this->_uploadImages($data);
 
@@ -177,7 +177,7 @@ class Save extends \Mageplaza\GiftCard\Controller\Adminhtml\Template
             }
 
             $fileName = $image['file'];
-            $pos      = strpos($fileName, '.tmp');
+            $pos = strpos($fileName, '.tmp');
 
             if ((isset($image['removed']) && $image['removed'])) {
                 /** Remove image */
@@ -185,7 +185,7 @@ class Save extends \Mageplaza\GiftCard\Controller\Adminhtml\Template
 
                 if ($pos === false) {
                     $filePath = $this->_templateHelper->getMediaPath($image['file']);
-                    $file     = $this->mediaDirectory->getRelativePath($filePath);
+                    $file = $this->mediaDirectory->getRelativePath($filePath);
                     if ($this->mediaDirectory->isFile($file)) {
                         $this->mediaDirectory->delete($filePath);
                     }
@@ -194,7 +194,7 @@ class Save extends \Mageplaza\GiftCard\Controller\Adminhtml\Template
                 /** Move image from tmp folder */
                 $fileName = substr($fileName, 0, $pos);
                 $filePath = $this->_templateHelper->getTmpMediaPath($fileName);
-                $file     = $this->mediaDirectory->getRelativePath($filePath);
+                $file = $this->mediaDirectory->getRelativePath($filePath);
                 if (!$this->mediaDirectory->isFile($file)) {
                     unset($imageEntries[$key]);
                     continue;
@@ -202,18 +202,18 @@ class Save extends \Mageplaza\GiftCard\Controller\Adminhtml\Template
 
                 $pathInfo = pathinfo($file);
                 if (!isset($pathInfo['extension']) || !in_array(
-                        strtolower($pathInfo['extension']),
-                        ['jpg', 'jpeg', 'gif', 'png']
-                    )) {
+                    strtolower($pathInfo['extension']),
+                    ['jpg', 'jpeg', 'gif', 'png']
+                )) {
                     unset($imageEntries[$key]);
                     continue;
                 }
 
-                $fileName       = Uploader::getCorrectFileName($pathInfo['basename']);
+                $fileName = Uploader::getCorrectFileName($pathInfo['basename']);
                 $dispretionPath = Uploader::getDispretionPath($fileName);
-                $fileName       = $dispretionPath . '/' . $fileName;
+                $fileName = $dispretionPath . '/' . $fileName;
 
-                $fileName        = $this->_templateHelper->getNotDuplicatedFilename($fileName, $dispretionPath);
+                $fileName = $this->_templateHelper->getNotDuplicatedFilename($fileName, $dispretionPath);
                 $destinationFile = $this->_templateHelper->getMediaPath($fileName);
 
                 try {

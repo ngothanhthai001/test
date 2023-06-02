@@ -110,11 +110,12 @@
         </arguments>
     </virtualType>
 
-    <type name="Klarna\Core\Model\Checkout\Orderline\Giftcard">
-        <plugin name="mpgiftcard_klarna" type="Mageplaza\GiftCard\Plugin\Model\Checkout\Orderline\Giftcard"/>
-    </type>
+    <virtualType name="MpGiftCardOrderLine" type="Mageplaza\GiftCard\Model\Checkout\Orderline\MpGiftcard"/>
 
-    <type name="Magento\Checkout\Model\Cart\ImageProvider">
-        <plugin name="mpgiftcard_checkout_image" type="Mageplaza\GiftCard\Plugin\Model\Cart\ImageProvider"/>
+    <type name="Magento\Checkout\CustomerData\AbstractItem">
+        <plugin name="mpgiftcard_change_item_image" type="Mageplaza\GiftCard\Plugin\CustomerData\Checkout\Image"/>
+    </type>
+    <type name="Mageplaza\Osc\Helper\Item">
+        <plugin name="mpgiftcard_change_item_image" type="Mageplaza\GiftCard\Plugin\Helper\Osc\Image"/>
     </type>
 </config>

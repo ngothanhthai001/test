@@ -68,7 +68,7 @@ class MassDelete extends Pool
         Filter $filter,
         Collection $giftCardCollection
     ) {
-        $this->filter             = $filter;
+        $this->filter = $filter;
         $this->giftCardCollection = $giftCardCollection;
 
         parent::__construct($context, $resultPageFactory, $poolFactory);
@@ -81,7 +81,7 @@ class MassDelete extends Pool
     public function execute()
     {
         $collection = $this->filter->getCollection($this->_getPoolCollection());
-        $deleted    = 0;
+        $deleted = 0;
 
         foreach ($collection->getItems() as $pool) {
             $collection = $this->giftCardCollection

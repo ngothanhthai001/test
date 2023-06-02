@@ -77,7 +77,7 @@ class Credit extends AbstractModel implements IdentityInterface
         AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_helper             = $helper;
+        $this->_helper = $helper;
         $this->_transactionFactory = $transactionFactory;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);

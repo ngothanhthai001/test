@@ -56,7 +56,7 @@ abstract class Code extends Action
         GiftCardFactory $giftCardFactory
     ) {
         $this->resultPageFactory = $resultPageFactory;
-        $this->_giftCardFactory  = $giftCardFactory;
+        $this->_giftCardFactory = $giftCardFactory;
 
         parent::__construct($context);
     }
@@ -84,7 +84,7 @@ abstract class Code extends Action
      */
     protected function _initObject()
     {
-        $codeId = (int) $this->getRequest()->getParam('id');
+        $codeId = (int)$this->getRequest()->getParam('id');
 
         /** @var GiftCard $giftCard */
         $giftCard = $this->_giftCardFactory->create();

@@ -78,7 +78,7 @@ class InstallSchema implements InstallSchemaInterface
                 ->addColumn('pool_id', Table::TYPE_INTEGER, null, [
                     'identity' => true,
                     'nullable' => false,
-                    'primary'  => true,
+                    'primary' => true,
                     'unsigned' => true
                 ], 'Code Pool Id')
                 ->addColumn('name', Table::TYPE_TEXT, 255, ['nullable' => false], 'Name')
@@ -146,7 +146,7 @@ class InstallSchema implements InstallSchemaInterface
                 ->addColumn('template_id', Table::TYPE_INTEGER, null, [
                     'identity' => true,
                     'nullable' => false,
-                    'primary'  => true,
+                    'primary' => true,
                     'unsigned' => true
                 ], 'Gift Card Template Id')
                 ->addColumn('name', Table::TYPE_TEXT, 255, ['nullable' => false], 'Name')
@@ -188,7 +188,7 @@ class InstallSchema implements InstallSchemaInterface
                 ->addColumn('giftcard_id', Table::TYPE_INTEGER, null, [
                     'identity' => true,
                     'nullable' => false,
-                    'primary'  => true,
+                    'primary' => true,
                     'unsigned' => true
                 ], 'Gift Card Id')
                 ->addColumn('code', Table::TYPE_TEXT, 255, ['nullable' => false], 'Code')
@@ -269,7 +269,7 @@ class InstallSchema implements InstallSchemaInterface
                 ->addColumn('history_id', Table::TYPE_INTEGER, null, [
                     'identity' => true,
                     'nullable' => false,
-                    'primary'  => true,
+                    'primary' => true,
                     'unsigned' => true
                 ], 'History Id')
                 ->addColumn(
@@ -334,7 +334,7 @@ class InstallSchema implements InstallSchemaInterface
                 ->addColumn('credit_id', Table::TYPE_INTEGER, null, [
                     'identity' => true,
                     'nullable' => false,
-                    'primary'  => true,
+                    'primary' => true,
                     'unsigned' => true
                 ], 'Credit Id')
                 ->addColumn(
@@ -377,7 +377,7 @@ class InstallSchema implements InstallSchemaInterface
                 ->addColumn('transaction_id', Table::TYPE_INTEGER, null, [
                     'identity' => true,
                     'nullable' => false,
-                    'primary'  => true,
+                    'primary' => true,
                     'unsigned' => true
                 ], 'Transaction Id')
                 ->addColumn(

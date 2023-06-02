@@ -106,12 +106,12 @@ class ImportCsv extends ManualAdd
         Import $import,
         Media $helperFile
     ) {
-        $this->csvProcessor    = $csvProcessor;
+        $this->csvProcessor = $csvProcessor;
         $this->uploaderFactory = $uploaderFactory;
-        $this->filesystem      = $filesystem;
-        $this->file            = $file;
-        $this->import          = $import;
-        $this->helperFile      = $helperFile;
+        $this->filesystem = $filesystem;
+        $this->file = $file;
+        $this->import = $import;
+        $this->helperFile = $helperFile;
 
         parent::__construct($context, $resultPageFactory, $poolFactory, $collectionFactory, $cardFactory, $logger);
     }
@@ -163,7 +163,7 @@ class ImportCsv extends ManualAdd
         $uploader->setFilesDispersion(true);
 
         /** @var Read $mediaDirectory */
-        $mediaDirectory   = $this->filesystem->getDirectoryRead(DirectoryList::MEDIA);
+        $mediaDirectory = $this->filesystem->getDirectoryRead(DirectoryList::MEDIA);
         $fileAbsolutePath = $mediaDirectory->getAbsolutePath($this->helperFile->getBaseMediaPath('csv'));
 
         try {

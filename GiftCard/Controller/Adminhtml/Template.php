@@ -55,7 +55,7 @@ abstract class Template extends Action
         TemplateFactory $templateFactory
     ) {
         $this->resultPageFactory = $resultPageFactory;
-        $this->_templateFactory  = $templateFactory;
+        $this->_templateFactory = $templateFactory;
 
         parent::__construct($context);
     }
@@ -82,7 +82,7 @@ abstract class Template extends Action
      */
     protected function _initObject()
     {
-        $id = (int) $this->getRequest()->getParam('id');
+        $id = (int)$this->getRequest()->getParam('id');
 
         /** @var \Mageplaza\GiftCard\Model\Template $template */
         $template = $this->_templateFactory->create();

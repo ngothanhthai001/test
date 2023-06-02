@@ -58,7 +58,7 @@ class Edit extends Container
         Template $templateHelper,
         array $data = []
     ) {
-        $this->_coreRegistry  = $coreRegistry;
+        $this->_coreRegistry = $coreRegistry;
         $this->templateHelper = $templateHelper;
         parent::__construct($context, $data);
     }
@@ -68,7 +68,7 @@ class Edit extends Container
      */
     protected function _construct()
     {
-        $this->_objectId   = 'id';
+        $this->_objectId = 'id';
         $this->_blockGroup = 'Mageplaza_GiftCard';
         $this->_controller = 'adminhtml_giftCard';
 
@@ -79,8 +79,8 @@ class Edit extends Container
             $this->buttonList->add(
                 'print',
                 [
-                    'label'          => __('Print'),
-                    'class'          => 'save',
+                    'label' => __('Print'),
+                    'class' => 'save',
                     'data_attribute' => [
                         'mage-init' => ['button' => ['event' => 'print', 'target' => '#edit_form']]
                     ]
@@ -91,8 +91,8 @@ class Edit extends Container
         $this->buttonList->add(
             'saveandsend',
             [
-                'label'          => __('Save and Send'),
-                'class'          => 'save',
+                'label' => __('Save and Send'),
+                'class' => 'save',
                 'data_attribute' => [
                     'mage-init' => ['button' => ['event' => 'saveAndSend', 'target' => '#edit_form']]
                 ]
@@ -102,8 +102,8 @@ class Edit extends Container
         $this->buttonList->add(
             'saveandcontinue',
             [
-                'label'          => __('Save and Continue Edit'),
-                'class'          => 'save',
+                'label' => __('Save and Continue Edit'),
+                'class' => 'save',
                 'data_attribute' => [
                     'mage-init' => ['button' => ['event' => 'saveAndContinueEdit', 'target' => '#edit_form']]
                 ]

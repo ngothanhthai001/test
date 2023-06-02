@@ -65,7 +65,7 @@ class MassPrintPDF extends Code
         Filter $filter,
         Template $template
     ) {
-        $this->filter    = $filter;
+        $this->filter = $filter;
         $this->_template = $template;
 
         parent::__construct($context, $resultPageFactory, $giftCardFactory);
@@ -80,7 +80,7 @@ class MassPrintPDF extends Code
     {
         /** @var Collection $collection */
         $collection = $this->filter->getCollection($this->_getCodeCollection());
-        $output     = $this->_template->outputGiftCardPdf($collection->getItems(), 'D');
+        $output = $this->_template->outputGiftCardPdf($collection->getItems(), 'D');
 
         if ($output === null) {
             $this->messageManager->addErrorMessage(__('Gift cards can\'t print.'));

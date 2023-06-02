@@ -37,4 +37,12 @@
     <type name="Magento\Catalog\Block\Product\AbstractProduct">
         <plugin name="mpgiftcard_change_item_image" type="Mageplaza\GiftCard\Plugin\Block\Catalog\ProductImage" />
     </type>
+
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="mpgiftcard_config_provider" xsi:type="object">Mageplaza\GiftCard\Model\CompositeConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

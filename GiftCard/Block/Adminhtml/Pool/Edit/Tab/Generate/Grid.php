@@ -65,7 +65,7 @@ class Grid extends Extended
         array $data = []
     ) {
         $this->_collectionFactory = $collectionFactory;
-        $this->_coreRegistry      = $registry;
+        $this->_coreRegistry = $registry;
 
         parent::__construct($context, $backendHelper, $data);
     }
@@ -88,7 +88,7 @@ class Grid extends Extended
      */
     protected function _prepareCollection()
     {
-        $pool       = $this->_coreRegistry->registry('current_pool');
+        $pool = $this->_coreRegistry->registry('current_pool');
         $collection = $this->_collectionFactory->create();
         if ($pool->getId()) {
             $collection->addFieldToFilter('pool_id', ['eq' => $pool->getId()]);
@@ -109,29 +109,29 @@ class Grid extends Extended
     {
         $this->addColumn('pool_code', [
             'header' => __('Code'),
-            'index'  => 'code',
-            'type'   => 'text'
+            'index' => 'code',
+            'type' => 'text'
         ]);
 
         $this->addColumn('pool_balance', [
-            'header'   => __('Balance'),
-            'align'    => 'right',
-            'index'    => 'balance',
-            'type'     => 'currency',
+            'header' => __('Balance'),
+            'align' => 'right',
+            'index' => 'balance',
+            'type' => 'currency',
             'renderer' => Price::class
         ]);
 
         $this->addColumn('pool_status', [
-            'header'  => __('Status'),
-            'index'   => 'status',
-            'type'    => 'options',
+            'header' => __('Status'),
+            'index' => 'status',
+            'type' => 'options',
             'options' => Status::getOptionArray()
         ]);
 
         $this->addColumn('pool_created_at', [
-            'header'           => __('Created Date'),
-            'type'             => 'datetime',
-            'index'            => 'created_at',
+            'header' => __('Created Date'),
+            'type' => 'datetime',
+            'index' => 'created_at',
             'header_css_class' => 'col-date',
             'column_css_class' => 'col-date'
         ]);
@@ -157,9 +157,9 @@ class Grid extends Extended
         $this->getMassactionBlock()->addItem(
             'delete',
             [
-                'label'    => __('Delete'),
-                'url'      => $this->getUrl('*/*/cardsMassDelete', ['_current' => true]),
-                'confirm'  => __('Are you sure you want to delete the selected code(s)?'),
+                'label' => __('Delete'),
+                'url' => $this->getUrl('*/*/cardsMassDelete', ['_current' => true]),
+                'confirm' => __('Are you sure you want to delete the selected code(s)?'),
                 'complete' => 'poolCodesGridJsObject.reload(); poolCodesGridJsObject.massaction.unselectAll()'
             ]
         );

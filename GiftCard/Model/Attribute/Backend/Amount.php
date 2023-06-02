@@ -43,14 +43,15 @@ class Amount extends AbstractClass
     public function beforeSave($object)
     {
         $attributeCode = $this->getAttribute()->getName();
-        $priceRows     = $object->getData($attributeCode);
+        $priceRows = $object->getData($attributeCode);
 
         if (!$object->getData('gift_card_amounts')) {
-            throw new LocalizedException(__('Please setup Gift Card amount.'));
+            throw new LocalizedException(__('Please setup Gift Card amount %1.', $object->getData('sku')));
+
         }
 
-        if ($object->getData('allow_amount_range')) {
-            if (!$object->getData('min_amount') || !$object->getData('max_amount')) {
+        if($object->getData('allow_amount_range')){
+            if(!$object->getData('min_amount') || !$object->getData('max_amount')){
                 throw new LocalizedException(__('Please setup Gift Card amount range.'));
             }
         }
@@ -60,8 +61,8 @@ class Amount extends AbstractClass
         }
 
         if ($priceRows !== null) {
-            $amounts   = [];
-            $priceRows = array_filter((array) $priceRows);
+            $amounts = [];
+            $priceRows = array_filter((array)$priceRows);
             foreach ($priceRows as $data) {
                 if (!isset($data['delete']) || (isset($data['delete']) && !$data['delete'])) {
                     $amounts[] = $data;
@@ -72,14 +73,14 @@ class Amount extends AbstractClass
 
             if ($object->getData('allow_amount_range')) {
                 $minAmount = $this->convertAmount($object->getData('min_amount') ?: 0);
-                $object->setData('min_amount', max(0, (float) $minAmount));
+                $object->setData('min_amount', max(0, (float)$minAmount));
 
                 if ($maxAmount = $this->convertAmount($object->getData('max_amount'))) {
-                    $object->setData('max_amount', max($object->getData('min_amount'), (float) $maxAmount));
+                    $object->setData('max_amount', max($object->getData('min_amount'), (float)$maxAmount));
                 }
 
                 $priceRate = $object->getData('price_rate') ?: 100;
-                $object->setData('price_rate', max(0, (float) $priceRate));
+                $object->setData('price_rate', max(0, (float)$priceRate));
             }
         }
 
@@ -96,7 +97,7 @@ class Amount extends AbstractClass
     public function afterLoad($object)
     {
         $attributeCode = $this->getAttribute()->getName();
-        $data          = $object->getData($attributeCode);
+        $data = $object->getData($attributeCode);
 
         if (is_string($data)) {
             $object->setData($attributeCode, Data::jsonDecode($data));
@@ -117,13 +118,13 @@ class Amount extends AbstractClass
     public function validate($object)
     {
         $attributeCode = $this->getAttribute()->getName();
-        $priceRows     = $object->getData($attributeCode);
+        $priceRows = $object->getData($attributeCode);
 
         if (!is_array($priceRows) || empty($priceRows)) {
             if (!$object->getData('allow_amount_range')
                 || ($object->getData('allow_amount_range')
                     && (!$object->getData('min_amount') || !$object->getData('max_amount')))) {
-                throw new LocalizedException(__('Please setup Gift Card amount.'));
+                throw new LocalizedException(__('Please setup Gift Card amount %1.', $object->getData('sku')));
             }
 
             return true;
@@ -144,7 +145,6 @@ class Amount extends AbstractClass
 
     /**
      * @param string|int $amount
-     *
      * @return string|string[]
      */
     public function convertAmount($amount)

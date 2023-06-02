@@ -74,8 +74,8 @@ class Generate extends Pool
         LoggerInterface $logger
     ) {
         $this->collectionFactory = $collectionFactory;
-        $this->giftCardFactory   = $cardFactory;
-        $this->logger            = $logger;
+        $this->giftCardFactory = $cardFactory;
+        $this->logger = $logger;
 
         parent::__construct($context, $resultPageFactory, $poolFactory);
     }
@@ -92,7 +92,7 @@ class Generate extends Pool
         }
 
         $result = [];
-        $pool   = $this->_initObject();
+        $pool = $this->_initObject();
         if ($pool && $pool->getId()) {
             try {
                 if ($giftCards = $this->generate($pool)) {
@@ -134,10 +134,10 @@ class Generate extends Pool
         $giftCard = $this->giftCardFactory->create()
             ->setData($pool->getData())
             ->addData([
-                'pattern'       => $data['pattern'],
-                'pool_id'       => $pool->getId(),
+                'pattern' => $data['pattern'],
+                'pool_id' => $pool->getId(),
                 'extra_content' => Data::jsonEncode(['auth' => $this->_auth->getUser()->getName()]),
-                'action_vars'   => Data::jsonEncode(['pool_id' => $pool->getId()])
+                'action_vars' => Data::jsonEncode(['pool_id' => $pool->getId()])
             ]);
 
         return $giftCard->createMultiple(['qty' => $data['qty']]);
@@ -171,9 +171,9 @@ class Generate extends Pool
         $giftCard = $this->giftCardFactory->create()
             ->setData($pool->getData())
             ->addData([
-                'pool_id'       => $pool->getId(),
+                'pool_id' => $pool->getId(),
                 'extra_content' => Data::jsonEncode(['auth' => $this->_auth->getUser()->getName()]),
-                'action_vars'   => Data::jsonEncode(['pool_id' => $pool->getId()])
+                'action_vars' => Data::jsonEncode(['pool_id' => $pool->getId()])
             ]);
 
         return $giftCard->createMultiple(['codes' => $codes]);

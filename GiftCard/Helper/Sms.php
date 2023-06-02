@@ -53,8 +53,8 @@ class Sms extends Data
 
         $storeId = $giftCard->getStoreId();
 
-        $sid    = $this->getSmsConfig('twilio_account_sid', $storeId);
-        $token  = $this->getSmsConfig('twilio_account_token', $storeId);
+        $sid = $this->getSmsConfig('twilio_account_sid', $storeId);
+        $token = $this->getSmsConfig('twilio_account_token', $storeId);
         $sender = $this->getSmsConfig('address_sender', $storeId);
 
         if (!$sid || !$token || !$sender) {
@@ -112,16 +112,16 @@ class Sms extends Data
     {
         if (!isset($this->attributeValue[$giftCard->getId()])) {
             $templateFields = $giftCard->getTemplateFields() ? self::jsonDecode($giftCard->getTemplateFields()) : [];
-            $store          = $this->storeManager->getStore($giftCard->getStoreId());
+            $store = $this->storeManager->getStore($giftCard->getStoreId());
 
             $this->attributeValue[$giftCard->getId()] = [
-                'sender_name'  => isset($templateFields['sender']) ? $templateFields['sender'] : '',
-                'message'      => isset($templateFields['message']) ? $templateFields['message'] : '',
-                'code'         => $giftCard->getCode(),
-                'balance'      => $this->formatPrice($giftCard->getBalance(), false, $store->getId()),
-                'status'       => $giftCard->getStatusLabel(),
+                'sender_name' => isset($templateFields['sender']) ? $templateFields['sender'] : '',
+                'message' => isset($templateFields['message']) ? $templateFields['message'] : '',
+                'code' => $giftCard->getCode(),
+                'balance' => $this->formatPrice($giftCard->getBalance(), false, $store->getId()),
+                'status' => $giftCard->getStatusLabel(),
                 'expired_date' => $this->formatDate($giftCard->getExpiredAt()),
-                'store_url'    => $store->getBaseUrl()
+                'store_url' => $store->getBaseUrl()
             ];
         }
 

@@ -133,9 +133,6 @@ define(
                     if (activeTemplate.images.length) {
                         self.activeImageSrc(activeTemplate.images[0].file);
                         self.image(activeTemplate.images[0].src);
-                    } else {
-                        self.activeImageSrc('');
-                        self.image('');
                     }
 
                     self.fields($.map(activeTemplate.design, function (value, index) {
@@ -167,9 +164,6 @@ define(
                                 break;
                             case 'image':
                                 value.src = self.image;
-                                break;
-                            case 'code':
-                                value.value = activeTemplate.giftCodePattern;
                                 break;
                         }
 

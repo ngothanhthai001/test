@@ -29,8 +29,8 @@ use Magento\Framework\Option\ArrayInterface;
  */
 class GenerateGiftCodeEvent implements ArrayInterface
 {
-    const ORDER_PLACED    = '1';
-    const INVOICED        = '2';
+    const ORDER_PLACED = '1';
+    const INVOICED = '2';
     const ORDER_COMPLETED = '3';
 
     /**
@@ -42,7 +42,7 @@ class GenerateGiftCodeEvent implements ArrayInterface
     {
         return [
             //          self::ORDER_PLACED    => __('Order Placed'),
-            self::INVOICED        => __('Invoice Created'),
+            self::INVOICED => __('Invoice Created'),
             self::ORDER_COMPLETED => __('Order Completed')
         ];
     }

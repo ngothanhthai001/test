@@ -109,9 +109,9 @@ class GiftCard extends AbstractType
         Http $request,
         DeliveryMethods $deliveryMethods
     ) {
-        $this->request         = $request;
-        $this->_dataHelper     = $dataHelper;
-        $this->logger          = $logger;
+        $this->request = $request;
+        $this->_dataHelper = $dataHelper;
+        $this->logger = $logger;
         $this->deliveryMethods = $deliveryMethods;
 
         parent::__construct(
@@ -156,7 +156,7 @@ class GiftCard extends AbstractType
     {
         $product = $product->load($product->getId());
 
-        return (int) $product->getGiftCardType() !== DeliveryMethods::TYPE_MAIL;
+        return (int)$product->getGiftCardType() !== DeliveryMethods::TYPE_MAIL;
     }
 
     /**
@@ -219,7 +219,7 @@ class GiftCard extends AbstractType
         $amount = $this->_validateAmount($buyRequest, $product);
         $product->addCustomOption(FieldRenderer::AMOUNT, $amount, $product);
 
-        $deliveryOptions = $this->deliveryMethods->validateMethodFields((int) $buyRequest->getDelivery(), $buyRequest);
+        $deliveryOptions = $this->deliveryMethods->validateMethodFields((int)$buyRequest->getDelivery(), $buyRequest);
         foreach ($deliveryOptions as $key => $option) {
             $product->addCustomOption($key, $option, $product);
         }
@@ -237,12 +237,12 @@ class GiftCard extends AbstractType
             $templateHelper = $this->_dataHelper->getTemplateHelper();
             $mediaDirectory = $this->_filesystem->getDirectoryRead(DirectoryList::MEDIA);
 
-            $pos      = strpos($image, '.tmp');
+            $pos = strpos($image, '.tmp');
             $filePath = ($pos === false)
                 ? $templateHelper->getMediaPath($image)
                 : $templateHelper->getTmpMediaPath(substr($image, 0, $pos));
 
-            $file        = $mediaDirectory->getRelativePath($filePath);
+            $file = $mediaDirectory->getRelativePath($filePath);
             $reOrderFile = $mediaDirectory->getRelativePath($templateHelper->getMediaPath(substr($image, 0, $pos)));
 
             if ($mediaDirectory->isFile($file)) {
@@ -267,8 +267,8 @@ class GiftCard extends AbstractType
      */
     protected function _validateAmount($buyRequest, $product)
     {
-        $isRange       = $buyRequest->getRangeAmount();
-        $amount        = $buyRequest->getAmount();
+        $isRange = $buyRequest->getRangeAmount();
+        $amount = $buyRequest->getAmount();
         $currentAction = $this->request->getFullActionName();
 
         if ($isRange) {
@@ -289,7 +289,7 @@ class GiftCard extends AbstractType
             $product->addCustomOption('range_amount', true, $product);
         } else {
             $allowAmounts = [];
-            $attribute    = $product->getResource()->getAttribute('gift_card_amounts');
+            $attribute = $product->getResource()->getAttribute('gift_card_amounts');
             if ($attribute) {
                 $attribute->getBackend()->afterLoad($product);
                 $allowAmounts = $product->getGiftCardAmounts();
@@ -342,26 +342,26 @@ class GiftCard extends AbstractType
      */
     public function processBuyRequest($product, $buyRequest)
     {
-        $delivery = (int) $buyRequest->getDelivery();
-        $options  = [
-            'amount'        => $buyRequest->getAmount(),
-            'range_amount'  => (boolean) $buyRequest->getRangeAmount(),
-            'template'      => $buyRequest->getTemplate(),
-            'image'         => $buyRequest->getImage(),
-            'from'          => $buyRequest->getFrom(),
-            'to'            => $buyRequest->getTo(),
-            'message'       => $buyRequest->getMessage(),
+        $delivery = (int)$buyRequest->getDelivery();
+        $options = [
+            'amount' => $buyRequest->getAmount(),
+            'range_amount' => (boolean)$buyRequest->getRangeAmount(),
+            'template' => $buyRequest->getTemplate(),
+            'image' => $buyRequest->getImage(),
+            'from' => $buyRequest->getFrom(),
+            'to' => $buyRequest->getTo(),
+            'message' => $buyRequest->getMessage(),
             'delivery_date' => $buyRequest->getDeliveryDate(),
-            'timezone'      => $buyRequest->getTimezone(),
-            'delivery'      => $delivery,
+            'timezone' => $buyRequest->getTimezone(),
+            'delivery' => $delivery,
         ];
 
         $image = $buyRequest->getImage();
         if ($image) {
             $options['image'] = $image;
-            $pos              = strpos($image, '.tmp');
+            $pos = strpos($image, '.tmp');
             if ($pos !== false) {
-                $imageTmp       = substr($image, 0, $pos);
+                $imageTmp = substr($image, 0, $pos);
                 $templateHelper = $this->_dataHelper->getTemplateHelper();
 
                 $mediaDirectory = $this->_filesystem->getDirectoryRead(DirectoryList::MEDIA);

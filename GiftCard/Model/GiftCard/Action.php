@@ -37,8 +37,8 @@ class Action implements OptionSourceInterface
      */
     const ACTION_CREATE = 1;
     const ACTION_UPDATE = 2;
-    const ACTION_SEND   = 3;
-    const ACTION_SPEND  = 4;
+    const ACTION_SEND = 3;
+    const ACTION_SPEND = 4;
     const ACTION_EXPIRE = 5;
     const ACTION_REDEEM = 6;
     const ACTION_REFUND = 7;
@@ -54,8 +54,8 @@ class Action implements OptionSourceInterface
         return [
             self::ACTION_CREATE => __('Created'),
             self::ACTION_UPDATE => __('Updated'),
-            self::ACTION_SEND   => __('Sent'),
-            self::ACTION_SPEND  => __('Spent'),
+            self::ACTION_SEND => __('Sent'),
+            self::ACTION_SPEND => __('Spent'),
             self::ACTION_EXPIRE => __('Expired'),
             self::ACTION_REDEEM => __('Redeemed'),
             self::ACTION_REFUND => __('Refunded'),

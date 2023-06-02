@@ -33,7 +33,6 @@ class MergeQuote implements ObserverInterface
 {
     /**
      * @param Observer $observer
-     *
      * @return $this|void
      */
     public function execute(Observer $observer)
@@ -41,7 +40,7 @@ class MergeQuote implements ObserverInterface
         $source = $observer->getSource();
         $quote  = $observer->getQuote();
 
-        if ($source->getMpGiftCards()) {
+        if($source->getMpGiftCards()){
             $quote->setMpGiftCards($source->getMpGiftCards());
         }
 

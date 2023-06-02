@@ -21,7 +21,6 @@
 
 namespace Mageplaza\GiftCard\Model\Total\Invoice;
 
-use Magento\Catalog\Model\ProductFactory;
 use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\Order\Invoice\Total\AbstractTotal;
 
@@ -32,23 +31,6 @@ use Magento\Sales\Model\Order\Invoice\Total\AbstractTotal;
 class Discount extends AbstractTotal
 {
     /**
-     * @var ProductFactory
-     */
-    protected $_productFactory;
-
-    /**
-     * @param ProductFactory $productFactory
-     * @param array $data
-     */
-    public function __construct(
-        ProductFactory $productFactory,
-        array $data = []
-    ) {
-        $this->_productFactory = $productFactory;
-        parent::__construct($data);
-    }
-
-    /**
      * Collect invoice subtotal
      *
      * @param Invoice $invoice
@@ -57,46 +39,32 @@ class Discount extends AbstractTotal
      */
     public function collect(Invoice $invoice)
     {
-        $order              = $invoice->getOrder();
-        $baseOrderDiscount  = $order->getBaseGiftCardAmount();
+        $order = $invoice->getOrder();
+        $baseOrderDiscount = $order->getBaseGiftCardAmount();
         $baseCreditDiscount = $order->getBaseGiftCreditAmount();
 
         if (!$baseOrderDiscount && !$baseCreditDiscount) {
             return $this;
         }
-        $invoiceSubtotal = $invoice->getSubtotal();
-        foreach ($invoice->getItems() as $item) {
-            $product = $this->_productFactory->create()->load($item->getProductId());
-            if ($product->getTypeId() === 'mpgiftcard') {
-                $invoiceSubtotal -= $item->getRowTotal();
-            }
-        }
 
-        $orderSubtotal = $order->getSubtotal();
-        foreach ($order->getAllItems() as $item) {
-            if ($item->getProductType() === 'mpgiftcard') {
-                $orderSubtotal -= $item->getRowTotal();
-            }
-        }
-
-        $rate = $invoiceSubtotal / $orderSubtotal;
+        $rate = $invoice->getSubtotal() / $order->getSubtotal();
 
         if ($baseOrderDiscount) {
             $orderDiscount = $order->getGiftCardAmount();
 
-            $giftcardDiscount     = $invoice->roundPrice($orderDiscount * $rate, 'regular', true);
+            $giftcardDiscount = $invoice->roundPrice($orderDiscount * $rate, 'regular', true);
             $baseGiftcardDiscount = $invoice->roundPrice($baseOrderDiscount * $rate, 'base', true);
 
             foreach ($invoice->getOrder()->getInvoiceCollection() as $previousInvoice) {
                 $baseOrderDiscount -= $previousInvoice->getBaseGiftCardAmount();
-                $orderDiscount     -= $previousInvoice->getGiftCardAmount();
+                $orderDiscount -= $previousInvoice->getGiftCardAmount();
             }
 
             if ($invoice->isLast()) {
-                $giftcardDiscount     = $orderDiscount;
+                $giftcardDiscount = $orderDiscount;
                 $baseGiftcardDiscount = $baseOrderDiscount;
             } else {
-                $giftcardDiscount     = max($orderDiscount, $giftcardDiscount);
+                $giftcardDiscount = max($orderDiscount, $giftcardDiscount);
                 $baseGiftcardDiscount = max($baseOrderDiscount, $baseGiftcardDiscount);
             }
 
@@ -110,19 +78,19 @@ class Discount extends AbstractTotal
         if ($baseCreditDiscount) {
             $creditDiscount = $order->getGiftCreditAmount();
 
-            $giftcreditDiscount     = $invoice->roundPrice($creditDiscount * $rate, 'regular', true);
+            $giftcreditDiscount = $invoice->roundPrice($creditDiscount * $rate, 'regular', true);
             $baseGiftcreditDiscount = $invoice->roundPrice($baseCreditDiscount * $rate, 'base', true);
 
             foreach ($invoice->getOrder()->getInvoiceCollection() as $previousInvoice) {
                 $baseCreditDiscount -= $previousInvoice->getBaseGiftCreditAmount();
-                $creditDiscount     -= $previousInvoice->getGiftCardAmount();
+                $creditDiscount -= $previousInvoice->getGiftCardAmount();
             }
 
             if ($invoice->isLast()) {
-                $giftcreditDiscount     = $creditDiscount;
+                $giftcreditDiscount = $creditDiscount;
                 $baseGiftcreditDiscount = $baseCreditDiscount;
             } else {
-                $giftcreditDiscount     = max($creditDiscount, $giftcreditDiscount);
+                $giftcreditDiscount = max($creditDiscount, $giftcreditDiscount);
                 $baseGiftcreditDiscount = max($baseCreditDiscount, $baseGiftcreditDiscount);
             }
 

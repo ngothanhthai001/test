@@ -67,7 +67,7 @@ class Images extends Widget
         ImageUploadConfig $imageUploadConfigDataProvider,
         array $data = []
     ) {
-        $this->_mediaConfig                  = $mediaConfig;
+        $this->_mediaConfig = $mediaConfig;
         $this->imageUploadConfigDataProvider = $imageUploadConfigDataProvider;
 
         parent::__construct($context, $data);
@@ -150,11 +150,11 @@ class Images extends Widget
         if (is_array($value) && count($value)
         ) {
             $mediaDir = $this->_filesystem->getDirectoryRead(DirectoryList::MEDIA);
-            $images   = $this->sortImagesByPosition($value);
+            $images = $this->sortImagesByPosition($value);
             foreach ($images as $key => &$image) {
                 $image['url'] = $this->_mediaConfig->getMediaUrl($image['file']);
                 try {
-                    $fileHandler   = $mediaDir->stat($this->_mediaConfig->getMediaPath($image['file']));
+                    $fileHandler = $mediaDir->stat($this->_mediaConfig->getMediaPath($image['file']));
                     $image['size'] = $fileHandler['size'];
                 } catch (Exception $e) {
                     $this->_logger->warning($e);
@@ -195,11 +195,11 @@ class Images extends Widget
     {
         return [
             'image' => [
-                'code'  => 'images',
+                'code' => 'images',
                 'value' => $this->getElement()->getDataObject()->getImages(),
                 'label' => 'Template Images',
                 'scope' => 'Template Images',
-                'name'  => 'template-images',
+                'name' => 'template-images',
             ]
         ];
     }

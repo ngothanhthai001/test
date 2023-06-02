@@ -74,9 +74,9 @@ class CreditmemoSaveAfter implements ObserverInterface
         GiftCardFactory $giftCardFactory,
         TransactionFactory $transactionFactory
     ) {
-        $this->_productHelper     = $productHelper;
-        $this->logger             = $logger;
-        $this->giftCardFactory    = $giftCardFactory;
+        $this->_productHelper = $productHelper;
+        $this->logger = $logger;
+        $this->giftCardFactory = $giftCardFactory;
         $this->transactionFactory = $transactionFactory;
     }
 
@@ -129,13 +129,14 @@ class CreditmemoSaveAfter implements ObserverInterface
 
         /** Refund Gift Credit */
         $giftCredit = $creditmemo->getBaseGiftCreditAmount();
-        if ($giftCredit && abs($giftCredit) > 0.0001) {
+        if (abs($giftCredit) > 0.0001) {
             try {
                 $this->transactionFactory->create()
                     ->createTransaction(
                         \Mageplaza\GiftCard\Model\Transaction\Action::ACTION_REFUND,
                         abs($giftCredit),
                         $order->getCustomerId(),
+                        $expiredAt = null,
                         ['order_increment_id' => $order->getIncrementId()]
                     );
             } catch (Exception $e) {

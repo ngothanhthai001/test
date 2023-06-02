@@ -52,8 +52,6 @@ use Mageplaza\GiftCard\Model\Source\GenerateGiftCodeEvent;
  */
 class Data extends CoreHelper
 {
-    const CONFIG_MODULE_PATH = 'mpgiftcard';
-
     /**
      * @var PriceCurrencyInterface
      */
@@ -100,7 +98,7 @@ class Data extends CoreHelper
         TimezoneInterface $localeDate,
         CustomerSession $customerSession
     ) {
-        $this->_localeDate      = $localeDate;
+        $this->_localeDate = $localeDate;
         $this->_customerSession = $customerSession;
 
         parent::__construct($context, $objectManager, $storeManager);
@@ -401,7 +399,7 @@ class Data extends CoreHelper
     public function allowRedeemGiftCard($storeId = null)
     {
         $isEnableCredit = $this->getGeneralConfig('enable_credit', $storeId);
-        $canRedeem      = $this->getGeneralConfig('can_redeem', $storeId);
+        $canRedeem = $this->getGeneralConfig('can_redeem', $storeId);
 
         return $isEnableCredit && $canRedeem;
     }
@@ -464,7 +462,7 @@ class Data extends CoreHelper
      */
     public function isShowGiftcardImageProduct($storeId = null)
     {
-        return (bool) $this->getCheckoutConfig('show_giftcard_image_product', $storeId);
+        return (bool)$this->getCheckoutConfig('show_giftcard_image_product', $storeId);
     }
 
     /**
@@ -548,7 +546,7 @@ class Data extends CoreHelper
      */
     public function getMessageMaxChar($storeId = null)
     {
-        return (int) $this->getTemplateConfig('message_max_char', $storeId) ?: 120;
+        return (int)$this->getTemplateConfig('message_max_char', $storeId) ?: 120;
     }
 
     /************************************** EMAIL CONFIGURATION ************************************************
@@ -678,10 +676,10 @@ class Data extends CoreHelper
      */
     public function validateMaxWrongTime($giftCard, $isCheckCode = false)
     {
-        $countKey         = $isCheckCode ? 'mp_giftcard_check_count' : 'mp_giftcard_add_count';
+        $countKey = $isCheckCode ? 'mp_giftcard_check_count' : 'mp_giftcard_add_count';
         $lastWrongTimeKey = $isCheckCode ? 'mp_giftcard_check_time' : 'mp_giftcard_add_time';
 
-        $count    = $this->_customerSession->getData($countKey);
+        $count = $this->_customerSession->getData($countKey);
         $maxCount = $this->getMaxWrongTimes();
 
         if (!$giftCard->getId()) {
@@ -695,7 +693,7 @@ class Data extends CoreHelper
         if (!$maxCount) {
             return;
         }
-        $time          = 5;
+        $time = 5;
         $lastWrongTime = $this->_customerSession->getData($lastWrongTimeKey);
 
         if ($count > $maxCount) {

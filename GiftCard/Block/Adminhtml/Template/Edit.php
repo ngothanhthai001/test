@@ -60,7 +60,7 @@ class Edit extends Container
      */
     protected function _construct()
     {
-        $this->_objectId   = 'id';
+        $this->_objectId = 'id';
         $this->_blockGroup = 'Mageplaza_GiftCard';
         $this->_controller = 'adminhtml_template';
 
@@ -69,8 +69,8 @@ class Edit extends Container
         $this->buttonList->add(
             'saveandcontinue',
             [
-                'label'          => __('Save and Continue Edit'),
-                'class'          => 'save',
+                'label' => __('Save and Continue Edit'),
+                'class' => 'save',
                 'data_attribute' => [
                     'mage-init' => ['button' => ['event' => 'saveAndContinueEdit', 'target' => '#edit_form']]
                 ]

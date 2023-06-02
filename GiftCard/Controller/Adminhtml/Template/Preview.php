@@ -72,7 +72,7 @@ class Preview extends Template
     {
         if ($this->getRequest()->isAjax()) {
             $result = $this->resultFactory->create(ResultFactory::TYPE_JSON);
-            $data   = (array) $this->getRequest()->getPost();
+            $data = (array)$this->getRequest()->getPost();
 
             $fileUrl = $this->templateHelper->createPreview($data);
 

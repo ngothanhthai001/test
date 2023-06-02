@@ -43,24 +43,19 @@ define([
 
         _addItem: function (event, imageData) {
             this._super(event, imageData);
-            var templateElem = $('.giftcard-template-design');
-
             if (this.element.find(this.options.imageSelector + ':not(.removed)').length === 1
-                && templateElem.data('giftCardDesign')
-                && templateElem.data('giftCardDesign').isCreatePreview
+                && $('.giftcard-template-design').data('giftCardDesign').isCreatePreview
             ) {
                 $('.giftcard-template-design').data('giftCardDesign').createPreview();
             }
         },
 
         _removeItem: function (event, imageData) {
-            var firstEl = this.element.find(this.options.imageSelector + ':not(.removed)').first(),
-                templateElem = $('.giftcard-template-design');
+            var firstEl = this.element.find(this.options.imageSelector + ':not(.removed)').first();
             this._super(event, imageData);
 
             if (!firstEl.length || firstEl.data('imageData').position === imageData.position
-                && templateElem.data('giftCardDesign')
-                && templateElem.data('giftCardDesign').isCreatePreview
+                && $('.giftcard-template-design').data('giftCardDesign').isCreatePreview
             ) {
                 $('.giftcard-template-design').data('giftCardDesign').createPreview();
             }

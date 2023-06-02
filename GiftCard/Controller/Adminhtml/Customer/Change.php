@@ -69,8 +69,8 @@ class Change extends Action
         JsonFactory $resultJsonFactory,
         TransactionFactory $transactionFactory
     ) {
-        $this->_dataHelper         = $dataHelper;
-        $this->_resultJsonFactory  = $resultJsonFactory;
+        $this->_dataHelper = $dataHelper;
+        $this->_resultJsonFactory = $resultJsonFactory;
         $this->_transactionFactory = $transactionFactory;
 
         parent::__construct($context);
@@ -84,13 +84,13 @@ class Change extends Action
      */
     public function execute()
     {
-        $result  = ['error' => true];
+        $result = ['error' => true];
         $request = $this->getRequest();
         if ($request->getParam('isAjax')) {
             $customerId = $request->getParam('customer_id');
-            $customer   = $this->_dataHelper->getCustomer($customerId);
-            $amount     = $request->getParam('amount');
-            $currency   = $customer->getStore()->getBaseCurrency();
+            $customer = $this->_dataHelper->getCustomer($customerId);
+            $amount = $request->getParam('amount');
+            $currency = $customer->getStore()->getBaseCurrency();
 
             /** @var Transaction $transaction */
             $transaction = $this->_transactionFactory->create();
@@ -100,13 +100,14 @@ class Change extends Action
                     TransactionAction::ACTION_ADMIN,
                     $amount,
                     $customer,
+                    $expiredAt = null,
                     ['auth' => $this->_auth->getUser()->getName()]
                 );
 
                 $balance = $this->_dataHelper->getCustomerBalance($customerId, false);
-                $result  = [
-                    'error'            => false,
-                    'balance'          => $balance,
+                $result = [
+                    'error' => false,
+                    'balance' => $balance,
                     'balanceFormatted' => $this->_dataHelper->formatPrice($balance, true, null, $currency)
                 ];
             } catch (Exception $e) {

@@ -70,7 +70,7 @@ class Save extends Code
         LoggerInterface $logger
     ) {
         $this->templateHelper = $templateHelper;
-        $this->logger         = $logger;
+        $this->logger = $logger;
 
         parent::__construct($context, $resultPageFactory, $giftCardFactory);
     }
@@ -154,7 +154,7 @@ class Save extends Code
             $data['template_fields'] = Template::jsonEncode($data['template_fields']);
         }
         if (isset($data['delivery_method'])) {
-            $fieldName                = DeliveryMethods::getFormFieldName($data['delivery_method']);
+            $fieldName = DeliveryMethods::getFormFieldName($data['delivery_method']);
             $data['delivery_address'] = isset($data[$fieldName]) ? $data[$fieldName] : '';
         }
         $data['action_vars'] = ['auth' => $this->_auth->getUser()->getName()];

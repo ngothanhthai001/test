@@ -54,12 +54,12 @@ class Item
     public function afterGetQtyToRefund(OrderItem $item, $result)
     {
         if ($item->getProductType() === 'mpgiftcard') {
-            $options                         = $item->getProductOptions();
+            $options = $item->getProductOptions();
             $options['refundable_gift_card'] = [];
-            $giftCards                       = $this->giftCardFactory->create()->getCollection()
+            $giftCards = $this->giftCardFactory->create()->getCollection()
                 ->addFieldToFilter('giftcard_id', ['in' => $item->getProductOptionByCode('giftcards')])
                 ->addFieldToFilter('status', ['neq' => 6]);
-            $count                           = 0;
+            $count = 0;
             foreach ($giftCards->getItems() as $giftCard) {
                 if ($giftCard->getInitBalance() !== $giftCard->getBalance()) {
                     ++$count;

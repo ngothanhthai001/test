@@ -56,7 +56,7 @@ class Product
         Data $helper
     ) {
         $this->request = $request;
-        $this->helper  = $helper;
+        $this->helper = $helper;
     }
 
     /**

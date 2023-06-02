@@ -51,7 +51,7 @@ class GiftCard extends AbstractDb
     protected function _beforeSave(AbstractModel $object)
     {
         $required = [
-            'code'    => $object->getCode(),
+            'code' => $object->getCode(),
             'balance' => $object->getBalance(),
         ];
 
@@ -64,7 +64,7 @@ class GiftCard extends AbstractDb
         parent::_beforeSave($object);
 
         $templateFields = $object->getTemplateFields();
-        $extraContent   = $object->getExtraContent();
+        $extraContent = $object->getExtraContent();
 
         if (is_array($templateFields)) {
             $object->setTemplateFields(Data::jsonEncode($templateFields));
@@ -94,12 +94,12 @@ class GiftCard extends AbstractDb
     {
         $select = $this->getConnection()->select()->from($this->getMainTable());
         $select->where('code=?', trim($code));
-        if ($object->getId() || (string) $object->getId() === '0') {
+        if ($object->getId() || (string)$object->getId() === '0') {
             $select->where($this->getIdFieldName() . '!=?', $object->getId());
         }
         $test = $this->getConnection()->fetchRow($select);
 
-        return (boolean) $test;
+        return (boolean)$test;
     }
 
     /**
@@ -132,7 +132,7 @@ class GiftCard extends AbstractDb
         parent::_afterLoad($object);
 
         $templateFields = $object->getTemplateFields();
-        $extraContent   = $object->getExtraContent();
+        $extraContent = $object->getExtraContent();
 
         if ($templateFields) {
             $object->addData(Data::jsonDecode($templateFields));
@@ -155,18 +155,18 @@ class GiftCard extends AbstractDb
     public function createMultiple($giftCard, $params)
     {
         $resultData = [];
-        $data       = [
-            'init_balance'          => $giftCard->getBalance(),
-            'balance'               => $giftCard->getBalance(),
-            'status'                => $giftCard->getStatus(),
-            'can_redeem'            => $giftCard->getCanRedeem(),
-            'store_id'              => $giftCard->getStoreId(),
-            'pool_id'               => $giftCard->getPoolId(),
-            'template_id'           => $giftCard->getTemplateId(),
-            'image'                 => $giftCard->getImage(),
-            'template_fields'       => $giftCard->getTemplateFields(),
+        $data = [
+            'init_balance' => $giftCard->getBalance(),
+            'balance' => $giftCard->getBalance(),
+            'status' => $giftCard->getStatus(),
+            'can_redeem' => $giftCard->getCanRedeem(),
+            'store_id' => $giftCard->getStoreId(),
+            'pool_id' => $giftCard->getPoolId(),
+            'template_id' => $giftCard->getTemplateId(),
+            'image' => $giftCard->getImage(),
+            'template_fields' => $giftCard->getTemplateFields(),
             'conditions_serialized' => $giftCard->getConditionsSerialized(),
-            'expired_at'            => $giftCard->getExpiredAt()
+            'expired_at' => $giftCard->getExpiredAt()
         ];
 
         if (isset($params['qty'])) {

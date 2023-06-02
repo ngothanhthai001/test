@@ -81,10 +81,10 @@ class Information extends Generic implements TabInterface
         Status $statusOptions,
         array $data = []
     ) {
-        $this->_systemStore  = $systemStore;
+        $this->_systemStore = $systemStore;
         $this->_yesnoOptions = $yesnoOptions;
-        $this->_helper       = $helper;
-        $this->_status       = $statusOptions;
+        $this->_helper = $helper;
+        $this->_status = $statusOptions;
 
         parent::__construct($context, $registry, $formFactory, $data);
     }
@@ -108,25 +108,25 @@ class Information extends Generic implements TabInterface
         }
 
         $informationFieldset->addField('name', 'text', [
-            'name'     => 'name',
-            'label'    => __('Name'),
-            'title'    => __('Name'),
+            'name' => 'name',
+            'label' => __('Name'),
+            'title' => __('Name'),
             'required' => true
         ]);
         $informationFieldset->addField('status', 'select', [
-            'name'   => 'status',
-            'label'  => __('Status'),
-            'title'  => __('Status'),
+            'name' => 'status',
+            'label' => __('Status'),
+            'title' => __('Status'),
             'values' => $this->_status->toOptionArray(),
-            'note'   => __('The gift cards of this pool cannot be used if the pool status is inactive.')
+            'note' => __('The gift cards of this pool cannot be used if the pool status is inactive.')
         ]);
 
         $informationFieldset->addField('can_inherit', 'select', [
-            'name'   => 'can_inherit',
-            'label'  => __('Can Inherit'),
-            'title'  => __('Can Inherit'),
+            'name' => 'can_inherit',
+            'label' => __('Can Inherit'),
+            'title' => __('Can Inherit'),
             'values' => $this->_yesnoOptions->toOptionArray(),
-            'note'   => __('If yes, when you change this pool information, the gift card information will be changed. Except status attribute')
+            'note' => __('If yes, when you change this pool information, the gift card information will be changed. Except status attribute')
         ]);
 
         $giftCardFieldset = $form->addFieldset('gift_card_fieldset', ['legend' => __('Gift Card Information')]);
@@ -135,18 +135,18 @@ class Information extends Generic implements TabInterface
         $store = $this->_storeManager->getStore();
         $giftCardFieldset->addType('price', Price::class);
         $giftCardFieldset->addField('balance', 'price', [
-            'name'     => 'balance',
-            'label'    => __('Balance'),
-            'title'    => __('Balance'),
-            'class'    => 'validate-greater-than-zero',
+            'name' => 'balance',
+            'label' => __('Balance'),
+            'title' => __('Balance'),
+            'class' => 'validate-greater-than-zero',
             'required' => true
         ])->setAfterElementHtml($store->getBaseCurrency()->getCurrencySymbol());
 
         if ($this->_helper->getGeneralConfig('enable_credit')) {
             $giftCardFieldset->addField('can_redeem', 'select', [
-                'name'   => 'can_redeem',
-                'label'  => __('Can Redeem'),
-                'title'  => __('Can Redeem'),
+                'name' => 'can_redeem',
+                'label' => __('Can Redeem'),
+                'title' => __('Can Redeem'),
                 'values' => $this->_yesnoOptions->toOptionArray()
             ]);
             if (!$model->getId()) {
@@ -158,18 +158,18 @@ class Information extends Generic implements TabInterface
             /** @var RendererInterface $rendererBlock */
             $rendererBlock = $this->getLayout()->createBlock(Element::class);
             $giftCardFieldset->addField('store_id', 'select', [
-                'name'   => 'store_id',
-                'label'  => __('Store'),
-                'title'  => __('Store'),
+                'name' => 'store_id',
+                'label' => __('Store'),
+                'title' => __('Store'),
                 'values' => $this->_systemStore->getStoreValuesForForm()
             ])->setRenderer($rendererBlock);
         }
 
         $giftCardFieldset->addField('expired_at', 'date', [
-            'name'        => 'expired_at',
-            'label'       => __('Expires At'),
-            'title'       => __('Expires At'),
-            'class'       => 'validate-date',
+            'name' => 'expired_at',
+            'label' => __('Expires At'),
+            'title' => __('Expires At'),
+            'class' => 'validate-date',
             'date_format' => $this->_localeDate->getDateFormat(IntlDateFormatter::MEDIUM)
         ]);
 

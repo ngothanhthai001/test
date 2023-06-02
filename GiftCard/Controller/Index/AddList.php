@@ -92,12 +92,12 @@ class AddList extends Action
         DataHelper $giftCardHelper,
         Session $customerSession
     ) {
-        $this->helper            = $helper;
+        $this->helper = $helper;
         $this->resultJsonFactory = $resultJsonFactory;
-        $this->giftCardFactory   = $giftCardFactory;
-        $this->resultRawFactory  = $resultRawFactory;
-        $this->customerSession   = $customerSession;
-        $this->giftCardHelper    = $giftCardHelper;
+        $this->giftCardFactory = $giftCardFactory;
+        $this->resultRawFactory = $resultRawFactory;
+        $this->customerSession = $customerSession;
+        $this->giftCardHelper = $giftCardHelper;
 
         parent::__construct($context);
     }
@@ -112,7 +112,7 @@ class AddList extends Action
      */
     public function execute()
     {
-        $credentials        = null;
+        $credentials = null;
         $httpBadRequestCode = 400;
 
         /** @var Raw $resultRaw */
@@ -132,7 +132,7 @@ class AddList extends Action
         }
 
         $response = [
-            'errors'  => false,
+            'errors' => false,
             'message' => __('Invalid Data.')
         ];
 
@@ -144,7 +144,7 @@ class AddList extends Action
                 throw new LocalizedException(__('Invalid gift card code.'));
             }
 
-            $customerId  = (string) $this->customerSession->getCustomerId();
+            $customerId = (string)$this->customerSession->getCustomerId();
             $customerIds = $giftCard->getCustomerIds() ? explode(',', $giftCard->getCustomerIds()) : [];
 
             if ($credentials['isRemove']) {
@@ -168,12 +168,12 @@ class AddList extends Action
             $response['giftCardLists'] = $giftCard->getGiftCardListForCustomer($customerId);
         } catch (LocalizedException $e) {
             $response = [
-                'errors'  => true,
+                'errors' => true,
                 'message' => $e->getMessage()
             ];
         } catch (Exception $e) {
             $response = [
-                'errors'  => true,
+                'errors' => true,
                 'message' => __('Invalid gift card code. %1', $e->getMessage())
             ];
         }

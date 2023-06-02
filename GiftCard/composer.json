@@ -2,12 +2,12 @@
   "name": "mageplaza/module-gift-card",
   "description": "Mageplaza Gift Card Extension",
   "require": {
-    "mageplaza/module-core": "^1.4.12",
+    "mageplaza/module-core": "^1.4.10",
     "twilio/sdk": "*",
     "spipu/html2pdf": "*"
   },
   "type": "magento2-module",
-  "version": "4.2.0",
+  "version": "4.1.4",
   "license": "proprietary",
   "authors": [
     {

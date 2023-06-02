@@ -35,7 +35,7 @@ use Mageplaza\GiftCard\Helper\Template;
  */
 class Thumbnail extends Column
 {
-    const NAME      = 'thumbnail';
+    const NAME = 'thumbnail';
     const ALT_FIELD = 'name';
 
     /**
@@ -80,9 +80,9 @@ class Thumbnail extends Column
         array $components = [],
         array $data = []
     ) {
-        $this->urlBuilder     = $urlBuilder;
-        $this->storeManager   = $storeManager;
-        $this->imageHelper    = $imageHelper;
+        $this->urlBuilder = $urlBuilder;
+        $this->storeManager = $storeManager;
+        $this->imageHelper = $imageHelper;
         $this->templateHelper = $templateHelper;
 
         parent::__construct($context, $uiComponentFactory, $components, $data);
@@ -105,11 +105,11 @@ class Thumbnail extends Column
 
                 $templateFields = $this->templateHelper->prepareTemplateData($item, true, true);
                 if (isset($templateFields['design'])) {
-                    $item[$fieldName . '_src']    = count($templateFields['images'])
+                    $item[$fieldName . '_src'] = count($templateFields['images'])
                         ? $templateFields['images'][0]['src']
                         : $this->templateHelper->getPlaceHolderImage();
                     $item[$fieldName . '_images'] = array_column($templateFields['images'], 'src');
-                    $item[$fieldName . '_card']   = $templateFields['card'];
+                    $item[$fieldName . '_card'] = $templateFields['card'];
                     $item[$fieldName . '_design'] = $templateFields['design'];
                 }
             }

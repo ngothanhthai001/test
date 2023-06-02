@@ -99,11 +99,11 @@ class Uninstall extends Command
         StoreManagerInterface $storeManager,
         $name = null
     ) {
-        $this->moduleResource    = $moduleResource;
-        $this->attributeFactory  = $attributeFactory;
+        $this->moduleResource = $moduleResource;
+        $this->attributeFactory = $attributeFactory;
         $this->collectionFactory = $collectionFactory;
-        $this->state             = $state;
-        $this->storeManager      = $storeManager;
+        $this->state = $state;
+        $this->storeManager = $storeManager;
 
         parent::__construct($name);
     }

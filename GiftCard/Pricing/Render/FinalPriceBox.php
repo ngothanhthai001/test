@@ -145,7 +145,7 @@ class FinalPriceBox extends CatalogRender
         if (empty($this->_optionAmounts)) {
             try {
                 $amountJson = $this->saleableItem->getGiftCardAmounts() ?: [];
-                $amounts    = is_string($amountJson) ? Data::jsonDecode($amountJson) : $amountJson;
+                $amounts = is_string($amountJson) ? Data::jsonDecode($amountJson) : $amountJson;
             } catch (Exception $e) {
                 $amounts = [];
             }
@@ -168,12 +168,12 @@ class FinalPriceBox extends CatalogRender
         $min = $max;
         if ($this->isRangeAvailable()) {
             $rate = $this->saleableItem->getPriceRate() / 100;
-            $min  = ($this->saleableItem->getMinAmount() ?: 0) * $rate;
-            $max  = ($this->saleableItem->getMaxAmount() ?: 0) * $rate;
+            $min = ($this->saleableItem->getMinAmount() ?: 0) * $rate;
+            $max = ($this->saleableItem->getMaxAmount() ?: 0) * $rate;
         }
 
-        $maxOp        = null;
-        $minOp        = $maxOp;
+        $maxOp = null;
+        $minOp = $maxOp;
         $optionPrices = $this->getOptionPrices();
         if (count($optionPrices)) {
             $minOp = min($optionPrices);

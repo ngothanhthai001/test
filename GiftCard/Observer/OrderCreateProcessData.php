@@ -71,9 +71,9 @@ class OrderCreateProcessData implements ObserverInterface
         RequestInterface $request
     ) {
         $this->_checkoutHelper = $checkoutHelper;
-        $this->messageManager  = $messageManager;
-        $this->escaper         = $escaper;
-        $this->request         = $request;
+        $this->messageManager = $messageManager;
+        $this->escaper = $escaper;
+        $this->request = $request;
     }
 
     /**
@@ -86,7 +86,7 @@ class OrderCreateProcessData implements ObserverInterface
     public function execute(Observer $observer)
     {
         $model = $observer->getEvent()->getOrderCreateModel();
-        $data  = $observer->getEvent()->getRequest();
+        $data = $observer->getEvent()->getRequest();
         $quote = $model->getQuote();
 
         $isUsedCouponBox = $this->_checkoutHelper->isEnabled()
@@ -94,7 +94,7 @@ class OrderCreateProcessData implements ObserverInterface
             && isset($data['order']['coupon']['code']);
 
         if (isset($data['gc_apply_code'])) {
-            $giftCode = trim((string) $data['gc_apply_code']);
+            $giftCode = trim((string)$data['gc_apply_code']);
         } elseif ($isUsedCouponBox) {
             $giftCode = trim($data['order']['coupon']['code']);
 
@@ -114,7 +114,7 @@ class OrderCreateProcessData implements ObserverInterface
         }
 
         if (isset($data['gc_cancel_code'])) {
-            $cancelCode = trim((string) $data['gc_cancel_code']);
+            $cancelCode = trim((string)$data['gc_cancel_code']);
         } elseif (isset($giftCode) && empty($giftCode)) {
             $giftCards = $this->_checkoutHelper->getGiftCardsUsed();
             if (count($giftCards)) {

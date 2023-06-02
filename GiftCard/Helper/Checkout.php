@@ -214,7 +214,9 @@ class Checkout extends Data
         if ($quote === null) {
             $quote = $this->getCheckoutSession()->getQuote();
         }
-
+        if($quote->getCouponCode() != null){
+            throw new LocalizedException(__('Cannot be used together with Coupon Discount.'));
+        }
         foreach ($codes as $code) {
             /** @var \Mageplaza\GiftCard\Model\GiftCard $giftCard */
             $giftCard = $this->_giftCardFactory->create();
@@ -228,7 +230,7 @@ class Checkout extends Data
         $store = $quote->getStore();
         if ($this->isUsedMultipleCode($store)) {
             $giftCardsUsed = array_keys($this->getGiftCardsUsed());
-            $codes         = array_unique(array_merge($giftCardsUsed, $codes));
+            $codes = array_unique(array_merge($giftCardsUsed, $codes));
         } elseif (count($codes) > 1) {
             $codes = [array_shift($codes)];
         }
@@ -268,13 +270,28 @@ class Checkout extends Data
 
     /**
      * @param $quote
-     *
      * @return float|mixed
      * @throws NoSuchEntityException
      */
     public function getGiftCreditUsed($quote)
     {
-        return (float) $quote->getGcCredit();
+        $amount              = (float) $quote->getGcCredit();
+        $currentCurrencyCode = $quote->getQuoteCurrencyCode();
+        $baseCreditCurrency  = $quote->getQuoteCurrencyCode();
+        $creditUsed          = self::jsonDecode($quote->getMpBaseCredit());
+
+        if(count($creditUsed) > 0){
+            foreach ($creditUsed as $currencyCode => $value) {
+                $baseCreditCurrency = $currencyCode;
+                $amount             = $value;
+            }
+        }
+
+        if ($currentCurrencyCode !== $baseCreditCurrency) {
+            $amount = $this->directoryHelper->currencyConvert($amount, $baseCreditCurrency, $currentCurrencyCode);
+        }
+
+        return $amount;
     }
 
     /**
@@ -294,6 +311,7 @@ class Checkout extends Data
         }
 
         $quote->setGcCredit($amount);
+        $quote->setMpBaseCredit(self::jsonEncode([$quote->getQuoteCurrencyCode() => $amount]));
         $this->collectTotals($quote);
 
         return $this;
@@ -305,23 +323,22 @@ class Checkout extends Data
      * Calculate total amount for discount
      *
      * @param Quote $quote
-     * @param false $isCredit
+     * @param bool $isCredit
      *
      * @return float|mixed
-     * @throws NoSuchEntityException
      */
     public function getTotalAmountForDiscount(Quote $quote, $isCredit = false)
     {
-        $discountTotal = $quote->getGrandTotal();
-        $discountTotal -= $quote->getShippingAddress()->getTaxAmount();
+        $discountTotal = $quote->getBaseGrandTotal();
         if (!$quote->isVirtual() && !$this->canUsedForShipping($quote->getStoreId())) {
-            $discountTotal -= $quote->getShippingAddress()->getShippingAmount();
+            $discountTotal -= $quote->getShippingAddress()->getBaseShippingAmount();
         }
+
         /** @var Item $item */
         foreach ($quote->getAllItems() as $item) {
             // todo use configuration to select which type of product can be spent by gift card
             if ($item->getProductType() === GiftCard::TYPE_GIFTCARD) {
-                $discountTotal -= $item->getRowTotal();
+                $discountTotal -= $item->getBaseRowTotal();
             }
         }
 

@@ -81,28 +81,28 @@ class Form extends Generic
         $fieldset->addClass('ignore-validate');
 
         $fieldset->addField('generate_type', 'select', [
-            'name'   => 'generate_type',
-            'label'  => __('Generate Type'),
-            'title'  => __('Generate Type'),
+            'name' => 'generate_type',
+            'label' => __('Generate Type'),
+            'title' => __('Generate Type'),
             'values' => $this->generateType->toOptionArray(),
         ]);
 
         $fieldset->addField('sample_file', 'link', [
-            'name'   => 'sample_file',
-            'label'  => '',
-            'title'  => __('Download Sample File'),
-            'href'   => $this->getUrl('*/*/downloadSample'),
-            'value'  => __('Download Sample File'),
+            'name' => 'sample_file',
+            'label' => '',
+            'title' => __('Download Sample File'),
+            'href' => $this->getUrl('*/*/downloadSample'),
+            'value' => __('Download Sample File'),
             'target' => '_blank'
         ]);
 
         $fieldset->addField('import_file', 'file', [
-            'name'     => 'import_file',
-            'label'    => __('Select File'),
-            'title'    => __('Select File'),
+            'name' => 'import_file',
+            'label' => __('Select File'),
+            'title' => __('Select File'),
             'required' => true,
-            'class'    => 'input-file',
-            'note'     => __('Only support file .csv'),
+            'class' => 'input-file',
+            'note' => __('Only support file .csv'),
         ]);
 
         $fieldset->addField('import_button', 'note', [
@@ -114,11 +114,11 @@ class Form extends Generic
         ]);
 
         $fieldset->addField('manual_code', 'textarea', [
-            'name'     => 'manual_code',
-            'label'    => __('Gift Code(s)'),
-            'title'    => __('Gift Code(s)'),
+            'name' => 'manual_code',
+            'label' => __('Gift Code(s)'),
+            'title' => __('Gift Code(s)'),
             'required' => true,
-            'note'     => __('Separated by line breaks')
+            'note' => __('Separated by line breaks')
         ]);
 
         $fieldset->addField('manual_button', 'note', [
@@ -130,19 +130,19 @@ class Form extends Generic
         ]);
 
         $fieldset->addField('pattern', 'text', [
-            'name'     => 'pattern',
-            'label'    => __('Code Pattern'),
-            'title'    => __('Code Pattern'),
-            'value'    => $model->getPattern(),
+            'name' => 'pattern',
+            'label' => __('Code Pattern'),
+            'title' => __('Code Pattern'),
+            'value' => $model->getPattern(),
             'required' => true
         ]);
 
         $fieldset->addField('qty', 'text', [
-            'name'     => 'qty',
-            'label'    => __('Gift Card Qty'),
-            'title'    => __('Gift Card Qty'),
+            'name' => 'qty',
+            'label' => __('Gift Card Qty'),
+            'title' => __('Gift Card Qty'),
             'required' => true,
-            'class'    => 'validate-digits validate-greater-than-zero'
+            'class' => 'validate-digits validate-greater-than-zero'
         ]);
 
         $fieldset->addField('generate_button', 'note', [

@@ -67,7 +67,7 @@ class History extends Extended implements TabInterface
         CollectionFactory $collectionFactory,
         array $data = []
     ) {
-        $this->_coreRegistry      = $coreRegistry;
+        $this->_coreRegistry = $coreRegistry;
         $this->_collectionFactory = $collectionFactory;
 
         parent::__construct($context, $backendHelper, $data);
@@ -90,7 +90,7 @@ class History extends Extended implements TabInterface
      */
     protected function _prepareCollection()
     {
-        $giftCard   = $this->_coreRegistry->registry('current_giftcard');
+        $giftCard = $this->_coreRegistry->registry('current_giftcard');
         $collection = $this->_collectionFactory->create()
             ->addFieldToFilter('giftcard_id', $giftCard->getId());
 
@@ -107,41 +107,41 @@ class History extends Extended implements TabInterface
     {
         $this->addColumn('history_created_at', [
             'header' => __('Created At'),
-            'index'  => 'created_at',
-            'type'   => 'datetime'
+            'index' => 'created_at',
+            'type' => 'datetime'
         ]);
         $this->addColumn('history_action', [
-            'header'  => __('Action'),
-            'align'   => 'center',
-            'index'   => 'action',
-            'type'    => 'options',
+            'header' => __('Action'),
+            'align' => 'center',
+            'index' => 'action',
+            'type' => 'options',
             'options' => Action::getOptionArray()
         ]);
         $this->addColumn('history_balance', [
-            'header'   => __('Balance'),
-            'align'    => 'right',
-            'index'    => 'balance',
-            'type'     => 'currency',
+            'header' => __('Balance'),
+            'align' => 'right',
+            'index' => 'balance',
+            'type' => 'currency',
             'renderer' => Price::class
         ]);
 
         $this->addColumn('history_amount', [
-            'header'   => __('Amount Change'),
-            'align'    => 'right',
-            'index'    => 'amount',
-            'type'     => 'currency',
+            'header' => __('Amount Change'),
+            'align' => 'right',
+            'index' => 'amount',
+            'type' => 'currency',
             'renderer' => Price::class
         ]);
         $this->addColumn('history_status', [
-            'header'  => __('Status'),
-            'align'   => 'center',
-            'index'   => 'status',
-            'type'    => 'options',
+            'header' => __('Status'),
+            'align' => 'center',
+            'index' => 'status',
+            'type' => 'options',
             'options' => Status::getOptionArray()
         ]);
         $this->addColumn('history_extra_content', [
-            'header'   => 'Action Detail',
-            'filter'   => false,
+            'header' => 'Action Detail',
+            'filter' => false,
             'sortable' => false,
             'renderer' => DetailRenderer::class
         ]);

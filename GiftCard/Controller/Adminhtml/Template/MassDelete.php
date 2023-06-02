@@ -71,7 +71,7 @@ class MassDelete extends Template
     public function execute()
     {
         $collection = $this->filter->getCollection($this->_getTemplateCollection());
-        $deleted    = 0;
+        $deleted = 0;
         foreach ($collection->getItems() as $template) {
             $template->delete();
             $deleted++;

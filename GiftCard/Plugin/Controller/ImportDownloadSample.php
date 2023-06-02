@@ -101,13 +101,13 @@ class ImportDownloadSample
         ComponentRegistrar $componentRegistrar,
         Http $request
     ) {
-        $this->fileFactory           = $fileFactory;
-        $this->resultRawFactory      = $resultRawFactory;
-        $this->readFactory           = $readFactory;
-        $this->componentRegistrar    = $componentRegistrar;
-        $this->request               = $request;
+        $this->fileFactory = $fileFactory;
+        $this->resultRawFactory = $resultRawFactory;
+        $this->readFactory = $readFactory;
+        $this->componentRegistrar = $componentRegistrar;
+        $this->request = $request;
         $this->resultRedirectFactory = $context->getResultRedirectFactory();
-        $this->messageManager        = $context->getMessageManager();
+        $this->messageManager = $context->getMessageManager();
     }
 
     /**
@@ -123,11 +123,11 @@ class ImportDownloadSample
             return $proceed();
         }
 
-        $fileName         = $this->request->getParam('filename') . '.csv';
-        $moduleDir        = $this->componentRegistrar->getPath(ComponentRegistrar::MODULE, self::SAMPLE_FILES_MODULE);
+        $fileName = $this->request->getParam('filename') . '.csv';
+        $moduleDir = $this->componentRegistrar->getPath(ComponentRegistrar::MODULE, self::SAMPLE_FILES_MODULE);
         $fileAbsolutePath = $moduleDir . '/Files/Sample/' . $fileName;
-        $directoryRead    = $this->readFactory->create($moduleDir);
-        $filePath         = $directoryRead->getRelativePath($fileAbsolutePath);
+        $directoryRead = $this->readFactory->create($moduleDir);
+        $filePath = $directoryRead->getRelativePath($fileAbsolutePath);
 
         if (!$directoryRead->isFile($filePath)) {
             /* @var Redirect $resultRedirect */

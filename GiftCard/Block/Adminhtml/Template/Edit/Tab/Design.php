@@ -78,8 +78,8 @@ class Design extends Generic implements TabInterface
         array $data = []
     ) {
         $this->_templateFactory = $templateFactory;
-        $this->_templateHelper  = $templateHelper;
-        $this->fonts            = $fonts;
+        $this->_templateHelper = $templateHelper;
+        $this->fonts = $fonts;
 
         parent::__construct($context, $registry, $formFactory, $data);
     }
@@ -98,8 +98,8 @@ class Design extends Generic implements TabInterface
     public function getExistTemplates()
     {
         $existTemplate = [];
-        $templates     = $this->_templateFactory->create()->getCollection();
-        $design        = $this->getDataObject();
+        $templates = $this->_templateFactory->create()->getCollection();
+        $design = $this->getDataObject();
         if ($design->getId()) {
             $templates->addFieldToFilter('template_id', ['neq' => $design->getId()]);
         }
@@ -107,7 +107,7 @@ class Design extends Generic implements TabInterface
         foreach ($templates as $template) {
             if ($template->getDesign()) {
                 $existTemplate[$template->getId()] = [
-                    'name'   => $this->escapeQuote($template->getName()),
+                    'name' => $this->escapeQuote($template->getName()),
                     'design' => $template->getDesign()
                 ];
             }
@@ -125,7 +125,7 @@ class Design extends Generic implements TabInterface
 
         $designFields = [
             'giftcard' => [
-                'width'  => 500,
+                'width' => 500,
                 'height' => 300
             ]
         ];
@@ -193,7 +193,7 @@ class Design extends Generic implements TabInterface
      */
     public function getFonts()
     {
-        $fonts  = array_column($this->fonts->getGoogleFonts(), 'label');
+        $fonts = array_column($this->fonts->getGoogleFonts(), 'label');
         $result = '';
 
         foreach ($fonts as $font) {

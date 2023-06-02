@@ -29,7 +29,7 @@ use Magento\Framework\Data\OptionSourceInterface;
  */
 class GenerateType implements OptionSourceInterface
 {
-    const AUTO   = 'auto';
+    const AUTO = 'auto';
     const IMPORT = 'import';
     const MANUAL = 'manual';
 
@@ -39,7 +39,7 @@ class GenerateType implements OptionSourceInterface
     public static function getOptionArray()
     {
         return [
-            self::AUTO   => __('Auto Generate'),
+            self::AUTO => __('Auto Generate'),
             self::IMPORT => __('Import'),
             self::MANUAL => __('Manual'),
         ];

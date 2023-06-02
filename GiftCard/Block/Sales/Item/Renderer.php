@@ -78,13 +78,11 @@ class Renderer extends DefaultRenderer
                 $giftCardCodes[] = __('N/A');
             }
 
-            if ($item->getProductType() === 'mpgiftcard') {
-                $itemOptions[] = [
-                    'label'       => __('Gift Codes'),
-                    'value'       => implode('<br />', $giftCardCodes),
-                    'custom_view' => true,
-                ];
-            }
+            $itemOptions[] = [
+                'label' => __('Gift Codes'),
+                'value' => implode('<br />', $giftCardCodes),
+                'custom_view' => true,
+            ];
         }
 
         return $itemOptions;

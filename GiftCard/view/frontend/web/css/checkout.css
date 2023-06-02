@@ -27,12 +27,6 @@
     display: block;
 }
 
-@media only screen and (max-device-width: 768px) {
-    .abs-discount-code .form-discount .actions-toolbar .primary, .checkout-payment-method .payment-option-content .form-discount .actions-toolbar .primary{
-        float: none !important;
-    }
-}
-
 .checkout-payment-method .payment-option-content .gift-card-apply .form-discount {
     display: block;
 }

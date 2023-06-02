@@ -108,7 +108,7 @@ class Conditions extends \Magento\SalesRule\Block\Adminhtml\Promo\Quote\Edit\Tab
             return '<style type="text/css">.fieldset-wrapper.mpgiftcard_conditions {display: none;}</style>';
         }
 
-        return parent::getFormHtml() . '<style type="text/css">.fieldset-wrapper.mpgiftcard_conditions .rule-tree span.rule-param{font-weight:bold;}</style>';
+        return parent::getFormHtml().'<style type="text/css">.fieldset-wrapper.mpgiftcard_conditions .rule-tree span.rule-param{font-weight:bold;}</style>';
     }
 
     /**

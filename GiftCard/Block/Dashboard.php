@@ -26,11 +26,12 @@ use Magento\Catalog\Block\Product\Context;
 use Magento\Customer\Model\Session;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
-use Mageplaza\GiftCard\Helper\Customer;
 use Mageplaza\GiftCard\Helper\Data as DataHelper;
 use Mageplaza\GiftCard\Model\CreditFactory;
 use Mageplaza\GiftCard\Model\GiftCard;
 use Mageplaza\GiftCard\Model\Transaction;
+use Mageplaza\GiftCard\Model\ResourceModel\Transaction\CollectionFactory;
+use Mageplaza\GiftCard\Cron\Process;
 
 /**
  * Class Dashboard
@@ -49,7 +50,7 @@ class Dashboard extends Template
     protected $_creditFactory;
 
     /**
-     * @var Customer
+     * @var DataHelper
      */
     protected $giftCardHelper;
 
@@ -62,6 +63,14 @@ class Dashboard extends Template
      * @var GiftCard
      */
     protected $_giftCard;
+    /**
+     * @var CollectionFactory
+     */
+    protected $_collectionFactory;
+    /**
+     * @var Process
+     */
+    protected $process;
 
     /**
      * Dashboard constructor.
@@ -72,6 +81,7 @@ class Dashboard extends Template
      * @param DataHelper $giftCardHelper
      * @param Transaction $transaction
      * @param GiftCard $giftCard
+     * @param CollectionFactory $collectionFactory
      * @param array $data
      */
     public function __construct(
@@ -81,13 +91,17 @@ class Dashboard extends Template
         DataHelper $giftCardHelper,
         Transaction $transaction,
         GiftCard $giftCard,
+        CollectionFactory $collectionFactory,
+        Process $cronProcess,
         array $data = []
     ) {
         $this->customerSession = $customerSession;
-        $this->_creditFactory  = $creditFactory;
-        $this->giftCardHelper  = $giftCardHelper;
-        $this->_transaction    = $transaction;
-        $this->_giftCard       = $giftCard;
+        $this->_creditFactory = $creditFactory;
+        $this->giftCardHelper = $giftCardHelper;
+        $this->_transaction = $transaction;
+        $this->_giftCard = $giftCard;
+        $this->_collectionFactory = $collectionFactory;
+        $this->process = $cronProcess;
 
         parent::__construct($context, $data);
     }
@@ -106,28 +120,29 @@ class Dashboard extends Template
             return [];
         }
 
-        $emailEnable       = $this->giftCardHelper->getEmailConfig('enable');
+        $emailEnable = $this->giftCardHelper->getEmailConfig('enable');
         $creditEmailEnable = $this->giftCardHelper->getEmailConfig('credit/enable');
 
         $creditAccount = $this->_creditFactory->create()
             ->load($customer->getId(), 'customer_id');
-        $code          = $this->getRequest()->getParam('code');
+        $code = $this->getRequest()->getParam('code');
 
         return [
-            'baseUrl'        => $this->getBaseUrl(),
-            'customerEmail'  => $customer->getEmail(),
-            'code'           => $code,
-            'balance'        => $this->giftCardHelper->getCustomerBalance($customer, true, true),
-            'transactions'   => $this->_transaction->getTransactionsForCustomer($customer->getId()),
-            'giftCardLists'  => $this->_giftCard->getGiftCardListForCustomer($customer->getId()),
-            'isEnableCredit' => (bool) $this->giftCardHelper->getGeneralConfig('enable_credit'),
-            'notification'   => [
-                'enable'               => $emailEnable,
-                'creditEnable'         => $creditEmailEnable,
-                'creditNotification'   => $creditAccount->getCreditNotification() === null
-                    ? true : (boolean) $creditAccount->getCreditNotification(),
+            'baseUrl' => $this->getBaseUrl(),
+            'customerEmail' => $customer->getEmail(),
+            'code' => $code,
+            'balance' => $this->giftCardHelper->getCustomerBalance($customer, true, true),
+            'transactions' => $this->_transaction->getTransactionsForCustomer($customer->getId()),
+            'redeemed' => $this->_transaction->getRedeemedForCustomer($customer->getId()),
+            'giftCardLists' => $this->_giftCard->getGiftCardListForCustomer($customer->getId()),
+            'isEnableCredit' => (bool)$this->giftCardHelper->getGeneralConfig('enable_credit'),
+            'notification' => [
+                'enable' => $emailEnable,
+                'creditEnable' => $creditEmailEnable,
+                'creditNotification' => $creditAccount->getCreditNotification() === null
+                    ? true : (boolean)$creditAccount->getCreditNotification(),
                 'giftcardNotification' => $creditAccount->getGiftcardNotification() === null
-                    ? true : (boolean) $creditAccount->getGiftcardNotification()
+                    ? true : (boolean)$creditAccount->getGiftcardNotification()
             ]
         ];
     }

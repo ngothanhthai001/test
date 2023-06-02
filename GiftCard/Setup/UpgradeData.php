@@ -130,14 +130,14 @@ class UpgradeData implements UpgradeDataInterface
         TemplateFactory $templateFactory
     ) {
         $this->categorySetupFactory = $categorySetupFactory;
-        $this->quoteSetupFactory    = $quoteSetupFactory;
-        $this->salesSetupFactory    = $salesSetupFactory;
-        $this->moduleReader         = $moduleReader;
-        $this->ioFile               = $ioFile;
-        $this->driverFile           = $driverFile;
-        $this->mediaDirectory       = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
-        $this->csvReader            = $csvReader;
-        $this->templateFactory      = $templateFactory;
+        $this->quoteSetupFactory = $quoteSetupFactory;
+        $this->salesSetupFactory = $salesSetupFactory;
+        $this->moduleReader = $moduleReader;
+        $this->ioFile = $ioFile;
+        $this->driverFile = $driverFile;
+        $this->mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
+        $this->csvReader = $csvReader;
+        $this->templateFactory = $templateFactory;
     }
 
     /**
@@ -156,7 +156,7 @@ class UpgradeData implements UpgradeDataInterface
         if (version_compare($context->getVersion(), '1.0.1') < 0) {
             $catalogSetup->updateAttribute(Product::ENTITY, 'price_rate', [
                 'frontend_input' => 'price',
-                'backend_model'  => Price::class
+                'backend_model' => Price::class
             ]);
         }
 
@@ -166,11 +166,11 @@ class UpgradeData implements UpgradeDataInterface
 
         if (version_compare($context->getVersion(), '1.0.3') < 0) {
             $catalogSetup->addAttribute(Product::ENTITY, 'mpgiftcard_conditions', array_merge($this->getOptions(), [
-                'label'      => 'Gift Code Condition',
-                'type'       => 'text',
-                'input'      => 'text',
+                'label' => 'Gift Code Condition',
+                'type' => 'text',
+                'input' => 'text',
                 'sort_order' => 110,
-                'visible'    => false,
+                'visible' => false,
             ]));
         }
 
@@ -215,7 +215,7 @@ class UpgradeData implements UpgradeDataInterface
 
             $file = $this->getModuleDir() . '/Files/Sample/mageplaza_giftcard_template.csv';
             if ($this->ioFile->fileExists($file)) {
-                $rows   = $this->csvReader->getData($file);
+                $rows = $this->csvReader->getData($file);
                 $header = array_shift($rows);
                 foreach ($rows as $row) {
                     $data = [];
@@ -245,22 +245,22 @@ class UpgradeData implements UpgradeDataInterface
     protected function getOptions()
     {
         return [
-            'group'                   => 'Gift Card Information',
-            'backend'                 => '',
-            'frontend'                => '',
-            'class'                   => '',
-            'source'                  => '',
-            'global'                  => ScopedAttributeInterface::SCOPE_WEBSITE,
-            'visible'                 => true,
-            'required'                => false,
-            'user_defined'            => true,
-            'default'                 => '',
-            'searchable'              => false,
-            'filterable'              => false,
-            'comparable'              => false,
-            'visible_on_front'        => false,
-            'unique'                  => false,
-            'apply_to'                => GiftCard::TYPE_GIFTCARD,
+            'group' => 'Gift Card Information',
+            'backend' => '',
+            'frontend' => '',
+            'class' => '',
+            'source' => '',
+            'global' => ScopedAttributeInterface::SCOPE_WEBSITE,
+            'visible' => true,
+            'required' => false,
+            'user_defined' => true,
+            'default' => '',
+            'searchable' => false,
+            'filterable' => false,
+            'comparable' => false,
+            'visible_on_front' => false,
+            'unique' => false,
+            'apply_to' => GiftCard::TYPE_GIFTCARD,
             'used_in_product_listing' => true
         ];
     }

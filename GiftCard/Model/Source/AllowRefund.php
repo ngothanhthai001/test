@@ -31,8 +31,8 @@ use Magento\Framework\Option\ArrayInterface;
 class AllowRefund extends AbstractModel implements ArrayInterface
 {
     const TYPE_ALLOW = '1';
-    const TYPE_DENY  = '2';
-    const TYPE_FULL  = '3';
+    const TYPE_DENY = '2';
+    const TYPE_FULL = '3';
 
     /**
      * Retrieve option array
@@ -43,8 +43,8 @@ class AllowRefund extends AbstractModel implements ArrayInterface
     {
         return [
             self::TYPE_ALLOW => __('Yes'),
-            self::TYPE_DENY  => __('No'),
-            self::TYPE_FULL  => __('Only Unused')
+            self::TYPE_DENY => __('No'),
+            self::TYPE_FULL => __('Only Unused')
         ];
     }
 

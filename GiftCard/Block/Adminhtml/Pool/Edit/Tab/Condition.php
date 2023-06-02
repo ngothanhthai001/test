@@ -75,8 +75,8 @@ class Condition extends Generic implements TabInterface
         array $data = []
     ) {
         $this->rendererFieldset = $rendererFieldset;
-        $this->conditions       = $conditions;
-        $this->ruleFactory      = $ruleFactory;
+        $this->conditions = $conditions;
+        $this->ruleFactory = $ruleFactory;
 
         parent::__construct($context, $registry, $formFactory, $data);
     }
@@ -108,7 +108,7 @@ class Condition extends Generic implements TabInterface
         )->setRenderer($renderer);
 
         $fieldset->addField('conditions', 'text', [
-            'name'  => 'conditions',
+            'name' => 'conditions',
             'label' => __('Conditions'),
             'title' => __('Conditions')
         ])->setRule($rule)->setRenderer($this->conditions);

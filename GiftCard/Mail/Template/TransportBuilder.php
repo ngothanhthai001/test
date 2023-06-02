@@ -84,8 +84,8 @@ class TransportBuilder extends DefaultBuilder
         TransportFactory $transportFactory,
         EmailMessageFactory $emailMessageFactory
     ) {
-        $this->helper              = $helper;
-        $this->transportFactory    = $transportFactory;
+        $this->helper = $helper;
+        $this->transportFactory = $transportFactory;
         $this->emailMessageFactory = $emailMessageFactory;
         parent::__construct(
             $templateFactory,
@@ -113,11 +113,11 @@ class TransportBuilder extends DefaultBuilder
         $filename = self::ATTACHMENT_NAME
     ) {
         if ($this->helper->versionCompare('2.2.8')) {
-            $attachment              = new Part($attachFile);
-            $attachment->type        = $mimeType;
-            $attachment->encoding    = $encoding;
+            $attachment = new Part($attachFile);
+            $attachment->type = $mimeType;
+            $attachment->encoding = $encoding;
             $attachment->disposition = $disposition;
-            $attachment->filename    = $filename;
+            $attachment->filename = $filename;
 
             return $attachment;
         }
@@ -155,14 +155,14 @@ class TransportBuilder extends DefaultBuilder
     protected function prepareNewMessage()
     {
         $messageData = [
-            'body'     => $this->message->getBody(),
-            'subject'  => $this->message->getSubject(),
-            'from'     => $this->message->getFrom(),
-            'to'       => $this->message->getTo(),
-            'cc'       => $this->message->getCc(),
-            'bcc'      => $this->message->getBcc(),
-            'replyTo'  => $this->message->getReplyTo(),
-            'sender'   => $this->message->getSender(),
+            'body' => $this->message->getBody(),
+            'subject' => $this->message->getSubject(),
+            'from' => $this->message->getFrom(),
+            'to' => $this->message->getTo(),
+            'cc' => $this->message->getCc(),
+            'bcc' => $this->message->getBcc(),
+            'replyTo' => $this->message->getReplyTo(),
+            'sender' => $this->message->getSender(),
             'encoding' => $this->message->getEncoding()
         ];
 

@@ -53,7 +53,7 @@ class GiftHistoryManagement implements GiftHistoryManagementInterface
         HelperData $helperData
     ) {
         $this->historyFactory = $historyFactory;
-        $this->helperData     = $helperData;
+        $this->helperData = $helperData;
     }
 
     /**

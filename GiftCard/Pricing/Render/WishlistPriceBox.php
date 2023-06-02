@@ -49,10 +49,10 @@ class WishlistPriceBox extends FinalPriceBox
         }
 
         $amountJson = $this->saleableItem->getGiftCardAmounts() ?: [];
-        $amounts    = is_string($amountJson) ? Data::jsonDecode($amountJson) : $amountJson;
+        $amounts = is_string($amountJson) ? Data::jsonDecode($amountJson) : $amountJson;
 
         foreach ($amounts as $amount) {
-            if ((float) $amount['amount'] === $requestAmount) {
+            if ((float)$amount['amount'] === $requestAmount) {
                 $this->_minMax = [
                     'min' => $amount['price'],
                     'max' => 0
@@ -81,6 +81,6 @@ class WishlistPriceBox extends FinalPriceBox
             return null;
         }
 
-        return (float) $buyRequest['amount'];
+        return (float)$buyRequest['amount'];
     }
 }

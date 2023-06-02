@@ -48,8 +48,8 @@ class Template extends AbstractDb
     protected function _beforeSave(AbstractModel $object)
     {
         $required = [
-            'name'        => $object->getName(),
-            'title'       => $object->getTitle(),
+            'name' => $object->getName(),
+            'title' => $object->getTitle(),
             'font_family' => $object->getFontFamily(),
         ];
 
