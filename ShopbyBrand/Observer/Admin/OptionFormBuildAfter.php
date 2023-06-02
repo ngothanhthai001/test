@@ -1,9 +1,16 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Observer\Admin;
 
-use Amasty\ShopbyBase\Helper\FilterSetting;
+use Amasty\ShopbyBase\Api\Data\OptionSettingInterface;
 use Amasty\ShopbyBase\Model\OptionSetting;
+use Amasty\ShopbyBase\Model\OptionSettings\Save;
+use Amasty\ShopbyBase\Model\OptionSettings\UrlResolver;
 use Amasty\ShopbyBrand\Model\ConfigProvider;
 use Magento\Catalog\Model\Category\Attribute\Source\Page;
 use Magento\Cms\Model\Wysiwyg\Config;
@@ -27,14 +34,21 @@ class OptionFormBuildAfter implements ObserverInterface
      */
     private $configProvider;
 
+    /**
+     * @var UrlResolver
+     */
+    private $optionsUrlResolver;
+
     public function __construct(
         Page $page,
         ConfigProvider $configProvider,
-        Config $wysiwygConfig
+        Config $wysiwygConfig,
+        UrlResolver $optionsUrlResolver
     ) {
         $this->page = $page;
         $this->wysiwygConfig = $wysiwygConfig;
         $this->configProvider = $configProvider;
+        $this->optionsUrlResolver = $optionsUrlResolver;
     }
 
     /**
@@ -48,10 +62,12 @@ class OptionFormBuildAfter implements ObserverInterface
         /** @var OptionSetting $setting */
         $setting = $observer->getData('setting');
         $storeId = $observer->getData('store_id');
+        $attributeCode = $setting->getAttributeCode();
+        $isBrandAttributeCode = $attributeCode === $this->configProvider->getBrandAttributeCode($storeId);
 
         $this->addMetaDataFieldset($form);
-        $this->addProductListFieldset($form, $setting, (int) $storeId);
-        $this->addOtherFieldset($observer);
+        $this->addProductListFieldset($form, $setting, (int) $storeId, $isBrandAttributeCode);
+        $this->addOtherFieldset($observer, $isBrandAttributeCode);
     }
 
     /**
@@ -97,8 +113,12 @@ class OptionFormBuildAfter implements ObserverInterface
         );
     }
 
-    private function addProductListFieldset(\Magento\Framework\Data\Form $form, OptionSetting $model, int $storeId)
-    {
+    private function addProductListFieldset(
+        \Magento\Framework\Data\Form $form,
+        OptionSetting $model,
+        int $storeId,
+        bool $isBrandAttributeCode
+    ): void {
         $productListFieldset = $form->addFieldset(
             'product_list_fieldset',
             [
@@ -125,36 +145,18 @@ class OptionFormBuildAfter implements ObserverInterface
             ]
         );
 
-        $filterCode = $model->getFilterCode();
-        if (strpos($filterCode, FilterSetting::ATTR_PREFIX) !== false) {
-            $filterCode = substr($filterCode, 5);
-        }
-
-        if ($filterCode == $this->configProvider->getBrandAttributeCode($storeId)) {
-            $productListFieldset->addField(
-                'short_description',
-                'textarea',
-                [
-                    'name' => 'short_description',
-                    'label' => __('Short Description'),
-                    'title' => __('Short Description')
-                ],
-                'description'
-            );
-        }
-
         $categoryImage = '';
         $categoryImageUseDefault = $model->getData('image_use_default') && $model->getCurrentStoreId();
-        if ($model->getImageUrl()) {
+        if ($url = $this->optionsUrlResolver->resolveImageUrl($model)) {
             $categoryImage = '
             <div>
             <br>
-            <input type="checkbox" id="image_delete" name="image_delete" value="1" ' .
+            <input type="checkbox" id="image_delete" name="' . Save::IMAGE_DELETE . '" value="1" ' .
                 ($categoryImageUseDefault ? 'disabled="disabled"' : '' ).
             ' />
             <label for="image_delete">' . __('Delete Image') . '</label>
             <br>
-            <br><img src="'.$model->getImageUrl().'" ' .($categoryImageUseDefault ? 'style="display:none"' : '').'/>
+            <br><img src="'.$url.'" ' .($categoryImageUseDefault ? 'style="display:none"' : ''). ' alt="Current Image"/>
             </div>';
         }
 
@@ -168,6 +170,31 @@ class OptionFormBuildAfter implements ObserverInterface
                 'after_element_html'=>$categoryImage
             ]
         );
+
+        if ($isBrandAttributeCode) {
+            $productListFieldset->addField(
+                'short_description',
+                'textarea',
+                [
+                    'name' => 'short_description',
+                    'label' => __('Short Description'),
+                    'title' => __('Short Description')
+                ],
+                'description'
+            );
+
+            $productListFieldset->addField(
+                OptionSettingInterface::IMAGE_ALT,
+                'text',
+                [
+                    'name' => OptionSettingInterface::IMAGE_ALT,
+                    'label' => __('Image Alt'),
+                    'title' => __('Image Alt'),
+                    'note' => __('Image Alt will be used for the brand image on the brand page')
+                ],
+                'image'
+            );
+        }
 
         $listCmsBlocks = $this->page->toOptionArray();
 
@@ -194,33 +221,34 @@ class OptionFormBuildAfter implements ObserverInterface
         );
     }
 
-    /**
-     * @param \Magento\Framework\Event\Observer $observer
-     */
-    private function addOtherFieldset(\Magento\Framework\Event\Observer $observer)
+    private function addOtherFieldset(\Magento\Framework\Event\Observer $observer, bool $isBrandAttributeCode): void
     {
+        /** @var \Amasty\ShopbyBase\Model\OptionSetting $model */
         $model = $observer->getData('setting');
 
-        $img = $model->getSliderImageUrl();
-        $strictImg = $model->getSliderImageUrl(true);
+        $img = $this->optionsUrlResolver->resolveSliderImageUrl($model, true);
         $sliderImage = '';
         $imageUseDefault = $model->getData('slider_image_use_default') && $model->getCurrentStoreId();
         if ($img) {
             $sliderImage = '
             <div><br>
-            <input type="checkbox" id="slider_image_delete" name="slider_image_delete" value="1" ' .
-                (($imageUseDefault || !$strictImg) ? 'disabled="disabled"' : '' ).
+            <input type="checkbox" id="slider_image_delete" name="' . Save::SLIDER_IMAGE_DELETE . '" value="1" ' .
+                (($imageUseDefault) ? 'disabled="disabled"' : '' ).
                 ' />
             <label for="slider_image_delete">' . __('Delete Image') . '</label>
             <br><br>
-            <img src="' . $img . '" style="' . ($imageUseDefault ? 'display:none;"' : '"') . '/></div>';
+            <img src="' . $img . '"  alt="Current Image" style="' . ($imageUseDefault ? 'display:none;"' : '"') . '/>
+            </div>';
         }
 
-        $note = __('Used in Brands Slider, Product Page Icon & Swatch for Multiselect Attribute');
-        if (!$strictImg) {
-            $note .=  '<br>';
-            $note .= __('Page content image is used.');
-        }
+        $note = $isBrandAttributeCode
+            ? __('Used in Brands Slider, Product Page Icon & Swatch for Multiselect Attribute.')
+            : __('Used as Product Page Icon & Swatch for Multiselect Attribute.');
+        $smallImageAltNote = $isBrandAttributeCode
+            ? __('Small Image Alt will be used for the brand image in brand pop-up, brand slider, on'
+                . ' all brands and product pages.')
+            : __('Small Image Alt will be used for the Product Page Icon Image & Swatch Image for'
+                . ' Multiselect Attribute.');
 
         $form = $observer->getData('form');
         $featuredFieldset = $form->addFieldset('other_fieldset', ['legend' => __('Other'), 'class'=>'form-inline']);
@@ -237,12 +265,13 @@ class OptionFormBuildAfter implements ObserverInterface
         );
 
         $featuredFieldset->addField(
-            'small_image_alt',
+            OptionSettingInterface::SMALL_IMAGE_ALT,
             'text',
             [
-                'name' => 'small_image_alt',
+                'name' => OptionSettingInterface::SMALL_IMAGE_ALT,
                 'label' => __('Small Image Alt'),
-                'title' => __('Small Image Alt')
+                'title' => __('Small Image Alt'),
+                'note' => $smallImageAltNote
             ]
         );
     }

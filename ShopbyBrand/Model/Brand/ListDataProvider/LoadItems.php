@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Model\Brand\ListDataProvider;
 
 use Amasty\ShopbyBase\Api\Data\OptionSettingInterface;
@@ -113,7 +119,7 @@ class LoadItems
             return $this->serializer->unserialize($data);
         }
 
-        $options = $this->brandAttribute->getOptions();
+        $options = $this->brandAttribute->getOptions($storeId);
         if ($options === null) {
             return [];
         }

@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Setup\Patch\Data;
 
 use Magento\Cms\Model\PageFactory;
@@ -52,7 +58,7 @@ class CreateAllBrandsCmsPage implements DataPatchInterface
             $content = '<p style="text-align: left;"><span style="font-size: small;">
 <strong>Searching for a favorite brand? Browse the list below to find just the label you\'re looking for!</strong>
 </span></p><p style="text-align: left;"><span style="font-size: medium;"><strong><br /></strong></span></p>
-<p><img src="{{media url="wysiwyg/collection/collection-performance.jpg"}}" alt="" /></p>
+<p><img src="{{media url="wysiwyg/collection/collection-performance.jpg"}}" alt="Current image" /></p>
 <p>{{widget type="Amasty\ShopbyBrand\Block\Widget\BrandSlider" template="widget/brand_list/slider.phtml"}}</p>
 <p>{{widget type="Amasty\ShopbyBrand\Block\Widget\BrandList" columns="3"
 template="widget/brand_list/index.phtml"}}</p>';

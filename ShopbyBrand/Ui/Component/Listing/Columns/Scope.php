@@ -2,9 +2,16 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Ui\Component\Listing\Columns;
 
 use Amasty\ShopbyBase\Api\Data\FilterSettingInterface;
+use Amasty\ShopbyBase\Api\Data\OptionSettingInterface;
 use Amasty\ShopbyBase\Helper\FilterSetting;
 use Amasty\ShopbyBrand\Model\ConfigProvider;
 use Magento\Framework\Escaper;
@@ -40,7 +47,7 @@ class Scope extends Store
      */
     protected function prepareItem(array $item)
     {
-        $attrCode = $item[BrandAttribute::ORIG_ATTRIBUTE_CODE] ?? $item[FilterSettingInterface::ATTRIBUTE_CODE] ?? null;
+        $attrCode = $item[OptionSettingInterface::ATTRIBUTE_CODE] ?? null;
         if ($attrCode) {
             $allAttributeCodes = $this->configProvider->getAllBrandAttributeCodes();
             $storeIds = [];

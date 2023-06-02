@@ -1,8 +1,12 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Plugin\Catalog\Block\Product\View;
 
-use Amasty\Mage24Fix\Block\Theme\Html\Title;
 use Amasty\ShopbyBase\Block\Product\AttributeIcon;
 use Amasty\ShopbyBrand\Model\ConfigProvider;
 use Amasty\ShopbyBrand\Model\Source\Tooltip;
@@ -39,7 +43,7 @@ class BlockHtmlTitlePlugin
     /**
      * Add Brand Label to Product Page
      *
-     * @param \Magento\Theme\Block\Html\Title|Title $original
+     * @param \Magento\Theme\Block\Html\Title $original
      * @param $html
      *
      * @return string
@@ -47,7 +51,10 @@ class BlockHtmlTitlePlugin
      */
     public function afterToHtml($original, $html)
     {
-        if ($this->isShowLogo()) {
+        if ($this->isShowLogo()
+            || $this->configProvider->isDisplayTitle()
+            || $this->configProvider->isDisplayDescription()
+        ) {
             $logoHtml = $this->generateLogoHtml();
 
             $html = str_replace('/h1>', '/h1>' . $logoHtml, $html);
@@ -68,6 +75,7 @@ class BlockHtmlTitlePlugin
             AttributeIcon::class,
             [
                 'data' => [
+                    AttributeIcon::PAGE_TYPE => 'product',
                     AttributeIcon::KEY_ATTRIBUTE_CODES => $this->getAttributeCodes(),
                     AttributeIcon::KEY_OPTION_PROCESSOR => $this->optionProcessor,
                 ]

@@ -1,20 +1,25 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Plugin;
 
+use Amasty\ShopbyBrand\Model\BrandResolver;
 use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
-use Amasty\ShopbyBrand\Helper\Content;
 
 class AttributeFilterPlugin
 {
     /**
-     * @var  Content
+     * @var BrandResolver
      */
-    protected $contentHelper;
+    private $brandResolver;
 
-    public function __construct(Content $contentHelper)
+    public function __construct(BrandResolver $brandResolver)
     {
-        $this->contentHelper = $contentHelper;
+        $this->brandResolver = $brandResolver;
     }
 
     /**
@@ -24,7 +29,7 @@ class AttributeFilterPlugin
      */
     public function afterIsVisibleWhenSelected(AbstractFilter $subject, $result)
     {
-        return ($result && $this->isBrandingBrand($subject)) ? false : $result;
+        return ($result && $this->brandResolver->isBrandFilter($subject)) ? false : $result;
     }
 
     /**
@@ -34,16 +39,6 @@ class AttributeFilterPlugin
      */
     public function afterShouldAddState(AbstractFilter $subject, $result)
     {
-        return ($result && $this->isBrandingBrand($subject)) ? false : $result;
-    }
-
-    /**
-     * @param AbstractFilter $subject
-     * @return bool
-     */
-    protected function isBrandingBrand(AbstractFilter $subject)
-    {
-        $brand = $this->contentHelper->getCurrentBranding();
-        return $brand && ($subject->getRequestVar() == $brand->getFilterCode());
+        return ($result && $this->brandResolver->isBrandFilter($subject)) ? false : $result;
     }
 }

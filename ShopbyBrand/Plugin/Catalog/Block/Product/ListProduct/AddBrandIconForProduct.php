@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Plugin\Catalog\Block\Product\ListProduct;
 
 use Amasty\Mostviewed\Block\Widget\Related;
@@ -93,6 +99,7 @@ class AddBrandIconForProduct
                         AttributeIcon::KEY_ATTRIBUTE_CODES => $this->getAttributeCodes(),
                         AttributeIcon::KEY_OPTION_PROCESSOR => $this->optionProcessor,
                         AttributeIcon::KEY_PRODUCT => $this->getProduct(),
+                        AttributeIcon::PAGE_TYPE => 'listing'
                     ]
                 ]
             );

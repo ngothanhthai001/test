@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Test\Unit\Model\Brand\ListDataProvider;
 
@@ -16,6 +21,9 @@ class SortItemsTest extends \PHPUnit\Framework\TestCase
     use Traits\ObjectManagerTrait;
     use Traits\ReflectionTrait;
 
+    /**
+     * @var SortItems
+     */
     private $sortItems;
 
     public function setup(): void

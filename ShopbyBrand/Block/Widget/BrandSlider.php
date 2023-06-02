@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Block\Widget;
 
 use Amasty\ShopbyBrand\Model\Brand\ListDataProvider\FilterItems;
@@ -30,30 +36,43 @@ class BrandSlider extends BrandListAbstract implements BlockInterface
     {
         $parts = parent::getCacheKeyInfo();
         $parts[] = 'brand_slider_widget';
+        $parts['slidesPerView'] = $this->getSlidesPerView();
+        $parts['loop'] = $this->getLoop();
+        $parts['simulateTouch'] = $this->getSimulateTouch();
+        $parts['autoplay'] = $this->getAutoplayTime();
+        $parts['pagination'] = $this->isPaginationShow();
 
         return $parts;
     }
 
-    /**
-     * @return array
-     */
-    public function getSliderOptions()
+    public function getSlidesPerView(): int
     {
-        $options = [];
-        $itemsPerView = max(1, $this->getItemNumber());
-        $options['slidesPerView'] = $itemsPerView;
-        $options['loop'] = $this->getData('infinity_loop') ? 'true' : 'false';
-        $options['simulateTouch'] = $this->getData('simulate_touch') ? 'true' : 'false';
-        if ($this->getData('pagination_show')) {
-            $options['pagination'] = '".swiper-pagination"';
-            $options['paginationClickable'] = 'true';
-        }
+        return max(1, $this->getItemNumber());
+    }
 
-        if ($this->getData('autoplay')) {
-            $options['autoplay'] = (int)$this->getData('autoplay_delay');
-        }
+    public function getLoop(): int
+    {
+        return (int) $this->getData('infinity_loop');
+    }
 
-        return $options;
+    public function getSimulateTouch(): int
+    {
+        return (int) $this->getData('simulate_touch');
+    }
+
+    public function isPaginationShow(): bool
+    {
+        return (bool) $this->getData('pagination_show');
+    }
+
+    public function isAutoplay(): bool
+    {
+        return (bool) $this->getData('autoplay');
+    }
+
+    public function getAutoplayTime(): int
+    {
+        return (int) $this->getData('autoplay_delay');
     }
 
     /**
@@ -126,5 +145,26 @@ class BrandSlider extends BrandListAbstract implements BlockInterface
     protected function getConfigValuesPath(): string
     {
         return self::CONFIG_VALUES_PATH;
+    }
+    /**
+     * @return array
+     */
+    public function getSliderOptions()
+    {
+        $options = [];
+        $itemsPerView = max(1, $this->getItemNumber());
+        $options['slidesPerView'] = $itemsPerView;
+        $options['loop'] = $this->getData('infinity_loop') ? 'true' : 'false';
+        $options['simulateTouch'] = $this->getData('simulate_touch') ? 'true' : 'false';
+        if ($this->getData('pagination_show')) {
+            $options['pagination'] = '".swiper-pagination"';
+            $options['paginationClickable'] = 'true';
+        }
+
+        if ($this->getData('autoplay')) {
+            $options['autoplay'] = (int)$this->getData('autoplay_delay');
+        }
+
+        return $options;
     }
 }

@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2015 Amasty. All rights reserved.
- */
--->
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */-->
+
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="amshopby_brand" translate="label" type="text" sortOrder="91314" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -116,6 +118,11 @@
                         <field id="tooltip_enabled" separator=",">all_brands,product_page,listing_page</field>
                     </depends>
                 </field>
+                <field id="exclude_empty_sitemap_brand" translate="label" type="select" sortOrder="90" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Exclude Brands without Products from Sitemap</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
 
             <group id="more_from_brand" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -143,28 +150,31 @@
 
             <group id="product_page" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Product Page Brand Settings</label>
-                <field id="display_brand_image" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="display_title" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Display Brand Title on Product Page</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="display_brand_image" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Display Brand Logo on Product Page</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="display_description" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Display Short Description on Product Page</label>
-                    <comment>Displays Brand short description together with the Brand logo on the product page</comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <depends>
-                        <field id="display_brand_image">1</field>
-                    </depends>
-                </field>
-                <field id="width" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="width" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Brand Logo Width, px</label>
                     <comment>If the field is left empty, the default image size (30px) will be used.</comment>
                     <depends>
                         <field id="display_brand_image">1</field>
                     </depends>
                 </field>
-                <field id="height" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="height" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Brand Logo Height, px</label>
                     <comment>If the field is left empty, the default image size (30px) will be used.</comment>
+                    <depends>
+                        <field id="display_brand_image">1</field>
+                    </depends>
+                </field>
+                <field id="display_description" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Display Short Description on Product Page</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="display_brand_image">1</field>
                     </depends>
@@ -191,6 +201,14 @@
                     <depends>
                         <field id="show_on_listing">1</field>
                     </depends>
+                </field>
+            </group>
+        </section>
+        <section id="amxmlsitemap">
+            <group id="hreflang">
+                <field id="brand_hreflang" translate="label" type="select" sortOrder="60" showInDefault="1">
+                    <label>Add Hreflang Tags for Amasty Brands</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>

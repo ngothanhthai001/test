@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <!--
 /**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */-->
+<!--
+/**
 * Copyright © 2015 Amasty. All rights reserved.
 */
 -->
@@ -29,6 +35,7 @@
                 <count>7</count>
             </more_from_brand>
             <product_page>
+                <display_title>0</display_title>
                 <display_brand_image>0</display_brand_image>
                 <display_description>0</display_description>
                 <width>30</width>
@@ -40,5 +47,10 @@
                 <listing_brand_logo_height>30</listing_brand_logo_height>
             </product_listing_settings>
         </amshopby_brand>
+        <amxmlsitemap>
+            <hreflang>
+                <brand_hreflang>0</brand_hreflang>
+            </hreflang>
+        </amxmlsitemap>
     </default>
 </config>

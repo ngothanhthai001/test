@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Block\Catalog\Product\ProductList;
 
@@ -161,7 +166,7 @@ class MoreFrom extends AbstractProduct implements IdentityInterface
         $attributeCode = $this->configProvider->getBrandAttributeCode();
         $attributeValue = $product->getData($attributeCode);
 
-        if (!$attributeValue) {
+        if (!$attributeValue || !$attributeCode) {
             return '';
         }
 
@@ -186,6 +191,9 @@ class MoreFrom extends AbstractProduct implements IdentityInterface
             ->addMinimalPrice()
             ->addFinalPrice()
             ->addTaxPercents()
+            ->addAttributeToSelect('special_price')
+            ->addAttributeToSelect('special_from_date')
+            ->addAttributeToSelect('special_to_date')
             ->setPageSize($this->getProductsLimit());
 
         $this->itemCollection->setCurPage(random_int(1, max($this->itemCollection->getLastPageNumber() - 1, 1)));

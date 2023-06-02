@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Helper;
 
 use Amasty\ShopbyBase\Api\Data\OptionSettingInterface;
@@ -113,21 +119,21 @@ class Data extends AbstractHelper
         return $this->brandAttribute->getOptions();
     }
 
-    /**
+      /**
      * @param int $storeId
      * @return array
      */
-    public function getBrandAliases($storeId = null)
+    
+    public function getBrandAliases(int $storeId = null): array
     {
-        $storeId = $storeId ?: $this->storeManager->getStore()->getId();
+        $storeId = $storeId ?: (int)$this->storeManager->getStore()->getId();
         if (!isset($this->brandAliases[$storeId])) {
             $attributeCode = $this->getBrandAttributeCode();
 
             if ($attributeCode == '') {
                 return [];
             }
-
-            $options = $this->brandAttribute->getOptions();
+            $options = $this->brandAttribute->getOptions($storeId);
 
             if (empty($options)) {
                 return [];
@@ -150,6 +156,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * @deprecated
+     * @see \Amasty\ShopbyBrand\Model\ConfigProvider::getSuffix()
      * @return string
      */
     public function getSuffix()
@@ -185,23 +193,20 @@ class Data extends AbstractHelper
 
     /**
      * @return string
+     * @deprecared moved to ConfigProvider
+     * @see \Amasty\ShopbyBrand\Model\ConfigProvider::getBrandAttributeCode
      */
     public function getBrandAttributeCode()
     {
-        return $this->scopeConfig->getValue(
-            'amshopby_brand/general/attribute_code',
-            ScopeInterface::SCOPE_STORE
-        );
+        return ObjectManager::getInstance()->get(ConfigProvider::class)->getBrandAttributeCode();
     }
 
-    /**
-     * @return string
-     */
-    public function getBrandUrlKey()
+    public function getBrandUrlKey(?int $storeId = null): ?string
     {
         return $this->scopeConfig->getValue(
             self::PATH_BRAND_URL_KEY,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $storeId
         );
     }
 
@@ -211,17 +216,17 @@ class Data extends AbstractHelper
      * @param bool $addBaseUrl
      * @return string
      */
-    public function getBrandUrl(Option $option, $storeId = null, $addBaseUrl = true)
+    public function getBrandUrl(Option $option, int $storeId = null, bool $addBaseUrl = true): string
     {
         $url = '#';
         $aliases = $this->getBrandAliases($storeId);
 
         if (isset($aliases[$option->getValue()])) {
             $brandAlias = $aliases[$option->getValue()];
-            $urlKey = $this->getBrandUrlKey();
+            $urlKey = $this->getBrandUrlKey($storeId);
             $urlSuffix = $this->getSuffix();
             $url = (!!$urlKey ? $urlKey . '/' . $brandAlias : $brandAlias) . $urlSuffix;
-            $url = $addBaseUrl ? $this->_urlBuilder->getBaseUrl() . $url : $url;
+            $url = $addBaseUrl ? $this->_urlBuilder->getBaseUrl(['_scope' => $storeId]) . $url : $url;
         }
 
         return $url;

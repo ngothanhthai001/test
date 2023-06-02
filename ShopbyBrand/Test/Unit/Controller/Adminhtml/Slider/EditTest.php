@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Test\Unit\Controller\Adminhtml\Slider;
 
@@ -61,15 +66,24 @@ class EditTest extends \PHPUnit\Framework\TestCase
      */
     public function testLoadSettingModel()
     {
-        $this->request->expects($this->at(0))->method('getParam')->with('attribute_code')->willReturn('test');
-        $this->request->expects($this->at(1))->method('getParam')->with('option_id')->willReturn(1);
-        $this->request->expects($this->at(2))->method('getParam')->with('store', 0)->willReturn(2);
+        $this->request->expects($this->exactly(3))->method('getParam')
+            ->withConsecutive(
+                ['attribute_code'],
+                ['option_id'],
+                ['store', 0]
+            )
+            ->willReturnOnConsecutiveCalls(
+                'test',
+                1,
+                2
+            );
         $optionSetting = $this->getObjectManager()->getObject(\Amasty\ShopbyBase\Model\OptionSetting::class);
         $optionSetting->setId(1);
-        $this->settingHelper->expects($this->any())->method('getSettingByValue')->willReturn($optionSetting);
+        $this->settingHelper->expects($this->any())->method('getSettingByOption')->willReturn($optionSetting);
         $result = $this->invokeMethod($this->controller, 'loadSettingModel');
         $this->assertEquals(2, $result->getCurrentStoreId());
     }
+
 
     /**
      * @covers Edit::loadSettingModel
@@ -79,9 +93,17 @@ class EditTest extends \PHPUnit\Framework\TestCase
      */
     public function testLoadSettingModelWithoutData()
     {
-        $this->request->expects($this->at(0))->method('getParam')->with('attribute_code')->willReturn(false);
-        $this->request->expects($this->at(1))->method('getParam')->with('option_id')->willReturn(false);
-        $this->request->expects($this->at(2))->method('getParam')->with('store', 0)->willReturn(false);
+        $this->request->expects($this->exactly(3))->method('getParam')
+            ->withConsecutive(
+                ['attribute_code'],
+                ['option_id'],
+                ['store', 0]
+            )
+            ->willReturnOnConsecutiveCalls(
+                false,
+                false,
+                false
+            );
         $this->expectException(\Magento\Framework\Exception\NoSuchEntityException::class);
         $this->invokeMethod($this->controller, 'loadSettingModel');
     }
@@ -95,7 +117,17 @@ class EditTest extends \PHPUnit\Framework\TestCase
     public function testLoadSettingModelWithoutModel()
     {
         $this->settingHelper->expects($this->any())->method('getSettingByValue')->willReturn($this->optionSetting);
-        $this->request->expects($this->at(0))->method('getParam')->with('attribute_code')->willReturn('test');
+        $this->request->expects($this->exactly(3))->method('getParam')
+            ->withConsecutive(
+                ['attribute_code'],
+                ['option_id'],
+                ['store', 0]
+            )
+            ->willReturnOnConsecutiveCalls(
+                'test',
+                null,
+                null
+            );
         $this->optionSetting->expects($this->any())->method('getId')->willReturn(0);
         $this->setProperty($this->controller, '_request', $this->request);
         $this->expectException(\Magento\Framework\Exception\NoSuchEntityException::class);

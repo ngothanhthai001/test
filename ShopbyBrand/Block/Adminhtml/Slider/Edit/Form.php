@@ -2,34 +2,21 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Block\Adminhtml\Slider\Edit;
 
 use Amasty\ShopbyBase\Api\Data\FilterSettingInterface;
-use Amasty\ShopbyBase\Block\Adminhtml\Form\Renderer\Fieldset\Element as RenderElement;
+use Amasty\ShopbyBase\Block\Adminhtml\Form\Renderer\Fieldset\Element;
 use Amasty\ShopbyBrand\Controller\RegistryConstants;
-use Magento\Backend\Block\Template\Context;
-use Magento\Framework\Data\FormFactory;
-use Magento\Framework\Registry;
+use Magento\Framework\View\Element\BlockInterface;
 
 class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
-
-    /**
-     * @var RenderElement
-     */
-    protected $_renderer;
-
-    public function __construct(
-        Context $context,
-        Registry $registry,
-        FormFactory $formFactory,
-        RenderElement $renderer,
-        array $data = []
-    ) {
-        $this->_renderer = $renderer;
-        parent::__construct($context, $registry, $formFactory, $data);
-    }
-
     protected function _prepareForm()
     {
         $attributeCode = $this->getRequest()->getParam(FilterSettingInterface::ATTRIBUTE_CODE);
@@ -56,7 +43,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         );
 
         $form->setUseContainer(true);
-        $form->setFieldsetElementRenderer($this->_renderer);
+        $form->setFieldsetElementRenderer($this->getRenderer());
         $form->setDataObject($model);
 
         $this->_eventManager->dispatch(
@@ -72,5 +59,19 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         $form->setValues($model->getData());
         $this->setForm($form);
         return parent::_prepareForm();
+    }
+
+    private function getRenderer(): Element
+    {
+        $name = $this->getNameInLayout() . '_fieldset_base_element';
+        $block = $this->getLayout()->getBlock($name);
+        if (!$block) {
+            $block = $this->getLayout()->createBlock(
+                Element::class,
+                $name
+            );
+        }
+
+        return $block;
     }
 }

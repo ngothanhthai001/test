@@ -2,12 +2,19 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Model\Sitemap\ItemProvider;
 
 use Amasty\ShopbyBase\Model\SitemapBuilder;
-use Amasty\ShopbyBrand\Helper\Data as Helper;
-use Amasty\ShopbyBrand\Model\Attribute;
-use Amasty\ShopbyBrand\Model\XmlSitemap;
+use Amasty\ShopbyBrand\Model\Brand\ListDataProvider\LoadItems;
+use Amasty\ShopbyBrand\Model\ConfigProvider;
+use Magento\Framework\UrlInterface;
+use Magento\Sitemap\Model\SitemapItemInterface;
 
 class Brand
 {
@@ -17,36 +24,58 @@ class Brand
     private $sitemapBuilder;
 
     /**
-     * @var Attribute
+     * @var LoadItems
      */
-    private $brandAttribute;
+    private $brandLoad;
 
     /**
-     * @var Helper
+     * @var ConfigProvider
      */
-    private $helper;
+    private $configProvider;
+
+    /**
+     * @var UrlInterface
+     */
+    private $urlBuilder;
 
     public function __construct(
         SitemapBuilder $sitemapBuilder,
-        Attribute $brandAttribute,
-        Helper $helper
+        LoadItems $brandLoad,
+        ConfigProvider $configProvider,
+        UrlInterface $url
     ) {
         $this->sitemapBuilder = $sitemapBuilder;
-        $this->brandAttribute = $brandAttribute;
-        $this->helper = $helper;
+        $this->brandLoad = $brandLoad;
+        $this->configProvider = $configProvider;
+        $this->urlBuilder = $url;
     }
 
     /**
      * @param int $storeId
-     * @return array|\Magento\Sitemap\Model\SitemapItemInterface[]
+     * @return array|SitemapItemInterface[]
      */
     public function getItems($storeId)
     {
-        $options = $this->brandAttribute->getOptions();
-        foreach ($options as $option) {
-            $option->setData('url', $this->helper->getBrandUrl($option, $storeId, false));
+        $storeId = (int) $storeId;
+        $options = $this->brandLoad->getItems($storeId);
+        if ($this->configProvider->isExcludeEmptySitemapBrand($storeId)) {
+            foreach ($options as $key => $option) {
+                if ($option->getCount() === 0) {
+                    unset($options[$key]);
+                }
+            }
         }
 
+        $this->prepareUrl($storeId, $options);
+
         return $this->sitemapBuilder->prepareItems($options, $storeId);
+    }
+
+    private function prepareUrl(int $storeId, array &$options): void
+    {
+        $baseUrlLength = strlen($this->urlBuilder->getBaseUrl(['_scope' => $storeId]));
+        foreach ($options as $option) {
+            $option->setUrl(substr($option->getUrl(), $baseUrlLength));
+        }
     }
 }

@@ -1,6 +1,4 @@
 "Save and Continue Edit","Save and Continue Edit"
-"Enable shop-by-brand-graphql module to activate GraphQl and Shop by Brand integration. Please, run the following command in the SSH: composer require amasty/module-shop-by-brand-graphql","Enable shop-by-brand-graphql module to activate GraphQl and Shop by Brand integration. Please, run the following command in the SSH: composer require amasty/module-shop-by-brand-graphql"
-"Please update Amasty Base module. Re-upload it and replace all the files.","Please update Amasty Base module. Re-upload it and replace all the files."
 "More from this Brand","More from this Brand"
 "Manage Brand Slider","Manage Brand Slider"
 "Edit Improved Navigation Brand Slider","Edit Improved Navigation Brand Slider"
@@ -32,13 +30,17 @@ No,No
 "Page Title","Page Title"
 Title,Title
 Description,Description
-"Short Description","Short Description"
 "Delete Image","Delete Image"
 Image,Image
+"Short Description","Short Description"
+"Image Alt","Image Alt"
+"Image Alt will be used for the brand image on the brand page","Image Alt will be used for the brand image on the brand page"
 "Top CMS Block","Top CMS Block"
 "Bottom CMS Block","Bottom CMS Block"
-"Used in Brands Slider, Product Page Icon & Swatch for Multiselect Attribute","Used in Brands Slider, Product Page Icon & Swatch for Multiselect Attribute"
-"Page content image is used.","Page content image is used."
+"Used in Brands Slider, Product Page Icon & Swatch for Multiselect Attribute.","Used in Brands Slider, Product Page Icon & Swatch for Multiselect Attribute."
+"Used as Product Page Icon & Swatch for Multiselect Attribute.","Used as Product Page Icon & Swatch for Multiselect Attribute."
+"Small Image Alt will be used for the brand image in brand pop-up, brand slider, on all brands and product pages.","Small Image Alt will be used for the brand image in brand pop-up, brand slider, on all brands and product pages."
+"Small Image Alt will be used for the Product Page Icon Image & Swatch Image for Multiselect Attribute.","Small Image Alt will be used for the Product Page Icon Image & Swatch Image for Multiselect Attribute."
 Other,Other
 "Small Image","Small Image"
 "Small Image Alt","Small Image Alt"
@@ -65,7 +67,6 @@ Brands,Brands
 Previous,Previous
 Next,Next
 "Improved Layered Navigation: Brands","Improved Layered Navigation: Brands"
-Information,Information
 General,General
 "Brand Attribute","Brand Attribute"
 "Creates SEO-friendly brand pages. Every page contains all your products filtered by particular brand and contains unique content that you assigned for the option of brand attribute.","Creates SEO-friendly brand pages. Every page contains all your products filtered by particular brand and contains unique content that you assigned for the option of brand attribute."
@@ -95,23 +96,25 @@ Optional.,Optional.
 "Display tooltip","Display tooltip"
 "Tooltip content","Tooltip content"
 "Possible variables: {title}, {small_image}, {image}, {description}, {short_description}.","Possible variables: {title}, {small_image}, {image}, {description}, {short_description}."
+"Exclude Brands without Products from Sitemap","Exclude Brands without Products from Sitemap"
 Enable,Enable
 "Displays the random products of the same brand at the bottom of the Product page. Note. Please enable ""Used in Product Listing"" setting for brand attribute.","Displays the random products of the same brand at the bottom of the Product page. Note. Please enable ""Used in Product Listing"" setting for brand attribute."
 "Max Product Count","Max Product Count"
 "Please set the quantity of the products displayed. Default value is 7.","Please set the quantity of the products displayed. Default value is 7."
 "Product Page Brand Settings","Product Page Brand Settings"
+"Display Brand Title on Product Page","Display Brand Title on Product Page"
 "Display Brand Logo on Product Page","Display Brand Logo on Product Page"
-"Display Short Description on Product Page","Display Short Description on Product Page"
-"Displays Brand short description together with the Brand logo on the product page","Displays Brand short description together with the Brand logo on the product page"
 "Brand Logo Width, px","Brand Logo Width, px"
 "If the field is left empty, the default image size (30px) will be used.","If the field is left empty, the default image size (30px) will be used."
 "Brand Logo Height, px","Brand Logo Height, px"
+"Display Short Description on Product Page","Display Short Description on Product Page"
 "Product Listing Brand Settings","Product Listing Brand Settings"
 "Display Brand Logo on Product Listing","Display Brand Logo on Product Listing"
 "Note. Please enable ""Used in Product Listing"" setting for brand attribute.","Note. Please enable ""Used in Product Listing"" setting for brand attribute."
 "Brand Logo Width","Brand Logo Width"
 "Please specify the value in pixels (e.g. 10) or percent (e.g. 10%). If the field is left empty, the default image size (30px) will be used.","Please specify the value in pixels (e.g. 10) or percent (e.g. 10%). If the field is left empty, the default image size (30px) will be used."
 "Brand Logo Height","Brand Logo Height"
+"Add Hreflang Tags for Amasty Brands","Add Hreflang Tags for Amasty Brands"
 "Amasty Brand List","Amasty Brand List"
 "List of your brand attribute options. Links lead to Brand Pages.","List of your brand attribute options. Links lead to Brand Pages."
 "Number of Columns","Number of Columns"

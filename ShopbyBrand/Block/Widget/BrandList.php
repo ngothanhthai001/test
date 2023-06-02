@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Block\Widget;
 
@@ -65,7 +70,7 @@ class BrandList extends BrandListAbstract implements BlockInterface
     {
         $parts = parent::getCacheKeyInfo();
         $parts[] = 'brand_list';
-        $this->cache->cleanType('block_html');
+
         return $parts;
     }
 

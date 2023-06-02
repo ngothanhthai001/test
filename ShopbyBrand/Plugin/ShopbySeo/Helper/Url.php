@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Plugin\ShopbySeo\Helper;
 
@@ -42,8 +47,10 @@ class Url
             ScopeInterface::SCOPE_STORE
         );
         $trimmedIdentifier = trim($identifier, DIRECTORY_SEPARATOR);
-        if (in_array($trimmedIdentifier, [$allProductsIdentifier, $brandUrlKey])
+        if ($trimmedIdentifier
             && $subject->getParam($this->brandHelper->getBrandAttributeCode())
+            && (in_array($trimmedIdentifier, [$allProductsIdentifier, $brandUrlKey])
+                || in_array($trimmedIdentifier, $this->brandHelper->getBrandAliases()))
         ) {
             $brandId = $subject->getParam($this->brandHelper->getBrandAttributeCode());
             if (is_array($brandId)) {

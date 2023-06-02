@@ -1,7 +1,16 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Controller;
 
+use Amasty\ShopbyBase\Model\Redirect\NonSlash as NonSlashRedirectManager;
+use Amasty\ShopbyBrand\Model\ConfigProvider;
+use Amasty\ShopbyBrand\Model\UrlBuilder\Adapter;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Module\Manager;
 
@@ -48,6 +57,16 @@ class Router implements \Magento\Framework\App\RouterInterface
      */
     private $permissionHelper;
 
+    /**
+     * @var ConfigProvider
+     */
+    private $configProvider;
+
+    /**
+     * @var NonSlashRedirectManager
+     */
+    private $nonSlashRedirectManager;
+
     public function __construct(
         \Magento\Framework\App\ActionFactory $actionFactory,
         \Magento\Framework\App\ResponseInterface $response,
@@ -55,7 +74,9 @@ class Router implements \Magento\Framework\App\RouterInterface
         \Magento\Framework\UrlInterface $urlBuilder,
         \Magento\Framework\Module\Manager $moduleManager,
         \Amasty\ShopbyBrand\Helper\Data $brandHelper,
-        \Amasty\ShopbyBase\Helper\PermissionHelper $permissionHelper
+        \Amasty\ShopbyBase\Helper\PermissionHelper $permissionHelper,
+        ConfigProvider $configProvider,
+        NonSlashRedirectManager $nonSlashRedirectManager = null
     ) {
         $this->actionFactory = $actionFactory;
         $this->response = $response;
@@ -65,6 +86,9 @@ class Router implements \Magento\Framework\App\RouterInterface
         $this->urlBuilder = $urlBuilder;
         $this->brandHelper = $brandHelper;
         $this->permissionHelper = $permissionHelper;
+        $this->configProvider = $configProvider;
+        $this->nonSlashRedirectManager = $nonSlashRedirectManager
+            ?? ObjectManager::getInstance()->get(NonSlashRedirectManager::class);
     }
 
     /**
@@ -93,8 +117,12 @@ class Router implements \Magento\Framework\App\RouterInterface
                 $request->setParams($this->retrieveFirstBrand($brandValue));
                 $result = $this->redirectToSingleBrand($request);
             } else {
-                $this->requestToBrandPage($request, $identifier, $brandParams);
-                $result = $this->actionFactory->create(\Magento\Framework\App\Action\Forward::class);
+                if ($this->nonSlashRedirectManager->isNeedRedirect($this->configProvider->getSuffix())) {
+                    $result = $this->nonSlashRedirectManager->createRedirect($this->configProvider->getSuffix());
+                } else {
+                    $this->requestToBrandPage($request, $identifier, $brandParams);
+                    $result = $this->actionFactory->create(\Magento\Framework\App\Action\Forward::class);
+                }
             }
         }
 
@@ -122,7 +150,7 @@ class Router implements \Magento\Framework\App\RouterInterface
      */
     private function requestToBrandPage($request, $identifier, $brandParams)
     {
-        $request->setModuleName('ambrand')
+        $request->setModuleName(Adapter::MODULE_NAME)
             ->setControllerName('index')
             ->setActionName('index');
         $request->setAlias(\Magento\Framework\Url::REWRITE_REQUEST_PATH_ALIAS, $identifier);

@@ -2,21 +2,27 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Plugin\Catalog\Model\ResourceModel\Product\Collection;
 
-use Amasty\ShopbyBrand\Helper\Content;
+use Amasty\ShopbyBrand\Model\BrandResolver;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 
 class FixUrlRewrites
 {
     /**
-     * @var  Content
+     * @var BrandResolver
      */
-    private $contentHelper;
+    private $brandResolver;
 
-    public function __construct(Content $contentHelper)
+    public function __construct(BrandResolver $brandResolver)
     {
-        $this->contentHelper = $contentHelper;
+        $this->brandResolver = $brandResolver;
     }
 
     /**
@@ -27,7 +33,7 @@ class FixUrlRewrites
      */
     public function beforeAddUrlRewrite(Collection $subject, $categoryId = ''): array
     {
-        if ($this->contentHelper->getCurrentBranding()) {
+        if ($this->brandResolver->getCurrentBrand()) {
             $categoryId = 0;
         }
 

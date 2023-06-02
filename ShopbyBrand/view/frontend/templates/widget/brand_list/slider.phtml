@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 /** @var Amasty\ShopbyBrand\Block\Widget\BrandSlider $block */
 /** @var \Magento\Framework\Escaper $escaper */
 
@@ -125,30 +130,42 @@ $sliderId = BrandSlider::HTML_ID . random_int(1, 10000);
                 </div>
             </div>
 
-            <?php if ($block->getData('pagination_show')): ?>
+            <?php if ($block->isPaginationShow()): ?>
                 <div class="swiper-pagination"></div>
             <?php endif; ?>
         </div>
     </div>
     <?php if ($isSliderEnable): ?>
         <script>
-            require(['jquery', 'swiper', 'domReady!'], function ($) {
+            require(['jquery', 'swiper', 'domReady!'], function ($, Swiper) {
                 new Swiper('#<?= /** @noEscape */ $sliderId ?> .swiper-container', {
-                    <?php foreach ($block->getSliderOptions() as $option => $value): ?>
-                        <?php $sliderConf = $option . ':' . $value . ',' ?>
-                        <?= /** @noEscape */ $sliderConf ?>
-                    <?php endforeach; ?>
+                    slidesPerView: 1,
+                    loop: <?= (int) $block->getLoop() ?>,
+                    simulateTouch: <?= (int) $block->getSimulateTouch() ?>,
+                    <?php if ($block->isPaginationShow()): ?>
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true
+                        },
+                    <?php endif; ?>
+                    <?php if ($block->isAutoplay()): ?>
+                        autoplay: {
+                            delay: <?= (int) $block->getAutoplayTime() ?>
+                        },
+                    <?php endif; ?>
                     breakpoints: {
-                    <?php for ($i = 1; $i < $itemsPerView; $i++): ?>
-                        <?= /** @noEscape */ ($i + 1) * ($imgWidth + 20 + 10) + $buttonWidth * 2; ?> : {
-                            slidesPerView: <?= /** @noEscape */ $i ?>
-                            },
+                    <?php for ($i = 1; $i <= $itemsPerView; $i++): ?>
+                        <?= ($i + 1) * ($imgWidth + 20 + 10) + $buttonWidth * 2; ?> : {
+                            slidesPerView: <?= (int) $i ?>
+                        },
                     <?php endfor; ?>
                     },
-                    nextButton: '#<?= /** @noEscape */ $sliderId ?> .swiper-button-next',
-                    prevButton: '#<?= /** @noEscape */ $sliderId ?> .swiper-button-prev',
+                    navigation: {
+                        nextEl: '#<?= /** @noEscape */ $sliderId ?> .swiper-button-next',
+                        prevEl: '#<?= /** @noEscape */ $sliderId ?> .swiper-button-prev'
+                    },
                     spaceBetween: 10
-            });
+                });
 
 
             });

@@ -1,14 +1,24 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Helper;
 
 use Amasty\ShopbyBase\Api\Data\OptionSettingInterface;
+use Amasty\ShopbyBrand\Model\BrandResolver;
 use Amasty\ShopbyBase\Helper\OptionSetting;
 use Magento\Catalog\Model\Layer;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\StoreManager;
 
+/**
+ * @deprecated usage of helpers is deprecated
+ * @see \Amasty\ShopbyBrand\Model\BrandResolver
+ */
 class Content extends AbstractHelper
 {
     public const CATEGORY_FORCE_MIXED_MODE = 'amshopby_force_mixed_mode';

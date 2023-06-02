@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Observer\Admin;
 
@@ -37,15 +42,13 @@ class OptionFormFeatured implements ObserverInterface
     {
         /** @var Form $fieldSet */
         $fieldSet = $observer->getEvent()->getFieldset();
+        /** @var OptionSettingInterface $setting */
         $setting = $observer->getEvent()->getSetting();
         $storeId = $observer->getEvent()->getStoreId();
-        $brandFilterCode = $this->configProvider->getBrandAttributeCode((int) $storeId);
-        $filterCode = $setting->getFilterCode();
-        if (strpos($filterCode, FilterSetting::ATTR_PREFIX) !== false) {
-            $filterCode = substr($filterCode, 5);
-        }
+        $brandAttributeCode = $this->configProvider->getBrandAttributeCode((int) $storeId);
+        $attributeCode = $setting->getAttributeCode();
 
-        if ($filterCode == $brandFilterCode) {
+        if ($attributeCode === $brandAttributeCode) {
             $fieldSet->setData('legend', 'Brand Options');
 
             $fieldSet->addField(

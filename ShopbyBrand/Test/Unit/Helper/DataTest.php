@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Test\Unit\Helper;
 
@@ -99,15 +104,6 @@ class DataTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Data::getBrandAliasesWithoutAttrCode
-     */
-    public function testGetBrandAliasesWithoutAttrCode()
-    {
-        $this->scopeConfig->expects($this->any())->method('getValue')->willReturn('');
-        $this->assertEquals([], $this->helper->getBrandAliases());
-    }
-
-    /**
      * @covers Data::getBrandUrl
      */
     public function testGetBrandUrl()
@@ -143,24 +139,5 @@ class DataTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->assertEquals('alias1', $this->helper->getBrandUrl($option, 1));
-    }
-
-    /**
-     * @covers Data::getStoreAliases
-     */
-    public function testGetStoreAliases()
-    {
-        $this->scopeConfig->expects($this->any())->method('getValue')->willReturn('_');
-        $optionSetting1 = $this->getObjectManager()->getObject(OptionSetting::class);
-        $optionSetting2 = $this->getObjectManager()->getObject(OptionSetting::class);
-        $optionSetting1->setUrlAlias('option-1');
-        $optionSetting1->setValue(1);
-        $optionSetting2->setUrlAlias('option_2');
-        $optionSetting2->setValue(2);
-        $this->optionCollection->expects($this->any())
-            ->method('getIterator')
-            ->willReturn(new \ArrayIterator([$optionSetting1, $optionSetting2]));
-        $result = $this->invokeMethod($this->helper, 'getStoreAliases', [[], 1]);
-        $this->assertEquals([1 => 'option_1', 2 => 'option_2'], $result);
     }
 }

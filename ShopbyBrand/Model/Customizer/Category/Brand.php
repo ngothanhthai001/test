@@ -1,9 +1,15 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Model\Customizer\Category;
 
 use Amasty\ShopbyBase\Api\CategoryDataSetterInterface;
 use Amasty\ShopbyBase\Model\Customizer\Category\CustomizerInterface;
+use Amasty\ShopbyBrand\Model\BrandResolver;
 use Magento\Catalog\Model\Category;
 use Amasty\ShopbyBase\Model\Category\Manager as CategoryManager;
 
@@ -11,10 +17,6 @@ class Brand implements CustomizerInterface
 {
     public const APPLY_TO_HEADING = 'am_apply_to_heading';
     public const APPLY_TO_META = 'am_apply_to_meta';
-    /**
-     * @var \Amasty\ShopbyBrand\Helper\Content
-     */
-    private $brandContentHelper;
 
     /**
      * @var  Category
@@ -22,51 +24,14 @@ class Brand implements CustomizerInterface
     private $category;
 
     /**
-     * @var \Magento\Catalog\Model\Layer
+     * @var BrandResolver
      */
-    private $layer;
-
-    /**
-     * @var \Magento\Framework\App\RequestInterface
-     */
-    private $request;
-
-    /**
-     * @var \Amasty\ShopbyBase\Helper\OptionSetting
-     */
-    private $optionSettingHelper;
-
-    /**
-     * @var \Magento\Store\Model\StoreManager
-     */
-    private $storeManager;
-
-    /**
-     * @var \Magento\Framework\View\Page\Config
-     */
-    private $pageConfig;
-
-    /**
-     * @var \Magento\Framework\Registry
-     */
-    private $registry;
+    private $brandResolver;
 
     public function __construct(
-        \Amasty\ShopbyBrand\Helper\Content $brandContentHelper,
-        \Magento\Catalog\Model\Layer\Resolver $layerResolver,
-        \Magento\Framework\App\RequestInterface $request,
-        \Amasty\ShopbyBase\Helper\OptionSetting $optionSettingHelper,
-        \Magento\Store\Model\StoreManager $storeManager,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\View\Page\Config $pageConfig
+        BrandResolver $brandResolver
     ) {
-        $this->brandContentHelper = $brandContentHelper;
-        $this->layer = $layerResolver->get();
-        $this->request = $request;
-        $this->optionSettingHelper = $optionSettingHelper;
-        $this->storeManager = $storeManager;
-        $this->registry = $registry;
-        $this->pageConfig = $pageConfig;
+        $this->brandResolver = $brandResolver;
     }
 
     /**
@@ -75,7 +40,7 @@ class Brand implements CustomizerInterface
      */
     public function prepareData(Category $category)
     {
-        $brand = $this->brandContentHelper->getCurrentBranding();
+        $brand = $this->brandResolver->getCurrentBrand();
         if (!$brand) {
             return $this;
         }
@@ -113,7 +78,7 @@ class Brand implements CustomizerInterface
             'bottom_cms_block' => null
         ];
 
-        $setting = $this->brandContentHelper->getCurrentBranding();
+        $setting = $this->brandResolver->getCurrentBrand();
 
         if ($setting->getTitle()) {
             $result['title'][] = $setting->getTitle();

@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\ViewModel;
 
 use Amasty\ShopbyBase\Model\OptionSetting;
@@ -69,11 +75,15 @@ class OptionProcessor implements OptionProcessorInterface
         $label = $setting->getAttributeOption()->getLabel();
         $title = $label ? : $setting->getTitle();
         $data = [
-            self::IMAGE_URL => $this->getProductPageLogoUrl($setting),
             self::LINK_URL => $this->getOptionSettingUrl($setting),
             self::TITLE => $title,
+            self::DISPLAY_TITLE => $this->isDisplayTitle(),
             OptionSetting::SMALL_IMAGE_ALT => $setting->getSmallImageAlt()
         ];
+
+        if ($this->isDisplayLogo()) {
+            $data[self::IMAGE_URL] = $this->getProductPageLogoUrl($setting);
+        }
 
         if ($this->isDisplayDescription()) {
             $data[self::SHORT_DESCRIPTION] = $setting->getShortDescription();
@@ -155,6 +165,24 @@ class OptionProcessor implements OptionProcessorInterface
         }
 
         return false;
+    }
+
+    private function isDisplayTitle(): bool
+    {
+        if ($this->getPageType() !== Tooltip::LISTING_PAGE) {
+            return $this->configProvider->isDisplayTitle();
+        }
+
+        return false;
+    }
+
+    private function isDisplayLogo(): bool
+    {
+        if ($this->getPageType() === Tooltip::LISTING_PAGE) {
+            return $this->configProvider->isShowOnListing();
+        }
+
+        return $this->configProvider->isDisplayBrandImage();
     }
 
     private function getLogoWidth(): int

@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Model\Brand;
 
 use Amasty\ShopbyBase\Api\Data\OptionSettingRepositoryInterface;
@@ -54,7 +60,7 @@ class OptionsUpdater
             }
 
             $currentAttributeValues = $this->getCurrentBrandAttributeValues($attrCode);
-            $this->addMissingBrandOptions($currentAttributeValues, FilterSettingHelper::ATTR_PREFIX . $attrCode);
+            $this->addMissingBrandOptions($currentAttributeValues, $attrCode);
         }
     }
 
@@ -81,11 +87,11 @@ class OptionsUpdater
         return $attributeValues;
     }
 
-    private function addMissingBrandOptions(array $currentAttributeValues, string $filterCode): void
+    private function addMissingBrandOptions(array $currentAttributeValues, string $attributeCode): void
     {
         foreach ($currentAttributeValues as $value) {
             /** @var OptionSetting $optionSetting */
-            $optionSetting = $this->optionSettingHelper->getSettingByValue($value, $filterCode, 0);
+            $optionSetting = $this->optionSettingHelper->getSettingByOption((int)$value, $attributeCode, 0);
             if (!$optionSetting->getId()) {
                 try {
                     $this->optionSettingRepository->save($optionSetting);

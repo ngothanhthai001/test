@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Model;
 
@@ -74,7 +79,7 @@ class ProductCount
 
         }
 
-        return isset($this->productCount[$optionId]) ? $this->productCount[$optionId]['count'] : 0;
+        return isset($this->productCount[$optionId]) ? (int) $this->productCount[$optionId]['count'] : 0;
     }
 
     /**

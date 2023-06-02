@@ -1,8 +1,17 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Controller\Adminhtml\Slider;
 
-class Save extends \Amasty\ShopbyBase\Controller\Adminhtml\Option\Save
+use Amasty\ShopbyBase\Controller\Adminhtml\Option\Save as ShopbyBaseOptionSave;
+use Magento\Backend\Model\View\Result\Redirect;
+use Magento\Framework\Controller\ResultFactory;
+
+class Save extends ShopbyBaseOptionSave
 {
     /**
      * @return bool
@@ -14,7 +23,10 @@ class Save extends \Amasty\ShopbyBase\Controller\Adminhtml\Option\Save
 
     protected function _redirectRefer()
     {
-        //phpcs:ignore Magento2.Legacy.ObsoleteResponse.ForwardResponseMethodFound
-        $this->_forward('index');
+        /** @var Redirect $resultRedirect */
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $resultRedirect->setPath('*/*/index');
+
+        return $resultRedirect;
     }
 }

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
 
 namespace Amasty\ShopbyBrand\Model\ResourceModel\Slider\Grid;
 
@@ -66,6 +71,7 @@ class Collection extends BrandCollection implements SearchResultInterface
      */
     protected function _prepareCollection()
     {
+        $this->addFilterToMap('brand_code', OptionSettingInterface::ATTRIBUTE_CODE);
         $this->addAttributeFilter();
         $this->addFieldToFilter('main_table.' . OptionSettingInterface::STORE_ID, Store::DEFAULT_STORE_ID);
         $this->getSelect()
@@ -92,9 +98,9 @@ class Collection extends BrandCollection implements SearchResultInterface
     protected function addAttributeFilter()
     {
         $this->addFieldToFilter(
-            OptionSettingInterface::FILTER_CODE,
+            OptionSettingInterface::ATTRIBUTE_CODE,
             [
-                'in' => $this->convertAttributesToFilterCodes($this->configProvider->getAllBrandAttributeCodes())
+                'in' => $this->configProvider->getAllBrandAttributeCodes()
             ]
         );
     }

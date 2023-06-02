@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Model;
 
 use Amasty\Base\Model\ConfigProviderAbstract;
@@ -13,11 +19,15 @@ class ConfigProvider extends ConfigProviderAbstract
 {
     public const DEFAULT_CATEGORY_LOGO_SIZE = 30;
 
+    public const CATEGORY_URL_SUFFIX = 'catalog/seo/category_url_suffix';
+    public const SHOPBY_SEO_SUFFIX = 'amasty_shopby_seo/url/add_suffix_shopby';
+
     /**
      * General group settings path
      */
     public const BRAND_ATTRIBUTE_CODE = 'general/attribute_code';
     public const TOOLTIP_ENABLED = 'general/tooltip_enabled';
+    public const EXCLUDE_EMPTY_SITEMAP_BRAND = 'general/exclude_empty_sitemap_brand';
 
     /**
      * Product Page group settings path
@@ -26,6 +36,7 @@ class ConfigProvider extends ConfigProviderAbstract
     public const PRODUCT_WIDTH = 'product_page/width';
     public const LOGO_HEIGHT = 'product_page/height';
     public const DISPLAY_BRAND_IMAGE = 'product_page/display_brand_image';
+    private const DISPLAY_TITLE = 'product_page/display_title';
 
     /**
      * Product Listing group settings path
@@ -64,16 +75,6 @@ class ConfigProvider extends ConfigProviderAbstract
         $this->storeManager = $storeManager;
     }
 
-    public function getBrandAttributeCode(?int $storeId = null): string
-    {
-        //should be scope config because of BTS-10415
-        return (string) $this->scopeConfig->getValue(
-            $this->pathPrefix . self::BRAND_ATTRIBUTE_CODE,
-            ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
-    }
-
     public function getAllBrandAttributeCodes(): array
     {
         if ($this->allBrandAttributeCodes === null) {
@@ -91,11 +92,33 @@ class ConfigProvider extends ConfigProviderAbstract
         return $this->allBrandAttributeCodes;
     }
 
-    /**
-     * @param int|null $storeId
-     *
-     * @return bool
+    /*
+     * General group settings
      */
+
+    public function getBrandAttributeCode(?int $storeId = null): string
+    {
+        return (string) $this->getValue(self::BRAND_ATTRIBUTE_CODE, $storeId);
+    }
+
+    /**
+     * @return string[]
+     * @see \Amasty\ShopbyBrand\Model\Source\Tooltip
+     */
+    public function getTooltipEnabled(?int $storeId = null): array
+    {
+        return explode(',', (string) $this->getValue(self::TOOLTIP_ENABLED, $storeId));
+    }
+
+    public function isExcludeEmptySitemapBrand(?int $storeId): bool
+    {
+        return $this->isSetFlag(self::EXCLUDE_EMPTY_SITEMAP_BRAND, $storeId);
+    }
+
+    /*
+     * Product Listing group settings path
+     */
+
     public function isShowOnListing(?int $storeId = null): bool
     {
         return $this->isSetFlag(self::SHOW_ON_LISTING, $storeId);
@@ -126,27 +149,12 @@ class ConfigProvider extends ConfigProviderAbstract
      *
      * @return bool
      */
+
     public function isDisplayBrandImage(?int $storeId = null): bool
     {
         return $this->isSetFlag(self::DISPLAY_BRAND_IMAGE, $storeId);
     }
 
-    /**
-     * @param int|null $storeId
-     *
-     * @return array
-     * @see \Amasty\ShopbyBrand\Model\Source\Tooltip
-     */
-    public function getTooltipEnabled(?int $storeId = null): array
-    {
-        return explode(',', (string) $this->getValue(self::TOOLTIP_ENABLED, $storeId));
-    }
-
-    /**
-     * @param int|null $storeId
-     *
-     * @return bool
-     */
     public function isDisplayDescription(?int $storeId = null): bool
     {
         return $this->isSetFlag(self::DISPLAY_DESCRIPTION, $storeId);
@@ -204,5 +212,21 @@ class ConfigProvider extends ConfigProviderAbstract
     public function getMoreFromProductsLimit(?int $storeId = null): int
     {
         return (int) $this->getValue(self::MORE_FROM_COUNT, $storeId);
+    }
+
+    public function isDisplayTitle(?int $storeId = null): bool
+    {
+        return (bool)$this->getValue(self::DISPLAY_TITLE, $storeId);
+    }
+
+    public function getSuffix(): string
+    {
+        $suffix = '';
+        if ($this->scopeConfig->isSetFlag(self::SHOPBY_SEO_SUFFIX)) {
+            $suffix = $this->scopeConfig
+                ->getValue(self::CATEGORY_URL_SUFFIX, ScopeInterface::SCOPE_STORE);
+        }
+
+        return $suffix;
     }
 }

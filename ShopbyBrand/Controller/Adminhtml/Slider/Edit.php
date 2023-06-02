@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Shop by Brand for Magento 2
+ */
+
 namespace Amasty\ShopbyBrand\Controller\Adminhtml\Slider;
 
 use Magento\Backend\App\Action;
@@ -78,12 +84,12 @@ class Edit extends Action
     private function loadSettingModel()
     {
         $attributeCode = $this->getRequest()->getParam('attribute_code');
-        $optionId = $this->getRequest()->getParam('option_id');
-        $storeId = $this->getRequest()->getParam('store', 0);
+        $optionId = (int) $this->getRequest()->getParam('option_id');
+        $storeId = (int) $this->getRequest()->getParam('store', 0);
         if (!$attributeCode || !$optionId) {
             throw new NoSuchEntityException();
         }
-        $model = $this->settingHelper->getSettingByValue($optionId, $attributeCode, $storeId);
+        $model = $this->settingHelper->getSettingByOption($optionId, $attributeCode, $storeId);
         if (!$model->getId()) {
             throw new NoSuchEntityException();
         }
