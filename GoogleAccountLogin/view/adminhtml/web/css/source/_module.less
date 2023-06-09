@@ -1,0 +1,93 @@
+//
+//  Amasty Google Account Login
+//  _________________________
+
+//
+//  Variables
+//  --------------------------------------------
+
+@amgsuite_icon__background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNjYgMzcyIj48ZGVmcy8+PHBhdGggZmlsbD0iI0VBNDMzNSIgZD0iTTEyNS45IDEwLjJjNDAuMi0xMy45IDg1LjMtMTMuNiAxMjUuMyAxLjEgMjIuMiA4LjIgNDIuNSAyMSA1OS45IDM3LjEtNS44IDYuMy0xMi4xIDEyLjItMTguMSAxOC4zbC0zNC4yIDM0LjJjLTExLjMtMTAuOC0yNS4xLTE5LTQwLjEtMjMuNi0xNy42LTUuMy0zNi42LTYuMS01NC42LTIuMi0yMSA0LjUtNDAuNSAxNS41LTU1LjYgMzAuOS0xMi4yIDEyLjMtMjEuNCAyNy41LTI3IDQzLjktMjAuMy0xNS44LTQwLjYtMzEuNS02MS00Ny4zIDIxLjUtNDMgNjAuMS03Ni45IDEwNS40LTkyLjR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNSIgZD0iTTIwLjYgMTAyLjRjMjAuMyAxNS44IDQwLjYgMzEuNSA2MSA0Ny4zLTggMjMuMy04IDQ5LjIgMCA3Mi40LTIwLjMgMTUuOC00MC42IDMxLjYtNjAuOSA0Ny4zQzEuOSAyMzIuNy0zLjggMTg5LjYgNC40IDE0OS4yYzMuMy0xNi4yIDguNy0zMiAxNi4yLTQ2Ljh6Ii8+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTM2MS43IDE1MS4xYzUuOCAzMi43IDQuNSA2Ni44LTQuNyA5OC44LTguNSAyOS4zLTI0LjYgNTYuNS00Ny4xIDc3LjJsLTU5LjEtNDUuOWMxOS41LTEzLjEgMzMuMy0zNC4zIDM3LjItNTcuNUgxODYuNmMuMS0yNC4yLjEtNDguNC4xLTcyLjZoMTc1eiIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Ik04MS40IDIyMi4yYzcuOCAyMi45IDIyLjggNDMuMiA0Mi42IDU3LjEgMTIuNCA4LjcgMjYuNiAxNC45IDQxLjQgMTcuOSAxNC42IDMgMjkuNyAyLjYgNDQuNC4xIDE0LjYtMi42IDI4LjctNy45IDQxLTE2LjJsNTkuMSA0NS45Yy0yMS4zIDE5LjctNDggMzMuMS03Ni4yIDM5LjYtMzEuMiA3LjEtNjQuMiA3LjMtOTUuMi0xLTI0LjYtNi41LTQ3LjctMTguMi02Ny42LTM0LjEtMjAuOS0xNi42LTM4LjMtMzgtNTAuNC02MiAyMC4zLTE1LjcgNDAuNi0zMS41IDYwLjktNDcuM3oiLz48L3N2Zz4=);
+
+//
+//  Common
+//  --------------------------------------------
+
+& when (@media-common = true) {
+    .amgsuite-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .amgsuite-button {
+        & {
+            display: flex;
+            align-items: center;
+            height: 40px;
+            transition-timing-function: ease-in-out;
+            transition-duration: 150ms;
+            transition-property: background-color, box-shadow;
+            white-space: nowrap;
+            color: #737373;
+            border-width: 0;
+            border-radius: 5px;
+            background: #fff;
+            box-shadow: 1px 1px 0 1px rgba(0, 0, 0, .05);
+        }
+
+        &:focus,
+        &:hover {
+            text-decoration: none;
+            color: #737373;
+            box-shadow: 1px 4px 5px 1px rgba(0, 0, 0, .1);
+        }
+
+        &:active {
+            transition-duration: 10ms;
+            text-decoration: none;
+            background-color: #e5e5e5;
+            box-shadow: none;
+        }
+    }
+
+    .amgsuite-text {
+        & {
+            font-family: 'Roboto', arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            padding: 0 8px;
+            vertical-align: middle;
+        }
+
+        &:before {
+            display: inline-block;
+            box-sizing: border-box;
+            width: 18px;
+            height: 18px;
+            margin: 0 5px 0 0;
+            vertical-align: middle;
+            background-image: @amgsuite_icon__background;
+            content: '';
+        }
+    }
+
+    // Override Magento styles
+
+    .adminhtml-auth-login .login-content .form-actions {
+        & {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .actions {
+            order: 2;
+        }
+
+        .links {
+            order: 1;
+            width: 100%;
+            display: block;
+        }
+    }
+}
