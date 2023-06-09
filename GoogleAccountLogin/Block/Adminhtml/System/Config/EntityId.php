@@ -1,10 +1,9 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_GoogleAccountLogin
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Google Account Login for Magento 2
  */
-
 
 namespace Amasty\GoogleAccountLogin\Block\Adminhtml\System\Config;
 

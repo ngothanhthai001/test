@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_GoogleAccountLogin
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Google Account Login for Magento 2
  */
 
 
@@ -14,7 +14,7 @@ use Magento\Framework\View\Element\Block\ArgumentInterface;
 
 class ConfigProvider extends \Amasty\Base\Model\ConfigProviderAbstract implements ArgumentInterface
 {
-    const NAME_ID_FORMAT = 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent';
+    public const NAME_ID_FORMAT = 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent';
 
     /**
      * @var string

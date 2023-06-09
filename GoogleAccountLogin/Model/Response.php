@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_GoogleAccountLogin
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Google Account Login for Magento 2
  */
 
 
@@ -41,6 +41,7 @@ class Response
             $samlResponse = new \OneLogin\Saml2\Response($samlSettings, $rawResponse);
 
             if ($samlResponse->isValid()) {
+                $userData['emailAddress'] = $samlResponse->getNameIdData()['Value'] ?? '';
                 foreach ($samlResponse->getAttributes() as $name => $values) {
                     $userData[$name] = $values[0] ?? '';
                 }
