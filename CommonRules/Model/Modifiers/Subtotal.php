@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model\Modifiers;
 
@@ -37,20 +42,30 @@ class Subtotal implements ModifierInterface
 
         $subtotal = $tempObject->getSubtotal();
         $baseSubtotal = $tempObject->getBaseSubtotal();
+        $includeTax = $this->config->getTaxIncludeConfig($this->getSectionConfig());
+        $includeDiscount = $this->config->getUseSubtotalConfig($this->getSectionConfig());
 
-        if ($this->config->getTaxIncludeConfig($this->getSectionConfig())) {
+        if ($includeTax) {
             $subtotal += $tempObject->getTaxAmount();
             $baseSubtotal += $tempObject->getBaseTaxAmount();
         }
 
-        if ($this->config->getUseSubtotalConfig($this->getSectionConfig())) {
+        if ($includeDiscount) {
             $subtotal += $tempObject->getDiscountAmount();
             $baseSubtotal += $tempObject->getBaseDiscountAmount();
+        }
+
+        if ($includeTax && $includeDiscount) {
+            $subtotal += $tempObject->getDiscountTaxCompensationAmount();
+            $baseSubtotal += $tempObject->getBaseDiscountTaxCompensationAmount();
         }
 
         $tempObject->setSubtotal($subtotal);
         $tempObject->setBaseSubtotal($baseSubtotal);
         $tempObject->setPackageValueWithDiscount($baseSubtotal);
+        if (!$tempObject->getTotalQty()) {
+            $tempObject->setTotalQty($tempObject->getQuote()->getItemsQty());
+        }
 
         return $tempObject;
     }

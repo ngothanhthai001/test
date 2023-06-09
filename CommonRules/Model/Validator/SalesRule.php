@@ -1,10 +1,12 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model\Validator;
 
-/**
- * Class SalesRule
- */
 class SalesRule implements ValidatorInterface
 {
     /**
@@ -61,7 +63,7 @@ class SalesRule implements ValidatorInterface
 
         /** @var \Magento\Quote\Model\Quote\Item $firstItem */
         $firstItem = current($items);
-        $rules = trim($firstItem->getQuote()->getAppliedRuleIds());
+        $rules = trim((string)$firstItem->getQuote()->getAppliedRuleIds());
 
         if (!$rules) {
             return [];
@@ -83,7 +85,7 @@ class SalesRule implements ValidatorInterface
 
         /** @var \Magento\Quote\Model\Quote\Item $firstItem */
         $firstItem = current($items);
-        $codes = trim(strtolower($firstItem->getQuote()->getCouponCode()));
+        $codes = trim(strtolower((string)$firstItem->getQuote()->getCouponCode()));
 
         if (!$codes) {
             return [];

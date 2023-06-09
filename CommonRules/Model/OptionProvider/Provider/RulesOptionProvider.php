@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model\OptionProvider\Provider;
 
@@ -7,7 +12,7 @@ namespace Amasty\CommonRules\Model\OptionProvider\Provider;
  */
 class RulesOptionProvider implements \Magento\Framework\Data\OptionSourceInterface
 {
-    const PAGE_SIZE = 7500;
+    public const PAGE_SIZE = 7500;
 
     /**
      * @var \Psr\Log\LoggerInterface

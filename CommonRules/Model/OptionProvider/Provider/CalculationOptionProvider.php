@@ -1,16 +1,18 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model\OptionProvider\Provider;
 
-/**
- * Class CalculationOptionProvider
- */
 class CalculationOptionProvider implements \Magento\Framework\Data\OptionSourceInterface
 {
-    const CALC_REPLACE = 0;
-    const CALC_ADD     = 1;
-    const CALC_DEDUCT  = 2;
-    const CALC_REPLACE_PRODUCT = 3;
+    public const CALC_REPLACE = 0;
+    public const CALC_ADD     = 1;
+    public const CALC_DEDUCT  = 2;
+    public const CALC_REPLACE_PRODUCT = 3;
 
     /**
      * @var array|null

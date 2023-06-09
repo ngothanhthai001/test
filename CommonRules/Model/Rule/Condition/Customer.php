@@ -1,13 +1,15 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model\Rule\Condition;
 
-/**
- * Class Customer
- */
 class Customer extends \Magento\Rule\Model\Condition\AbstractCondition
 {
-    const AMASTY_CUSTOMER_ATTRIBUTES_KEY_NAME = 'custom_attributes';
+    public const AMASTY_CUSTOMER_ATTRIBUTES_KEY_NAME = 'custom_attributes';
 
     /**
      * @var \Magento\Customer\Model\ResourceModel\Customer

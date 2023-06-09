@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Test\Unit\Model\Modifiers;
 
@@ -18,12 +23,12 @@ class SubtotalTest extends \PHPUnit\Framework\TestCase
 {
     use Traits\ObjectManagerTrait;
 
-    const SUBTOTAL = 1000;
-    const BASE_SUBTOTAL = 100;
-    const TAX_AMOUNT = 100;
-    const BASE_TAX_AMOUNT = 10;
-    const DISCOUNT_AMOUNT = 250;
-    const BASE_DISCOUNT_AMOUNT = 25;
+    public const SUBTOTAL = 1000;
+    public const BASE_SUBTOTAL = 100;
+    public const TAX_AMOUNT = 100;
+    public const BASE_TAX_AMOUNT = 10;
+    public const DISCOUNT_AMOUNT = 250;
+    public const BASE_DISCOUNT_AMOUNT = 25;
 
     /**
      * @covers Subtotal::modify
@@ -45,7 +50,8 @@ class SubtotalTest extends \PHPUnit\Framework\TestCase
             ->setTaxAmount(static::TAX_AMOUNT)
             ->setBaseTaxAmount(static::BASE_TAX_AMOUNT)
             ->setDiscountAmount(static::DISCOUNT_AMOUNT)
-            ->setBaseDiscountAmount(static::BASE_DISCOUNT_AMOUNT);
+            ->setBaseDiscountAmount(static::BASE_DISCOUNT_AMOUNT)
+            ->setTotalQty(1);
 
         /** @var MockObject $config */
         $config = $this->createMock(\Amasty\CommonRules\Model\Config::class);

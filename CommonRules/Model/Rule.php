@@ -1,18 +1,21 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model;
 
 class Rule extends \Magento\Rule\Model\AbstractModel
 {
-    const ALL_ORDERS = 0;
-    const BACKORDERS_ONLY = 1;
-    const NON_BACKORDERS = 2;
+    public const ALL_ORDERS = 0;
+    public const BACKORDERS_ONLY = 1;
+    public const NON_BACKORDERS = 2;
 
-    const SALES_RULE_PRODUCT_CONDITION_NAMESPACE = \Magento\SalesRule\Model\Rule\Condition\Product::class;
+    public const SALES_RULE_PRODUCT_CONDITION_NAMESPACE = \Magento\SalesRule\Model\Rule\Condition\Product::class;
 
     /**
-     * Store manager
-     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
@@ -83,7 +86,7 @@ class Rule extends \Magento\Rule\Model\AbstractModel
      */
     public function match($rate)
     {
-        $selectedCarriers = explode(',', $this->getCarriers());
+        $selectedCarriers = explode(',', (string)$this->getCarriers());
 
         if (in_array($rate->getCarrier(), $selectedCarriers)) {
             return true;

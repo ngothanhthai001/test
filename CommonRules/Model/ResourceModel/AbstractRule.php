@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model\ResourceModel;
 
@@ -7,7 +12,7 @@ namespace Amasty\CommonRules\Model\ResourceModel;
  */
 abstract class AbstractRule extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-    const ATTRIBUTE_TABLE_NAME = '';
+    public const ATTRIBUTE_TABLE_NAME = '';
 
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,

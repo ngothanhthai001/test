@@ -1,6 +1,6 @@
 <div class="admin__field" attr="'data-index': index">
     <label if="element.label" class="admin__field-label" attr="for: element.uid">
-        <span text="element.label"/>
+        <span text="element.label"></span>
     </label>
 
     <div class="admin__field-control" data-role="grid-wrapper">
@@ -13,7 +13,8 @@
                     disable="elem.disabled"
                     template="elem.template"
                     style="border: none;"
-                    attr="'data-index': index"/>
+                    attr="'data-index': index">
+                </td>
                 <!-- /ko -->
             </tr>
             </tbody>

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Ui\DataProvider;
 
@@ -10,7 +15,7 @@ use Amasty\CommonRules\Model\ResourceModel\Rule\Collection as CommonRulesCollect
  */
 class AbstractDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
 {
-    const METHODS_FIELD = 'methods';
+    public const METHODS_FIELD = 'methods';
 
     /**
      * @var MethodConverter
@@ -46,7 +51,7 @@ class AbstractDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
         }
 
         foreach ($data['items'] as &$item) {
-            $item[self::METHODS_FIELD] = $this->converter->convert($item[self::METHODS_FIELD]);
+            $item[self::METHODS_FIELD] = $this->converter->convert((string)$item[self::METHODS_FIELD]);
             $item[self::METHODS_FIELD] = $item[self::METHODS_FIELD] ?: __('Any');
         }
 

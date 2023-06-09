@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model;
 
@@ -7,9 +12,9 @@ namespace Amasty\CommonRules\Model;
  */
 class Config
 {
-    const CONFIG_PATH_GENERAL_TAX_INCLUDE = '/general/tax';
-    const CONFIG_PATH_GENERAL_USE_SUBTOTAL = '/general/discount';
-    const CONFIG_PATH_GENERAL_ERROR_MESSAGE = '/general/error_message';
+    public const CONFIG_PATH_GENERAL_TAX_INCLUDE = '/general/tax';
+    public const CONFIG_PATH_GENERAL_USE_SUBTOTAL = '/general/discount';
+    public const CONFIG_PATH_GENERAL_ERROR_MESSAGE = '/general/error_message';
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface

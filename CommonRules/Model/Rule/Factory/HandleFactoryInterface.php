@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model\Rule\Factory;
 
@@ -7,10 +12,10 @@ namespace Amasty\CommonRules\Model\Rule\Factory;
  */
 interface HandleFactoryInterface
 {
-    const CUSTOMER_HANDLE = 'customer';
-    const ORDERS_HANDLE = 'orders';
+    public const CUSTOMER_HANDLE = 'customer';
+    public const ORDERS_HANDLE = 'orders';
 
-    const TOTAL_COMBINE_HANDLE = 'total';
+    public const TOTAL_COMBINE_HANDLE = 'total';
 
     /**
      * @param string $type

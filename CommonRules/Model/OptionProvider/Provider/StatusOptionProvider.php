@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model\OptionProvider\Provider;
 
@@ -7,8 +12,8 @@ namespace Amasty\CommonRules\Model\OptionProvider\Provider;
  */
 class StatusOptionProvider implements \Magento\Framework\Data\OptionSourceInterface
 {
-    const ACTIVE  = 1;
-    const INACTIVE = 0;
+    public const ACTIVE  = 1;
+    public const INACTIVE = 0;
 
     /**
      * @var array|null

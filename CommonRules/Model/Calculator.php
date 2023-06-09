@@ -1,13 +1,15 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model;
 
-/**
- * Calculator
- */
 class Calculator
 {
-    const CONNECTION_TYPE_DEFAULT = 'default';
+    public const CONNECTION_TYPE_DEFAULT = 'default';
 
     /**
      * @var Resource

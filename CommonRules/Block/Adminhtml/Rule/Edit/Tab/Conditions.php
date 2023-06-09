@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Block\Adminhtml\Rule\Edit\Tab;
 
@@ -9,7 +14,7 @@ namespace Amasty\CommonRules\Block\Adminhtml\Rule\Edit\Tab;
  */
 class Conditions extends AbstractTab
 {
-    const RULE_CONDITIONS_FIELDSET_NAMESPACE = 'rule_conditions_fieldset';
+    public const RULE_CONDITIONS_FIELDSET_NAMESPACE = 'rule_conditions_fieldset';
 
     /**
      * @var \Magento\Backend\Block\Widget\Form\Renderer\Fieldset
@@ -99,7 +104,8 @@ class Conditions extends AbstractTab
         $form = $this->_formFactory->create();
         $renderer = $this->rendererFieldset->setTemplate(
             'Magento_CatalogRule::promo/fieldset.phtml'
-        )->setNewChildUrl(
+        )->setNameInLayout('amasty_payrestriction_rule_edit_tab_conditions')
+            ->setNewChildUrl(
             $this->getUrl('amasty_rules/rule/newConditionHtml', ['form' => self::RULE_CONDITIONS_FIELDSET_NAMESPACE])
         );
 

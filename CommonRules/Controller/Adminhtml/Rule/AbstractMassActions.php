@@ -1,8 +1,14 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Controller\Adminhtml\Rule;
 
 use Magento\Backend\App\Action;
+use Magento\Backend\Model\View\Result\RedirectFactory;
 use Magento\Framework\Data\Collection\AbstractDb as Collection;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb as Resource;
 use Magento\Ui\Component\MassAction\Filter;
@@ -12,11 +18,11 @@ use Magento\Ui\Component\MassAction\Filter;
  */
 abstract class AbstractMassActions extends Action
 {
-    const ACTIVATE = 'activate';
-    const INACTIVATE = 'inactivate';
-    const DELETE = 'delete';
+    public const ACTIVATE = 'activate';
+    public const INACTIVATE = 'inactivate';
+    public const DELETE = 'delete';
 
-    const ALLOWED_ACTIONS = [self::ACTIVATE, self::INACTIVATE, self::DELETE];
+    public const ALLOWED_ACTIONS = [self::ACTIVATE, self::INACTIVATE, self::DELETE];
 
     /**
      * @var Filter;
@@ -33,16 +39,23 @@ abstract class AbstractMassActions extends Action
      */
     protected $collection;
 
+    /**
+     * @var RedirectFactory
+     */
+    private $redirectFactory;
+
     public function __construct(
         Action\Context $context,
         Filter $filter,
         Collection $collection,
+        RedirectFactory $redirectFactory,
         Resource $resource
     ) {
         parent::__construct($context);
 
         $this->filter = $filter;
         $this->collection = $collection;
+        $this->redirectFactory = $redirectFactory;
         $this->resource = $resource;
     }
 
@@ -68,7 +81,7 @@ abstract class AbstractMassActions extends Action
             }
         }
 
-        return $this->_redirect('*/*/');
+        return $this->redirectFactory->create()->setPath('*/*/');
     }
 
     protected function massDelete()

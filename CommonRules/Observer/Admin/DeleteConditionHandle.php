@@ -1,13 +1,15 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Observer\Admin;
 
-/**
- * Class DeleteConditionHandle
- */
 class DeleteConditionHandle implements \Magento\Framework\Event\ObserverInterface
 {
-    const NOT_SUPPORTED_CONDITIONS = [
+    public const NOT_SUPPORTED_CONDITIONS = [
         'Amasty\Conditions\Model\Rule\Condition\Address|payment_method',
     ];
 

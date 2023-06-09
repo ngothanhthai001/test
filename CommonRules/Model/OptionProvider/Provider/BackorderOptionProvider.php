@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Common Rules for Magento 2 (System)
+ */
 
 namespace Amasty\CommonRules\Model\OptionProvider\Provider;
 
@@ -7,9 +12,9 @@ namespace Amasty\CommonRules\Model\OptionProvider\Provider;
  */
 class BackorderOptionProvider implements \Magento\Framework\Data\OptionSourceInterface
 {
-    const ALL_ORDERS = 0;
-    const BACKORDERS_ONLY = 1;
-    const NON_BACKORDERS = 2;
+    public const ALL_ORDERS = 0;
+    public const BACKORDERS_ONLY = 1;
+    public const NON_BACKORDERS = 2;
 
     /**
      * @var array|null
