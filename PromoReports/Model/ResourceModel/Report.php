@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Reports for Free Gift (Add-On) for Magento 2
+ */
 
 namespace Amasty\PromoReports\Model\ResourceModel;
 
@@ -9,9 +14,9 @@ use Magento\Reports\Model\ResourceModel\Report\AbstractReport;
 
 class Report extends AbstractReport
 {
-    const REPORT_PROMO_FLAG_CODE = 'report_amasty_promo_aggregated';
+    public const REPORT_PROMO_FLAG_CODE = 'report_amasty_promo_aggregated';
 
-    const AMPROMO_ITEM_EXPR = "order_item.product_options LIKE '%ampromo_rule_id%'";
+    public const AMPROMO_ITEM_EXPR = "order_item.product_options LIKE '%ampromo_rule_id%'";
 
     /**
      * Model initialization
@@ -231,7 +236,7 @@ class Report extends AbstractReport
         $connection = $this->getConnection();
 
         $select
-            ->reset(\Zend_Db_Select::COLUMNS)
+            ->reset(Select::COLUMNS)
             ->columns([
                 ReportInterface::TOTAL_SALES => 'SUM(total_sales_with_promo)',
                 ReportInterface::ORDERS_COUNT => 'SUM(orders_count_with_promo)',

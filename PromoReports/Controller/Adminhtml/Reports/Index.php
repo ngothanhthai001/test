@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Reports for Free Gift (Add-On) for Magento 2
+ */
 
 namespace Amasty\PromoReports\Controller\Adminhtml\Reports;
 
@@ -15,7 +20,7 @@ class Index extends Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Amasty_PromoReports::promo_reports';
+    public const ADMIN_RESOURCE = 'Amasty_PromoReports::promo_reports';
 
     /**
      * @return Page|ResponseInterface|ResultInterface

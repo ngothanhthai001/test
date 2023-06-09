@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Reports for Free Gift (Add-On) for Magento 2
+ */
 
 namespace Amasty\PromoReports\Model;
 
@@ -10,7 +15,7 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
  */
 class DateProxy
 {
-    const SECONDS_IN_DAY = 86400;
+    public const SECONDS_IN_DAY = 86400;
 
     /**
      * @var StdDateTime

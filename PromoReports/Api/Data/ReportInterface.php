@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Reports for Free Gift (Add-On) for Magento 2
+ */
 
 namespace Amasty\PromoReports\Api\Data;
 
@@ -7,15 +12,15 @@ interface ReportInterface
     /**
      * Constants defined for keys of data array
      */
-    const ENTITY_ID = 'id';
-    const STORE_ID = 'store_id';
-    const CUSTOMER_GROUP_ID = 'customer_group_id';
-    const PERIOD = 'period';
-    const TOTAL_SALES = 'total_sales_with_promo';
-    const ORDERS_COUNT = 'orders_count_with_promo';
-    const PROMO_ITEMS_PER_ORDER = 'items_per_order';
-    const AVG_WITH_PROMO = 'average_total_with_promo';
-    const AVG_WITHOUT_PROMO = 'average_total_without_promo';
+    public const ENTITY_ID = 'id';
+    public const STORE_ID = 'store_id';
+    public const CUSTOMER_GROUP_ID = 'customer_group_id';
+    public const PERIOD = 'period';
+    public const TOTAL_SALES = 'total_sales_with_promo';
+    public const ORDERS_COUNT = 'orders_count_with_promo';
+    public const PROMO_ITEMS_PER_ORDER = 'items_per_order';
+    public const AVG_WITH_PROMO = 'average_total_with_promo';
+    public const AVG_WITHOUT_PROMO = 'average_total_without_promo';
 
     /**
      * @return int

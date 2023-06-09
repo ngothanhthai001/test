@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Reports for Free Gift (Add-On) for Magento 2
+ */
 
 namespace Amasty\PromoReports\Block\Adminhtml\Reports;
 
@@ -21,13 +26,13 @@ class Filters extends Generic
     /**
      * Constants defined for names of filters form
      */
-    const ALL = 'all';
-    const STORE = 'store';
-    const CUSTOMER_GROUP = 'customer_group';
-    const DATE_RANGE = 'date_range';
-    const DATE_FROM = 'date_from';
-    const DATE_TO = 'date_to';
-    const SUBMIT = 'submit';
+    public const ALL = 'all';
+    public const STORE = 'store';
+    public const CUSTOMER_GROUP = 'customer_group';
+    public const DATE_RANGE = 'date_range';
+    public const DATE_FROM = 'date_from';
+    public const DATE_TO = 'date_to';
+    public const SUBMIT = 'submit';
 
     /**
      * @var DataObject

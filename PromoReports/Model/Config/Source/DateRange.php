@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Reports for Free Gift (Add-On) for Magento 2
+ */
 
 namespace Amasty\PromoReports\Model\Config\Source;
 
@@ -9,11 +14,11 @@ class DateRange implements OptionSourceInterface
     /**
      * Data range
      */
-    const LAST_DAY = 1;
-    const LAST_WEEK = 7;
-    const LAST_MONTH = 30;
-    const OVERALL = 'Overall';
-    const CUSTOM = 0;
+    public const LAST_DAY = 1;
+    public const LAST_WEEK = 7;
+    public const LAST_MONTH = 30;
+    public const OVERALL = 'Overall';
+    public const CUSTOM = 0;
 
     /**
      * Return array of options as value-label pairs
