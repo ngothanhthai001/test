@@ -1,46 +1,46 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Promotions Manager for Magento 2
+ */
 
 namespace Amasty\Rgrid\Controller\Adminhtml\Promo\Quote;
 
+use Amasty\Rgrid\Model\DuplicateRuleProcessor;
 use Magento\Backend\App\Action;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\SalesRule\Api\Data\RuleInterface;
-use Magento\SalesRule\Api\RuleRepositoryInterface;
 
 class Duplicate extends Action
 {
     /**
-     * @var RuleRepositoryInterface
+     * @var DuplicateRuleProcessor
      */
-    private $ruleRepository;
+    private $processDuplicateRule;
 
     public function __construct(
         Action\Context $context,
-        RuleRepositoryInterface $ruleRepository
+        DuplicateRuleProcessor $processDuplicateRule
     ) {
         parent::__construct($context);
-
-        $this->ruleRepository = $ruleRepository;
+        $this->processDuplicateRule = $processDuplicateRule;
     }
 
     /**
-     * @inheritdoc
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
      */
     public function execute()
     {
-        $ruleId = $this->getRequest()->getParam('id');
+        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+        $resultRedirect = $this->resultRedirectFactory->create();
+        $ruleId = (int)$this->getRequest()->getParam('id');
 
         if ($ruleId) {
             try {
-                /** @var RuleInterface $rule */
-                $rule = $this->ruleRepository->getById($ruleId);
-                $rule->setRuleId(null);
-
-                $rule = $this->ruleRepository->save($rule);
-
+                $newRule = $this->processDuplicateRule->execute($ruleId);
                 $this->messageManager->addSuccessMessage(__('The rule has been duplicated.'));
 
-                return $this->_redirect('sales_rule/*/edit', ['id' => $rule->getRuleId()]);
+                return $resultRedirect->setPath('sales_rule/*/edit', ['id' => $newRule->getRuleId()]);
             } catch (LocalizedException $exception) {
                 $this->messageManager->addExceptionMessage($exception);
             } catch (\Exception $exception) {
@@ -50,10 +50,10 @@ class Duplicate extends Action
                 );
             }
 
-            return $this->_redirect('sales_rule/*/');
+            return $resultRedirect->setPath('sales_rule/*/');
         }
         $this->messageManager->addErrorMessage(__('We can\'t find a rule to duplicate.'));
 
-        return $this->_redirect('sales_rule/*/');
+        return $resultRedirect->setPath('sales_rule/*/');
     }
 }

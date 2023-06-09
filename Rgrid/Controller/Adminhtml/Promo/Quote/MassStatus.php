@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Promotions Manager for Magento 2
+ */
 
 namespace Amasty\Rgrid\Controller\Adminhtml\Promo\Quote;
 
@@ -31,6 +36,7 @@ class MassStatus extends Action
         $ids = $this->getRequest()->getParam('ids');
         /** @var string|null $status */
         $status = $this->getRequest()->getParam('status');
+        $resultRedirect = $this->resultRedirectFactory->create();
 
         if (is_array($ids)) {
             try {
@@ -47,7 +53,7 @@ class MassStatus extends Action
                     __('A total of %1 record(s) have been updated.', $rules->getTotalCount())
                 );
 
-                return $this->_redirect('sales_rule/*/');
+                return $resultRedirect->setPath('sales_rule/*/');
             } catch (LocalizedException $exception) {
                 $this->messageManager->addExceptionMessage($exception);
             } catch (\Exception $exception) {
@@ -57,11 +63,11 @@ class MassStatus extends Action
                 );
             }
 
-            return $this->_redirect('sales_rule/*/');
+            return $resultRedirect->setPath('sales_rule/*/');
         }
 
         $this->messageManager->addErrorMessage(__('We can\'t find a rule to update its status.'));
 
-        return $this->_redirect('sales_rule/*/');
+        return $resultRedirect->setPath('sales_rule/*/');
     }
 }

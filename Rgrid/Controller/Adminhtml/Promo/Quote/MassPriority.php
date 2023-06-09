@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Promotions Manager for Magento 2
+ */
 
 namespace Amasty\Rgrid\Controller\Adminhtml\Promo\Quote;
 
@@ -40,6 +45,7 @@ class MassPriority extends Action
         /** @var int[]|null $ids */
         $ids = $this->getRequest()->getParam('ids');
         $rulePriority = $this->getRulePriority();
+        $resultRedirect = $this->resultRedirectFactory->create();
 
         if (is_array($ids)) {
             try {
@@ -56,7 +62,7 @@ class MassPriority extends Action
                     __('A total of %1 record(s) have been updated.', $rules->getTotalCount())
                 );
 
-                return $this->_redirect('sales_rule/*/');
+                return $resultRedirect->setPath('sales_rule/*/');
             } catch (LocalizedException $exception) {
                 $this->messageManager->addExceptionMessage($exception);
             } catch (\Exception $exception) {
@@ -66,12 +72,12 @@ class MassPriority extends Action
                 );
             }
 
-            return $this->_redirect('sales_rule/*/');
+            return $resultRedirect->setPath('sales_rule/*/');
         }
 
         $this->messageManager->addErrorMessage(__('We can\'t find a rule to update its priority.'));
 
-        return $this->_redirect('sales_rule/*/');
+        return $resultRedirect->setPath('sales_rule/*/');
     }
 
     /**
