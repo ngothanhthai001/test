@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Amasty_PromoReports::promo_reports" title="Free Gift Reports" sortOrder="50" module="Amasty_PromoReports" parent="Magento_Reports::report_marketing" action="amasty_promoreports/reports/" resource="Amasty_PromoReports::promo_reports"/>
+    </menu>
+</config>

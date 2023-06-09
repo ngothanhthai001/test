@@ -1,0 +1,142 @@
+//
+//  Promo Reports
+//  ____________________________________________
+
+//
+//  Common
+//  ----------------------------------------------
+
+& when (@media-common = true) {
+    .ampromo-actions-container {
+        .entry-edit {
+            .lib-vendor-prefix-display(flex);
+            .lib-vendor-prefix-flex-wrap(wrap);
+        }
+
+        .field-row:not(:last-of-type) {
+            margin-right: 30px;
+        }
+
+        .field-row:last-of-type {
+            margin-left: auto;
+        }
+
+        .ampromo-field {
+            min-width: 170px;
+        }
+    }
+
+    .ampromo-report-container {
+        & {
+            .lib-vendor-prefix-display(flex);
+            .lib-vendor-box-align(flex-start);
+            .lib-vendor-prefix-flex-wrap(wrap);
+        }
+
+        .ampromo-title {
+            margin-bottom: 20px;
+            color: #363636;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        > .ampromo-block {
+            width: 100%;
+        }
+
+        > .ampromo-block > .ampromo-wrapper {
+            height: 100%;
+
+            &:extend(.ampromo-plate-shadow);
+        }
+    }
+
+    .ampromo-report-error {
+        display: none;
+    }
+
+    .ampromo-report-statistic {
+        & {
+            margin-bottom: 20px;
+            max-width: 100%;
+            order: 1;
+        }
+
+        > .ampromo-wrapper {
+            padding: 35px 20px;
+        }
+    }
+
+    .ampromo-report-chart {
+        & {
+            margin-bottom: 20px;
+            order: 0;
+            -webkit-box-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+        }
+
+        > .ampromo-wrapper {
+            padding: 20px;
+        }
+
+        .ampromo-chart {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .ampromo-reports-table {
+        & {
+            width: 100%;
+        }
+
+        .ampromo-row {
+            border-bottom: 1px solid #e3e3e3;
+        }
+
+        .ampromo-value {
+            padding-left: 10px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .ampromo-name {
+            padding: 10px 0;
+        }
+    }
+
+    .ampromo-plate-shadow {
+        box-sizing: border-box;
+        border: 1px solid #e3e3e3;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(123, 123, 123, .1);
+    }
+
+    // Override magento styling - fix appearance data range
+    .ampromo-actions-container {
+        .field-row:nth-child(4),
+        .field-row:nth-child(5) {
+            display: none;
+        }
+    }
+}
+
+.media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__m) {
+    .ampromo-report-container {
+        > .ampromo-block:not(:last-of-type) {
+            margin-right: 30px;
+        }
+
+        .ampromo-report-statistic.ampromo-block {
+            min-width: 350px;
+            width: 30%;
+        }
+
+        .ampromo-report-chart.ampromo-block {
+            margin-bottom: 0;
+            width: inherit;
+            order: 2;
+        }
+    }
+}
