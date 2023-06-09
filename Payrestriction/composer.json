@@ -1,17 +1,17 @@
 {
-    "name": "amasty\/payrestriction",
+    "name": "amasty/payrestriction",
     "description": "Payment Restrictions by Amasty",
     "require": {
-        "php": "^7.1.0",
-        "amasty\/base": ">=1.13.1",
-        "amasty\/system-common-rules": ">=2.4.11"
+        "php": ">=7.3",
+        "amasty/base": ">=1.13.2",
+        "amasty/system-common-rules": ">=2.4.5"
     },
     "suggest": {
-        "amasty\/module-payrestriction-mftf-2": "Install module-payrestriction-mftf-2 module to be able to run Payment Restrictions MFTF tests for Magento 2.3.5+ version.",
-        "amasty\/module-payrestriction-mftf-3": "Install module-payrestriction-mftf-3 module to be able to run Payment Restrictions MFTF tests for Magento 2.4.0+ version."
+        "amasty/module-payrestriction-mftf-2": "Install module-payrestriction-mftf-2 module to be able to run Payment Restrictions MFTF tests for Magento 2.3.5+ version.",
+        "amasty/module-payrestriction-mftf-3": "Install module-payrestriction-mftf-3 module to be able to run Payment Restrictions MFTF tests for Magento 2.4.0+ version."
     },
     "type": "magento2-module",
-    "version": "2.3.11",
+    "version": "2.3.12",
     "license": [
         "Commercial"
     ],

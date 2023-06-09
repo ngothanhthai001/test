@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Payment Restrictions for Magento 2
+ */-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+  <table name="am_payrestriction_rule" resource="default" engine="innodb" comment="Amasty Payment Restriction Rule">
+    <column xsi:type="int" name="rule_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Rule Id"/>
+    <column xsi:type="int" name="for_admin" padding="10" unsigned="true" nullable="false" identity="false" comment="For Admin"/>
+    <column xsi:type="int" name="is_active" padding="10" unsigned="true" nullable="false" identity="false" comment="Active"/>
+    <column xsi:type="int" name="all_stores" padding="10" unsigned="true" nullable="false" identity="false" comment="All Stores"/>
+    <column xsi:type="int" name="all_groups" padding="10" unsigned="true" nullable="false" identity="false" comment="All Groups"/>
+    <column xsi:type="text" name="name" nullable="false" comment="Name"/>
+    <column xsi:type="int" name="out_of_stock" padding="11" unsigned="false" nullable="false" identity="false" comment="Out Of Stock"/>
+    <column xsi:type="text" name="days" nullable="false" comment="Days"/>
+    <column xsi:type="int" name="time_from" padding="11" unsigned="false" nullable="true" identity="false" comment="Time From"/>
+    <column xsi:type="int" name="time_to" padding="11" unsigned="false" nullable="true" identity="false" comment="Time To"/>
+    <column xsi:type="text" name="stores" nullable="false" comment="Stores"/>
+    <column xsi:type="text" name="cust_groups" nullable="false" comment="Groups"/>
+    <column xsi:type="text" name="message" nullable="true" comment="Message"/>
+    <column xsi:type="text" name="methods" nullable="true" comment="Methods"/>
+    <column xsi:type="text" name="conditions_serialized" nullable="true" comment="Conditions Serialized"/>
+    <column xsi:type="text" name="coupon_disable" nullable="false" comment="Coupon Disable"/>
+    <column xsi:type="text" name="discount_id_disable" nullable="false" comment="Disable Discount ID"/>
+    <column xsi:type="text" name="coupon" nullable="false" comment="Coupon"/>
+    <column xsi:type="text" name="discount_id" nullable="false" comment="Discount ID"/>
+    <constraint xsi:type="primary" referenceId="PRIMARY">
+      <column name="rule_id"/>
+    </constraint>
+  </table>
+  <table name="am_payrestriction_attribute" resource="default" engine="innodb" comment="Amasty Payment Restriction Attribute">
+    <column xsi:type="int" name="attr_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Attribute Id"/>
+    <column xsi:type="int" name="rule_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Rule Id"/>
+    <column xsi:type="text" name="code" nullable="false" comment="Code"/>
+    <constraint xsi:type="primary" referenceId="PRIMARY">
+      <column name="attr_id"/>
+    </constraint>
+  </table>
+</schema>

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Payment Restrictions for Magento 2
+ */
 
 namespace Amasty\Payrestriction\Controller\Adminhtml;
 
@@ -7,7 +12,7 @@ namespace Amasty\Payrestriction\Controller\Adminhtml;
  */
 abstract class Rule extends \Magento\Backend\App\Action
 {
-    const FIELDS = [
+    public const FIELDS = [
         'stores',
         'cust_groups',
         'methods',
@@ -17,8 +22,6 @@ abstract class Rule extends \Magento\Backend\App\Action
     ];
 
     /**
-     * Core registry
-     *
      * @var \Magento\Framework\Registry
      */
     protected $_coreRegistry = null;
@@ -29,8 +32,8 @@ abstract class Rule extends \Magento\Backend\App\Action
     protected $resultPageFactory;
 
     /**
-     *  @var \Magento\Framework\View\Result\LayoutFactory
-    */
+     * @var \Magento\Framework\View\Result\LayoutFactory|null
+     */
     protected $_resultLayoutFactory = null;
 
     public function __construct(
