@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
 <!--
 /**
-* @author Amasty Team
-* @copyright Copyright (c) 2022 Amasty (https://www.amasty.com)
-* @package Amasty_Base
-*/
--->
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Magento 2 Base Package
+ */-->
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
@@ -23,5 +22,12 @@
                 <api_url>https://irs.amasty.com</api_url>
             </licence_service>
         </amasty_base>
+        <system>
+            <media_storage_configuration>
+                <allowed_resources>
+                    <amasty>amasty</amasty>
+                </allowed_resources>
+            </media_storage_configuration>
+        </system>
     </default>
 </config>

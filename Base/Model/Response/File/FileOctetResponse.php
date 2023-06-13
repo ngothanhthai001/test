@@ -1,20 +1,22 @@
 <?php
-/**
-* @author Amasty Team
-* @copyright Copyright (c) 2022 Amasty (https://www.amasty.com)
-* @package Amasty_Base
-*/
-
 
 declare(strict_types=1);
+
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Magento 2 Base Package
+ */
 
 namespace Amasty\Base\Model\Response\File;
 
 use Amasty\Base\Model\MagentoVersion;
 use Amasty\Base\Model\Response\AbstractOctetResponse;
 use Amasty\Base\Model\Response\DownloadOutput;
-use Amasty\Base\Model\Response\OctetResponseInterface;
 use Magento\Framework\App;
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\File\ReadFactory;
 use Magento\Framework\Filesystem\File\ReadInterface;
 use Magento\Framework\Session\Config\ConfigInterface;
@@ -27,6 +29,11 @@ class FileOctetResponse extends AbstractOctetResponse
      */
     private $fileReadFactory;
 
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
     public function __construct(
         ReadFactory $fileReadFactory,
         DownloadOutput $downloadHelper,
@@ -36,9 +43,11 @@ class FileOctetResponse extends AbstractOctetResponse
         Stdlib\Cookie\CookieMetadataFactory $cookieMetadataFactory,
         App\Http\Context $context,
         Stdlib\DateTime $dateTime,
-        ConfigInterface $sessionConfig = null
+        ConfigInterface $sessionConfig = null,
+        Filesystem $filesystem = null
     ) {
         $this->fileReadFactory = $fileReadFactory;
+        $this->filesystem = $filesystem ?? ObjectManager::getInstance()->get(Filesystem::class);
 
         parent::__construct(
             $downloadHelper,
@@ -54,6 +63,8 @@ class FileOctetResponse extends AbstractOctetResponse
 
     public function getReadResourceByPath(string $readResourcePath): ReadInterface
     {
-        return $this->fileReadFactory->create($readResourcePath, OctetResponseInterface::FILE);
+        $driver = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getDriver();
+
+        return $this->fileReadFactory->create($readResourcePath, $driver);
     }
 }
