@@ -1,8 +1,19 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Sales Rules Wizard for Magento 2 (System)
+ */
 
 namespace Amasty\SalesRuleWizard\Block\Adminhtml;
 
+use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Block\Widget\Form\Renderer\Fieldset;
+use Magento\Config\Model\Config\Source\Yesno;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Data\FormFactory;
+use Magento\Framework\Registry;
+use Magento\Rule\Block\Actions as BlockActions;
 use Magento\SalesRule\Model\RuleFactory;
 
 class Actions extends \Magento\SalesRule\Block\Adminhtml\Promo\Quote\Edit\Tab\Actions implements
@@ -14,13 +25,41 @@ class Actions extends \Magento\SalesRule\Block\Adminhtml\Promo\Quote\Edit\Tab\Ac
     protected $_nameInLayout = 'actions_apply_to';
 
     /**
+     * @var RuleFactory|mixed
+     */
+    private $ruleFactory;
+
+    public function __construct(
+        Context $context,
+        Registry $registry,
+        FormFactory $formFactory,
+        Yesno $sourceYesno,
+        BlockActions $ruleActions,
+        Fieldset $rendererFieldset,
+        array $data = [],
+        RuleFactory $ruleFactory = null
+    ) {
+        $this->ruleFactory = $ruleFactory ?: ObjectManager::getInstance()->get(RuleFactory::class);
+        parent::__construct(
+            $context,
+            $registry,
+            $formFactory,
+            $sourceYesno,
+            $ruleActions,
+            $rendererFieldset,
+            $data,
+            $ruleFactory
+        );
+    }
+
+    /**
      * Prepare form before rendering HTML
      *
      * @return $this
      */
     protected function _prepareForm()
     {
-        $model = ObjectManager::getInstance()->get(RuleFactory::class)->create();
+        $model = $this->ruleFactory->create();
         $form = $this->addTabToForm($model);
         $this->setForm($form);
 
@@ -36,8 +75,11 @@ class Actions extends \Magento\SalesRule\Block\Adminhtml\Promo\Quote\Edit\Tab\Ac
      * @return \Magento\Framework\Data\Form
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function addTabToForm($model, $fieldsetId = 'actions_fieldset', $formName = 'amasty_promowizard_rule_settings')
-    {
+    protected function addTabToForm(
+        $model,
+        $fieldsetId = 'actions_fieldset',
+        $formName = 'amasty_promowizard_rule_settings'
+    ) {
         $actionsFieldSetId = $model->getActionsFieldSetId($formName);
 
         $newChildUrl = $this->getUrl(
@@ -48,13 +90,11 @@ class Actions extends \Magento\SalesRule\Block\Adminhtml\Promo\Quote\Edit\Tab\Ac
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix('rule_');
-        $renderer = $this->_rendererFieldset->setTemplate(
-            'Amasty_SalesRuleWizard::promo/fieldset.phtml'
-        )->setNewChildUrl(
-            $newChildUrl
-        )->setFieldSetId(
-            $actionsFieldSetId
-        );
+        $renderer = $this->_rendererFieldset
+            ->setTemplate('Amasty_SalesRuleWizard::promo/fieldset.phtml')
+            ->setNameInLayout('promo.wizard.fieldset')
+            ->setNewChildUrl($newChildUrl)
+            ->setFieldSetId($actionsFieldSetId);
 
         $fieldset = $form->addFieldset(
             $fieldsetId,

@@ -1,5 +1,12 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Sales Rules Wizard for Magento 2 (System)
+ */
 namespace Amasty\SalesRuleWizard\Controller\Adminhtml\Wizard;
+
+use Magento\SalesRule\Model\Rule;
 
 class NewActionHtml extends \Magento\Backend\App\Action
 {
@@ -8,7 +15,7 @@ class NewActionHtml extends \Magento\Backend\App\Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Magento_SalesRule::quote';
+    public const ADMIN_RESOURCE = 'Magento_SalesRule::quote';
 
     /**
      * New action html action
@@ -24,7 +31,7 @@ class NewActionHtml extends \Magento\Backend\App\Action
         $model = $this->_objectManager->create($type)
             ->setId($id)
             ->setType($type)
-            ->setRule($this->_objectManager->create('Magento\SalesRule\Model\Rule'))
+            ->setRule($this->_objectManager->create(Rule::class))
             ->setPrefix('actions');
 
         if (!empty($typeArr[1])) {

@@ -1,12 +1,17 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Sales Rules Wizard for Magento 2 (System)
+ */
 
 namespace Amasty\SalesRuleWizard\Model\OptionsProvider;
 
 class ApplyTime implements \Magento\Framework\Data\OptionSourceInterface
 {
-    const FIRST_TIME = 'first';
-    const EVERY_TIME = 'every';
-    const LIMIT_TIME = 'limit';
+    public const FIRST_TIME = 'first';
+    public const EVERY_TIME = 'every';
+    public const LIMIT_TIME = 'limit';
 
     /**
      * @return array

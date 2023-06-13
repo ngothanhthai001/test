@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Sales Rules Wizard for Magento 2 (System)
+ */
 
 namespace Amasty\SalesRuleWizard\Controller\Adminhtml\Wizard;
 
@@ -9,7 +14,7 @@ class Save extends \Magento\Backend\App\Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Magento_SalesRule::quote';
+    public const ADMIN_RESOURCE = 'Magento_SalesRule::quote';
 
     /**
      * @var \Magento\SalesRule\Model\RuleFactory
@@ -33,14 +38,16 @@ class Save extends \Magento\Backend\App\Action
 
     public function execute()
     {
+        $resultRedirect = $this->resultRedirectFactory->create();
+
         /** @var $model \Magento\SalesRule\Model\Rule */
         $data = $this->getRequest()->getParams();
         $scenario = $this->getRequest()->getParam('scenario');
 
         if (!isset($data['apply_settings'], $data['rule_settings'], $data['additional']) || !$scenario) {
             $this->messageManager->addErrorMessage(__('Form Data is empty'));
-            $this->_redirect('*/*/index');
-            return;
+
+            return $resultRedirect->setPath('*/*/index');
         }
 
         $model = $this->ruleFactory->create();
@@ -100,8 +107,8 @@ class Save extends \Magento\Backend\App\Action
                 $this->messageManager->addErrorMessage($errorMessage);
             }
             $this->session->setPageData($ruleData);
-            $this->_redirect('*/*', ['id' => $model->getId()]);
-            return;
+
+            return  $resultRedirect->setPath('*/*', ['id' => $model->getId()]);
         }
 
         try {
@@ -112,24 +119,23 @@ class Save extends \Magento\Backend\App\Action
             $this->messageManager->addErrorMessage($e->getMessage());
             $id = (int)$this->getRequest()->getParam('rule_id');
             if (!empty($id)) {
-                $this->_redirect('*/*', ['id' => $id]);
+                return $resultRedirect->setPath('*/*', ['id' => $id]);
             } else {
-                $this->_redirect('*/*');
+                return $resultRedirect->setPath('*/*');
             }
-            return;
         } catch (\Exception $e) {
             $this->session->setPageData($ruleData);
             $this->messageManager->addErrorMessage(
                 __('Something went wrong while saving the rule data. Please review the error log.')
             );
             $this->_objectManager->get(\Psr\Log\LoggerInterface::class)->critical($e);
-            $this->_redirect('*/*', ['id' => $this->getRequest()->getParam('rule_id')]);
-            return;
+
+            return $resultRedirect->setPath('*/*', ['id' => $this->getRequest()->getParam('rule_id')]);
         }
 
         $this->addSuccessMessage($model);
 
-        $this->_redirect('sales_rule/promo_quote/index');
+        return $resultRedirect->setPath('sales_rule/promo_quote/index');
     }
 
     /**

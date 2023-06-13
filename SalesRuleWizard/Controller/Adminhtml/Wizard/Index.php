@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Sales Rules Wizard for Magento 2 (System)
+ */
 
 namespace Amasty\SalesRuleWizard\Controller\Adminhtml\Wizard;
 
@@ -11,7 +16,7 @@ class Index extends \Magento\Backend\App\Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Amasty_SalesRuleWizard::wizard';
+    public const ADMIN_RESOURCE = 'Amasty_SalesRuleWizard::wizard';
 
     /**
      * Index action

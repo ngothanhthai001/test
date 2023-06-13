@@ -1,13 +1,21 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Sales Rules Wizard for Magento 2 (System)
+ */
 
 namespace Amasty\SalesRuleWizard\Block\Adminhtml\Steps;
 
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Serialize\Serializer\Json;
+
 class Initial extends \Magento\Ui\Block\Component\StepsWizard\StepAbstract
 {
-    const TYPE_FREE_GIFT = 'add_free_product';
+    public const TYPE_FREE_GIFT = 'add_free_product';
 
-    const SCENARIO_BUY_X_GET_Y = 'buy_x_get_y';
-    const SCENARIO_SPENT_X_GET_Y = 'spent_x_get_y';
+    public const SCENARIO_BUY_X_GET_Y = 'buy_x_get_y';
+    public const SCENARIO_SPENT_X_GET_Y = 'spent_x_get_y';
     /**
      * @return string
      */
@@ -51,7 +59,11 @@ class Initial extends \Magento\Ui\Block\Component\StepsWizard\StepAbstract
             ]
         ];
 
-        return \Zend_Json::encode($actions);
+        //use object manager to avoid loading dependencies of parent class
+        $objectManager = ObjectManager::getInstance();
+        $serializer = $objectManager->create(Json::class);
+
+        return $serializer->serialize($actions);
     }
 
     /**
