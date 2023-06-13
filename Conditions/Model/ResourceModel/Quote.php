@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */
 
 namespace Amasty\Conditions\Model\ResourceModel;
 
@@ -7,7 +12,7 @@ use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
 class Quote extends AbstractDb
 {
-    const TABLE_NAME = 'amasty_conditions_quote';
+    public const TABLE_NAME = 'amasty_conditions_quote';
 
     protected function _construct()
     {

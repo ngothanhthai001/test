@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */
 
 namespace Amasty\Conditions\Model\Rule\Condition;
 
@@ -15,13 +20,13 @@ use Magento\Store\Model\StoreManagerInterface;
 
 class Address extends AbstractCondition
 {
-    const CUSTOM_OPERATORS = [
+    public const CUSTOM_OPERATORS = [
         AddressInterface::SHIPPING_ADDRESS_LINE,
         AddressInterface::CITY,
         AddressInterface::CURRENCY
     ];
 
-    const VALUE_PARTS_FOR_CONTAINS = [
+    public const VALUE_PARTS_FOR_CONTAINS = [
         'klarna',
         'vault'
     ];
@@ -277,7 +282,7 @@ class Address extends AbstractCondition
             }
         }
 
-        return parent::validateAttribute(trim($attrValue));
+        return parent::validateAttribute(trim((string)$attrValue));
     }
 
     /**
@@ -384,7 +389,7 @@ class Address extends AbstractCondition
                 'city' => $address->getCity(),
                 'shipping_address_line' => $address->getStreet(),
                 'custom_attributes' => $address->getCustomAttributes(),
-                'billing_address_country' => $address->getCountryId(),
+                'billing_address_country' => $quote->getBillingAddress()->getCountryId(),
                 'currency' => $this->storeManager->getStore()->getCurrentCurrency()->getCode()
             ];
             $addressModel->setData($advancedConditionData);

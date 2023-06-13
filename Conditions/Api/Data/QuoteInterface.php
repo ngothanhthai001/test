@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */
 
 namespace Amasty\Conditions\Api\Data;
 
@@ -7,11 +12,11 @@ interface QuoteInterface
     /**#@+
      * Constants defined for keys of array, makes typos less likely
      */
-    const ITEM_ID = 'id';
+    public const ITEM_ID = 'id';
 
-    const QUOTE_ID = 'quote_id';
+    public const QUOTE_ID = 'quote_id';
 
-    const PAYMENT_CODE = 'payment_code';
+    public const PAYMENT_CODE = 'payment_code';
 
     /**#@-*/
 

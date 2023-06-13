@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */
 
 namespace Amasty\Conditions\Model\Rule\Condition;
 
@@ -13,12 +18,12 @@ use Amasty\Conditions\Model\Constants;
  */
 class CustomerAttributes extends \Magento\Rule\Model\Condition\AbstractCondition
 {
-    const CUSTOM_ATTRIBUTES_NAME = 'custom_attributes';
+    public const CUSTOM_ATTRIBUTES_NAME = 'custom_attributes';
 
     /**
      * @var array
      */
-    const NOT_ALLOWED_ATTRIBUTES = [
+    public const NOT_ALLOWED_ATTRIBUTES = [
         'lock_expires',
         'first_failure',
         'group_id',
@@ -33,7 +38,7 @@ class CustomerAttributes extends \Magento\Rule\Model\Condition\AbstractCondition
     /**
      * @var array
      */
-    const AVAILABLE_TYPES = [
+    public const AVAILABLE_TYPES = [
         'checkbox',
         'checkboxes',
         'date',
@@ -57,9 +62,9 @@ class CustomerAttributes extends \Magento\Rule\Model\Condition\AbstractCondition
     /**
      * @var array
      */
-    const INPUT_TYPES = ['string', 'numeric', 'date', 'select', 'multiselect', 'grid', 'boolean'];
+    public const INPUT_TYPES = ['string', 'numeric', 'date', 'select', 'multiselect', 'grid', 'boolean'];
 
-    const SECONDS_IN_DAY = 60 * 60 * 24;
+    public const SECONDS_IN_DAY = 60 * 60 * 24;
 
     /**
      * @var \Magento\Customer\Model\ResourceModel\Customer
@@ -168,10 +173,9 @@ class CustomerAttributes extends \Magento\Rule\Model\Condition\AbstractCondition
     public function getValue()
     {
         if ($this->getInputType() == 'date' && !$this->getIsValueParsed()) {
+            $value = (string)$this->getData('value');
             // date format intentionally hard-coded
-            $this->setValue(
-                (new \DateTime($this->getData('value')))->format('Y-m-d')
-            );
+            $this->setValue((new \DateTime($value))->format('Y-m-d'));
             $this->setIsValueParsed(true);
         }
 
@@ -331,6 +335,10 @@ class CustomerAttributes extends \Magento\Rule\Model\Condition\AbstractCondition
                 $allAttr[$attr] = $this->getMembership($customer->getCreatedAt());
             }
 
+            if ($attr === 'created_at') {
+                $allAttr[$attr] = $this->getRegistrationDate($customer->getCreatedAt());
+            }
+
             if ($attr !== 'entity_id' && !array_key_exists($attr, $allAttr)) {
                 if (isset($allAttr[self::CUSTOM_ATTRIBUTES_NAME])
                     && array_key_exists($attr, $allAttr[self::CUSTOM_ATTRIBUTES_NAME])
@@ -379,5 +387,15 @@ class CustomerAttributes extends \Magento\Rule\Model\Condition\AbstractCondition
     private function getMembership($created)
     {
         return round((time() - strtotime($created)) / self::SECONDS_IN_DAY);
+    }
+
+    /**
+     * @param $created
+     *
+     * @return string
+     */
+    private function getRegistrationDate($created)
+    {
+        return date('Y-m-d', strtotime($created));
     }
 }

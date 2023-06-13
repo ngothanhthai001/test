@@ -1,7 +1,13 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */
 
 namespace Amasty\Conditions\Model\Rule\Condition;
 
+use Magento\Catalog\Model\Product\Type;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 
 class Product extends \Magento\Rule\Model\Condition\AbstractCondition
@@ -78,6 +84,10 @@ class Product extends \Magento\Rule\Model\Condition\AbstractCondition
 
         /** @var \Magento\Quote\Model\Quote\Item $item */
         foreach ($quote->getAllItems() as $item) {
+            if ($item->getProductType() == Type::TYPE_BUNDLE) {
+                continue;
+            }
+
             $attrValue = $this->getAttribute() === 'quantity_in_stock'
                 ? $this->getStockQty($item)
                 : $item->getWeight();

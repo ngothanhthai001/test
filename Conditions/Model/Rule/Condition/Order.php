@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */
 
 namespace Amasty\Conditions\Model\Rule\Condition;
 
@@ -84,6 +89,15 @@ class Order extends \Magento\SalesRule\Model\Rule\Condition\Product\Combine
     public function getValueElementType()
     {
         return 'text';
+    }
+
+    /**
+     * @return $this|Order
+     */
+    public function loadValueOptions()
+    {
+        $this->setValueOption([]);
+        return $this;
     }
 
     /**

@@ -1,15 +1,20 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */
 
 namespace Amasty\Conditions\Observer\Admin;
 
 class AddNewConditionHandle implements \Magento\Framework\Event\ObserverInterface
 {
-    const CONDITIONS = [
+    public const CONDITIONS = [
         'Advanced Conditions' => ['Product', 'Address'],
         'Customer Attributes' => ['Customer Attributes']
     ];
 
-    const CONDITION_MODEL_PATH = 'Amasty\Conditions\Model\Rule\Condition\\';
+    public const CONDITION_MODEL_PATH = 'Amasty\Conditions\Model\Rule\Condition\\';
 
     /**
      * @var \Magento\Framework\ObjectManagerInterface

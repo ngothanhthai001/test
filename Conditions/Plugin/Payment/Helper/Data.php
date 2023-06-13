@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */
 
 namespace Amasty\Conditions\Plugin\Payment\Helper;
 
@@ -116,6 +121,9 @@ class Data
         foreach ($methods as $code => $title) {
             if (isset($groups[$code])) {
                 $labelValues[$code]['label'] = $title;
+                if (!isset($labelValues[$code]['value'])) {
+                        $labelValues[$code]['value'] = null;
+                }
             } elseif (isset($groupRelations[$code])) {
                 unset($labelValues[$code]);
                 $labelValues[$groupRelations[$code]]['value'][$code] = ['value' => $code, 'label' => $title];

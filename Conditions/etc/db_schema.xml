@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+  <table name="amasty_conditions_quote" resource="default" engine="innodb" comment="Amasty Conditions Quote Information">
+    <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID" onCreate="migrateDataFrom(id)"/>
+    <column xsi:type="int" name="quote_id" padding="10" unsigned="true" nullable="true" identity="false" comment="Quote ID" onCreate="migrateDataFrom(quote_id)"/>
+    <column xsi:type="text" name="payment_code" nullable="false" comment="Payment Code For Quote"/>
+    <constraint xsi:type="primary" referenceId="PRIMARY">
+      <column name="id"/>
+    </constraint>
+    <constraint xsi:type="primary" referenceId="STAGING_PRIMARY">
+      <column name="id"/>
+    </constraint>
+    <index referenceId="AMASTY_CONDITIONS_QUOTE_QUOTE_ID" indexType="btree">
+      <column name="quote_id"/>
+    </index>
+  </table>
+</schema>

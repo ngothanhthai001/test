@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */
 
 namespace Amasty\Conditions\Api\Data;
 
@@ -7,12 +12,12 @@ interface AddressInterface
     /**
      * Constants defined for keys of array, makes typos less likely
      */
-    const PAYMENT_METHOD = 'payment_method';
-    const SHIPPING_ADDRESS_LINE = 'shipping_address_line';
-    const CUSTOM_ATTRIBUTES = 'custom_attributes';
-    const BILLING_ADDRESS_COUNTRY = 'billing_address_country';
-    const CITY = 'city';
-    const CURRENCY = 'currency';
+    public const PAYMENT_METHOD = 'payment_method';
+    public const SHIPPING_ADDRESS_LINE = 'shipping_address_line';
+    public const CUSTOM_ATTRIBUTES = 'custom_attributes';
+    public const BILLING_ADDRESS_COUNTRY = 'billing_address_country';
+    public const CITY = 'city';
+    public const CURRENCY = 'currency';
 
     /**
      * Get payment method

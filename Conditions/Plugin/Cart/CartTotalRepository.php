@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Advanced Conditions for Magento 2
+ */
 
 namespace Amasty\Conditions\Plugin\Cart;
 
@@ -7,7 +12,7 @@ use Magento\Framework\Registry;
 
 class CartTotalRepository
 {
-    const REGISTRY_IGNORE_EXTENSION_ATTRIBUTES_KEY = 'amasty_conditions_ignore_extension_attributes';
+    public const REGISTRY_IGNORE_EXTENSION_ATTRIBUTES_KEY = 'amasty_conditions_ignore_extension_attributes';
 
     /**
      * @var Registry
