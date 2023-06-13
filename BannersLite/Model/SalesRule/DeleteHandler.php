@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Model\SalesRule;
 
@@ -7,9 +12,6 @@ use Amasty\BannersLite\Model\Cache;
 use Amasty\BannersLite\Model\ImageProcessor;
 use Magento\Framework\EntityManager\Operation\ExtensionInterface;
 
-/**
- * Class DeleteHandler
- */
 class DeleteHandler implements ExtensionInterface
 {
     /**
@@ -61,9 +63,7 @@ class DeleteHandler implements ExtensionInterface
 
         /** @var \Amasty\BannersLite\Model\Banner $banner */
         foreach ($banners as $banner) {
-            if(!is_array($banner)) {
-                $this->imageProcessor->deleteImage($banner->getBannerImage());
-            }
+            $this->imageProcessor->deleteImage((string)$banner->getBannerImage());
         }
     }
 }

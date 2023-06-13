@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Controller\Adminhtml\Banners;
 
@@ -6,11 +11,9 @@ use Magento\Framework\Controller\ResultFactory;
 
 class Upload extends \Magento\Backend\App\Action
 {
-    const PARAM_NAME = 'banner_image';
+    public const PARAM_NAME = 'banner_image';
 
     /**
-     * Image uploader
-     *
      * @var \Amasty\BannersLite\Model\BannerImageUpload
      */
     private $imageUploader;

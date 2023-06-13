@@ -1,13 +1,18 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Model;
 
-class BannerImageUpload extends \Magento\Catalog\Model\ImageUploader
+use Magento\Catalog\Model\ImageUploader;
+use Magento\Framework\File\Uploader;
+
+class BannerImageUpload extends ImageUploader
 {
-    /**
-     * @inheritdoc
-     */
-    public function moveFileFromTmp($imageName, $returnRelativePath = false)
+    public function moveFileFromTmp($imageName, $returnRelativePath = false): string
     {
         $baseTmpPath = $this->getBaseTmpPath();
         $basePath = $this->getBasePath();
@@ -34,12 +39,17 @@ class BannerImageUpload extends \Magento\Catalog\Model\ImageUploader
         return $returnRelativePath ? $baseImagePath : $validName;
     }
 
-    /**
-     * @param string $fileName
-     *
-     * @return string
-     */
-    public function duplicateFile($fileName)
+    public function deleteFromTmp(string $fileName): void
+    {
+        $path = $this->getBaseTmpPath();
+        $baseTmpImagePath = $this->getFilePath($path, $fileName);
+
+        if ($this->mediaDirectory->isExist($baseTmpImagePath)) {
+            $this->mediaDirectory->delete($baseTmpImagePath);
+        }
+    }
+
+    public function duplicateFile(string $fileName): string
     {
         $basePath = $this->getBasePath();
         $validName = $this->getValidNewFileName($basePath, $fileName);
@@ -55,16 +65,10 @@ class BannerImageUpload extends \Magento\Catalog\Model\ImageUploader
         return $validName;
     }
 
-    /**
-     * @param string $basePath
-     * @param string $imageName
-     *
-     * @return string
-     */
-    private function getValidNewFileName($basePath, $imageName)
+    private function getValidNewFileName(string $basePath, string $imageName): string
     {
         $basePath = $this->mediaDirectory->getAbsolutePath($basePath) . DIRECTORY_SEPARATOR . $imageName;
 
-        return \Magento\Framework\File\Uploader::getNewFileName($basePath);
+        return Uploader::getNewFileName($basePath);
     }
 }

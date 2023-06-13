@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */-->
 
 <form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <fieldset name="promo_banners_highlights">
@@ -88,7 +94,7 @@
                     <item name="label" xsi:type="string" translate="true">Product SKUs</item>
                     <item name="visible" xsi:type="boolean">true</item>
                     <item name="dataType" xsi:type="string">text</item>
-                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="formElement" xsi:type="string">textarea</item>
                     <item name="source" xsi:type="string">sales_rule</item>
                     <item name="dataScope" xsi:type="string">extension_attributes.banner_product_sku</item>
                     <item name="sortOrder" xsi:type="number">2</item>
@@ -137,7 +143,9 @@
                         <item name="label" xsi:type="string" translate="true">Image</item>
                         <item name="visible" xsi:type="boolean">true</item>
                         <item name="formElement" xsi:type="string">fileUploader</item>
-                        <item name="componentType" xsi:type="string">fileUploader</item>
+                        <item name="component" xsi:type="string">Amasty_BannersLite/js/form/element/file-uploader</item>
+                        <item name="previewTmpl" xsi:type="string">Amasty_BannersLite/form/element/uploader-preview</item>
+                        <item name="deleteUrl" xsi:type="url" path="banners_lite/banners/deleteTmp"/>
                         <item name="sortOrder" xsi:type="number">10</item>
                         <item name="source" xsi:type="string">sales_rule</item>
                         <item name="dataScope" xsi:type="string">extension_attributes.promo_banners_lite.0.banner_image</item>
@@ -203,7 +211,9 @@
                         <item name="label" xsi:type="string" translate="true">Image</item>
                         <item name="visible" xsi:type="boolean">true</item>
                         <item name="formElement" xsi:type="string">fileUploader</item>
-                        <item name="componentType" xsi:type="string">fileUploader</item>
+                        <item name="component" xsi:type="string">Amasty_BannersLite/js/form/element/file-uploader</item>
+                        <item name="previewTmpl" xsi:type="string">Amasty_BannersLite/form/element/uploader-preview</item>
+                        <item name="deleteUrl" xsi:type="url" path="banners_lite/banners/deleteTmp"/>
                         <item name="sortOrder" xsi:type="number">10</item>
                         <item name="source" xsi:type="string">sales_rule</item>
                         <item name="dataScope" xsi:type="string">extension_attributes.promo_banners_lite.1.banner_image</item>
@@ -269,7 +279,9 @@
                         <item name="label" xsi:type="string" translate="true">Image</item>
                         <item name="visible" xsi:type="boolean">true</item>
                         <item name="formElement" xsi:type="string">fileUploader</item>
-                        <item name="componentType" xsi:type="string">fileUploader</item>
+                        <item name="component" xsi:type="string">Amasty_BannersLite/js/form/element/file-uploader</item>
+                        <item name="previewTmpl" xsi:type="string">Amasty_BannersLite/form/element/uploader-preview</item>
+                        <item name="deleteUrl" xsi:type="url" path="banners_lite/banners/deleteTmp"/>
                         <item name="sortOrder" xsi:type="number">10</item>
                         <item name="source" xsi:type="string">sales_rule</item>
                         <item name="dataScope" xsi:type="string">extension_attributes.promo_banners_lite.2.banner_image</item>

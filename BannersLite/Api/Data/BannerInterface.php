@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Api\Data;
 
@@ -6,16 +11,16 @@ use Magento\Framework\Api\ExtensibleDataInterface;
 
 interface BannerInterface extends ExtensibleDataInterface
 {
-    const EXTENSION_CODE = 'promo_banners_lite';
+    public const EXTENSION_CODE = 'promo_banners_lite';
 
-    const TOP_BANNER = 0;
-    const AFTER_BANNER = 1;
-    const PRODUCT_LABEL = 2;
+    public const TOP_BANNER = 0;
+    public const AFTER_BANNER = 1;
+    public const PRODUCT_LABEL = 2;
 
     /**
      * Array with banner positions
      */
-    const BANNER_POSITIONS = [
+    public const BANNER_POSITIONS = [
         self::TOP_BANNER => 'top',
         self::AFTER_BANNER => 'after_description',
         self::PRODUCT_LABEL => 'product'
@@ -24,13 +29,13 @@ interface BannerInterface extends ExtensibleDataInterface
     /**#@+
      * Constants defined for keys of data array
      */
-    const ENTITY_ID = 'entity_id';
-    const SALESRULE_ID = 'salesrule_id';
-    const BANNER_TYPE = 'banner_type';
-    const BANNER_IMAGE = 'banner_image';
-    const BANNER_ALT = 'banner_alt';
-    const BANNER_HOVER_TEXT = 'banner_hover_text';
-    const BANNER_LINK = 'banner_link';
+    public const ENTITY_ID = 'entity_id';
+    public const SALESRULE_ID = 'salesrule_id';
+    public const BANNER_TYPE = 'banner_type';
+    public const BANNER_IMAGE = 'banner_image';
+    public const BANNER_ALT = 'banner_alt';
+    public const BANNER_HOVER_TEXT = 'banner_hover_text';
+    public const BANNER_LINK = 'banner_link';
     /**#@-*/
 
     /**

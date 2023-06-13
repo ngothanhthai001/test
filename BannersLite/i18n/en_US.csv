@@ -10,6 +10,8 @@
 "BannerRule with specified ID ""%1"" not found.","BannerRule with specified ID ""%1"" not found."
 "Unable to remove bannerRule with ID %1. Error: %2","Unable to remove bannerRule with ID %1. Error: %2"
 "Unable to remove bannerRule. Error: %1","Unable to remove bannerRule. Error: %1"
+"Base64 Decode File Error","Base64 Decode File Error"
+"Delete image","Delete image"
 "Promo Banners Lite","Promo Banners Lite"
 General,General
 "Enable Top Banners","Enable Top Banners"

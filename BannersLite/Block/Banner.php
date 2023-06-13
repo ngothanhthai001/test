@@ -1,11 +1,18 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Block;
 
 use Amasty\BannersLite\Api\Data\BannerInterface;
 use Amasty\BannersLite\Model\ConfigProvider;
+use Amasty\BannersLite\Model\ImageProcessor;
 use Amasty\BannersLite\Model\ProductBannerProvider;
 use Amasty\Base\Model\Serializer;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\View\Element\Template;
 
 /**
@@ -25,26 +32,27 @@ class Banner extends Template
     private $banners;
 
     /**
-     * @var Serializer
-     */
-    private $serializerBase;
-
-    /**
      * @var ConfigProvider
      */
     private $configProvider;
 
+    /**
+     * @var ImageProcessor
+     */
+    private $imageProcessor;
+
     public function __construct(
         Template\Context $context,
         ProductBannerProvider $banners,
-        Serializer $serializerBase,
+        Serializer $serializerBase, //@deprecated backward compatibility
         ConfigProvider $configProvider,
-        array $data = []
+        array $data = [],
+        ImageProcessor $imageProcessor = null //todo: move to not optional
     ) {
         parent::__construct($context, $data);
         $this->banners = $banners;
-        $this->serializerBase = $serializerBase;
         $this->configProvider = $configProvider;
+        $this->imageProcessor = $imageProcessor ?? ObjectManager::getInstance()->get(ImageProcessor::class);
     }
 
     /**
@@ -85,10 +93,9 @@ class Banner extends Template
         $url = null;
 
         if ($banner[BannerInterface::BANNER_TYPE] == $this->getPosition()) {
-            $image = $this->serializerBase->unserialize($banner[BannerInterface::BANNER_IMAGE]);
-            if (is_array($image) && count($image) > 0 && $this->isOneBanner()) {
-                $image = end($image);
-                $url = $image['url'];
+            $image = (string)$banner[BannerInterface::BANNER_IMAGE];
+            if ($image && $this->isOneBanner()) {
+                $url = $this->imageProcessor->getBannerImageUrl($image);
             }
         }
 

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Model;
 
@@ -17,12 +22,12 @@ class Cache extends \Magento\Framework\Cache\Frontend\Decorator\TagScope
     /**
      * Cache type code unique among all cache types
      */
-    const TYPE_IDENTIFIER = 'full_page';
+    public const TYPE_IDENTIFIER = 'full_page';
 
     /**
      * Cache tag used to distinguish the cache type from all other cache
      */
-    const CACHE_TAG = 'FPC';
+    public const CACHE_TAG = 'FPC';
 
     /**
      * @var CollectionFactory

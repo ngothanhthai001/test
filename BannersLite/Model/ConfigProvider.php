@@ -1,16 +1,24 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Model;
 
 class ConfigProvider extends \Amasty\Base\Model\ConfigProviderAbstract
 {
+    /**
+     * @var string
+     */
     protected $pathPrefix = 'amasty_banners_lite/';
 
-    const BANNERS_GROUP_GENERAL = 'general/';
-    const ENABLE_TOP_BANNERS = 'enable_top_banner';
-    const ENABLE_AFTER_BANNERS = 'enable_after_banner';
-    const ENABLE_PRODUCT_BANNERS = 'enable_product_label';
-    const ONE_BANNER = 'show_one_banner';
+    public const BANNERS_GROUP_GENERAL = 'general/';
+    public const ENABLE_TOP_BANNERS = 'enable_top_banner';
+    public const ENABLE_AFTER_BANNERS = 'enable_after_banner';
+    public const ENABLE_PRODUCT_BANNERS = 'enable_product_label';
+    public const ONE_BANNER = 'show_one_banner';
 
     /**
      * @return bool

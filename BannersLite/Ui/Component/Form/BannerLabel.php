@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Ui\Component\Form;
 
@@ -11,13 +16,13 @@ use Magento\Framework\UrlInterface;
 
 class BannerLabel extends Field
 {
-    const MODULE_NAME = 'Amasty_Label';
+    public const MODULE_NAME = 'Amasty_Label';
 
-    const LABEL_GUIDE_URL = 'https://amasty.com/product-labels-for-magento-2.html'
+    public const LABEL_GUIDE_URL = 'https://amasty.com/product-labels-for-magento-2.html'
     . '?utm_source=extension&utm_medium=link&utm_campaign=sp-plabels-m2';
-    const MARKETPLACE_URL = 'https://marketplace.magento.com/amasty-label.html';
+    public const MARKETPLACE_URL = 'https://marketplace.magento.com/amasty-label.html';
 
-    const LABEL_URL = 'amasty_label/labels';
+    public const LABEL_URL = 'amasty_label/labels';
 
     /**
      * @var Manager

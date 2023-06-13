@@ -1,12 +1,19 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Model;
 
 use Amasty\Base\Model\Serializer;
 use Amasty\BannersLite\Model\BannerImageUpload;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Directory\WriteInterface;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 class ImageProcessor
@@ -14,27 +21,17 @@ class ImageProcessor
     /**
      * Banners area inside media folder
      */
-    const BANNERS_MEDIA_PATH = 'amasty/banners_lite';
+    public const BANNERS_MEDIA_PATH = 'amasty/banners_lite';
 
     /**
      * Banners temporary area inside media folder
      */
-    const BANNERS_MEDIA_TMP_PATH = 'amasty/banners_lite/tmp';
+    public const BANNERS_MEDIA_TMP_PATH = 'amasty/banners_lite/tmp';
 
     /**
      * @var WriteInterface
      */
     private $mediaDirectory;
-
-    /**
-     * @var Filesystem
-     */
-    private $filesystem;
-
-    /**
-     * @var Serializer
-     */
-    private $serializer;
 
     /**
      * @var BannerImageUpload
@@ -48,103 +45,57 @@ class ImageProcessor
 
     public function __construct(
         Filesystem $filesystem,
-        Serializer $serializer,
+        Serializer $serializer, //@deprecated backward compatibility
         BannerImageUpload $imageUploader,
         StoreManagerInterface $storeManager
     ) {
-        $this->filesystem = $filesystem;
-        $this->serializer = $serializer;
+        $this->mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
         $this->imageUploader = $imageUploader;
         $this->storeManager = $storeManager;
     }
 
-    /**
-     * @param string $imageName
-     *
-     * @return string string
-     */
-    public function getBannerImageUrl($imageName)
+    public function getBannerImageUrl(string $imageName): string
     {
-        return $this->getBannerMedia($imageName) . DIRECTORY_SEPARATOR . $imageName;
+        return rtrim($this->getBannerMedia($imageName), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $imageName;
     }
 
-    /**
-     * @param string $imageName
-     *
-     * @return string
-     */
-    public function moveFileFromTmp($imageName)
+    public function moveFileFromTmp(string $imageName): string
     {
-        try {
-            return $this->imageUploader->moveFileFromTmp($imageName, true);
-        } catch (\Magento\Framework\Exception\LocalizedException $exception) {
-            // file already was moved from tmp
-            return $imageName;
-        }
+        return $this->imageUploader->moveFileFromTmp($imageName);
     }
 
-    /**
-     * @param string $imageName
-     *
-     * @return string
-     */
-    public function copyFile($imageName)
+    public function copyFile(string $imageName): string
     {
         try {
             return $this->imageUploader->duplicateFile($imageName);
-        } catch (\Magento\Framework\Exception\LocalizedException $exception) {
+        } catch (LocalizedException $exception) {
             // file already was duplicated
             return $imageName;
         }
     }
 
-    /**
-     * @param string $bannerImage
-     */
-    public function deleteImage($bannerImage)
+    public function deleteImage(string $bannerImage): void
     {
-        $banner = $this->serializer->unserialize($bannerImage);
-
-        if ($banner) {
-            $this->getMediaDirectory()->delete(
-                $this->getBannersRelativePath($banner[0]['name'])
+        if ($bannerImage) {
+            $this->mediaDirectory->delete(
+                $this->getBannersRelativePath($bannerImage)
             );
         }
     }
 
-    /**
-     * @param string $bannerName
-     *
-     * @return string
-     */
-    private function getBannersRelativePath($bannerName)
+    private function getBannersRelativePath(string $bannerName): string
     {
         return self::BANNERS_MEDIA_PATH . DIRECTORY_SEPARATOR . $bannerName;
     }
 
     /**
-     * @return WriteInterface
-     */
-    private function getMediaDirectory()
-    {
-        if ($this->mediaDirectory === null) {
-            $this->mediaDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA);
-        }
-
-        return $this->mediaDirectory;
-    }
-
-    /**
      * Url type http://url/pub/media/amasty/banners_lite
-     *
-     * @param string $imageName
-     * @return string
      */
-    private function getBannerMedia($imageName = '')
+    private function getBannerMedia(string $imageName): string
     {
         $bannerMedia = $this->storeManager
             ->getStore()
-            ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+            ->getBaseUrl(UrlInterface::URL_TYPE_MEDIA);
         if (strpos($imageName, self::BANNERS_MEDIA_PATH) === false) {
             $bannerMedia .= self::BANNERS_MEDIA_PATH;
         }

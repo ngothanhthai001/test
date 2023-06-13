@@ -1,61 +1,49 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Plugin\SalesRule\Model;
 
 use Amasty\BannersLite\Api\Data\BannerInterface;
+use Amasty\BannersLite\Model\Banner;
 use Amasty\BannersLite\Model\ImageProcessor;
-use Amasty\Base\Model\Serializer;
 use Magento\SalesRule\Model\Data\Rule;
+use Magento\SalesRule\Model\Rule\DataProvider;
 
 class DataProviderPlugin
 {
-    /**
-     * Needed to compatibility with old version Amasty Rules
-     *
-     * @var array
-     */
-    private $emptyArray = [
-        BannerInterface::BANNER_ALT => "",
-        BannerInterface::BANNER_HOVER_TEXT => ""
-    ];
-
-    /**
-     * @var Serializer
-     */
-    private $serializer;
-
     /**
      * @var ImageProcessor
      */
     private $imageProcessor;
 
-    public function __construct(Serializer $serializer, ImageProcessor $imageProcessor)
+    public function __construct(ImageProcessor $imageProcessor)
     {
-        $this->serializer = $serializer;
         $this->imageProcessor = $imageProcessor;
     }
 
     /**
      * Convert Promo Banners data to Array
      *
-     * @param \Magento\SalesRule\Model\Rule\DataProvider $subject
-     * @param array $result
+     * @param DataProvider $subject
+     * @param array|null $result
      *
      * @return array
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @codingStandardsIgnoreStart
      */
-    public function afterGetData(\Magento\SalesRule\Model\Rule\DataProvider $subject, $result)
+    public function afterGetData(DataProvider $subject, ?array $result): ?array
     {
         if (is_array($result)) {
             foreach ($result as &$item) {
                 if (isset($item[BannerInterface::EXTENSION_ATTRIBUTES_KEY][BannerInterface::EXTENSION_CODE])) {
-                    $ruleId = isset($item[Rule::KEY_RULE_ID]) ? $item[Rule::KEY_RULE_ID] : null;
+                    $ruleId = $item[Rule::KEY_RULE_ID] ?? null;
                     $banners = &$item[BannerInterface::EXTENSION_ATTRIBUTES_KEY][BannerInterface::EXTENSION_CODE];
                     foreach ($banners as $key => $banner) {
-                        /** @var \Amasty\BannersLite\Model\Banner $banner */
                         if ($banner instanceof BannerInterface) {
-                            $banners[$key] = $this->convertBannerToArray($banner, $ruleId, $key);
+                            $banners[$key] = $this->prepareBannerData($banner, $ruleId, $key);
                         }
                     }
                 }
@@ -64,43 +52,30 @@ class DataProviderPlugin
 
         return $result;
     }
-    //@codingStandardsIgnoreEnd
 
-    /**
-     * @param \Amasty\BannersLite\Model\Banner $banner
-     * @param int|null $ruleId
-     * @param int $bannerPosition
-     *
-     * @return array
-     */
-    private function convertBannerToArray(\Amasty\BannersLite\Model\Banner $banner, $ruleId, $bannerPosition)
+    private function prepareBannerData(Banner $banner, ?int $ruleId, int $bannerPosition): array
     {
-        $array = $banner->toArray();
+        $result = $banner->getData();
+        $bannerImage = (string)($result[BannerInterface::BANNER_IMAGE] ?? null);
 
-        if ($this->isBannerImage($array)) {
-            $array[BannerInterface::BANNER_IMAGE]
-                = $this->serializer->unserialize($array[BannerInterface::BANNER_IMAGE]);
-            $array[BannerInterface::BANNER_IMAGE][0]['url']
-                = $this->imageProcessor->getBannerImageUrl($array[BannerInterface::BANNER_IMAGE][0]['name']);
+        if ($bannerImage) {
+            $result[BannerInterface::BANNER_IMAGE] = [
+                0 => [
+                    'name' => $bannerImage,
+                    'url' => $this->imageProcessor->getBannerImageUrl($bannerImage)
+                ]
+            ];
         }
 
-        if (empty($array) && $ruleId) {
-            $array += [BannerInterface::BANNER_TYPE => $bannerPosition, BannerInterface::SALESRULE_ID => $ruleId];
-            $array = array_merge($array, $this->emptyArray);
+        if (empty($result) && $ruleId) {
+            $emptyArray = [ //compatibility with old Amasty_Rules
+                BannerInterface::BANNER_ALT => "",
+                BannerInterface::BANNER_HOVER_TEXT => ""
+            ];
+            $result += [BannerInterface::BANNER_TYPE => $bannerPosition, BannerInterface::SALESRULE_ID => $ruleId];
+            $result = array_merge($result, $emptyArray);
         }
 
-        return $array;
-    }
-
-    /**
-     * @param array $array
-     *
-     * @return bool
-     */
-    private function isBannerImage(array $array)
-    {
-        return isset($array[BannerInterface::BANNER_IMAGE])
-            && $array[BannerInterface::BANNER_IMAGE]
-            && is_string($array[BannerInterface::BANNER_IMAGE]);
+        return $result;
     }
 }

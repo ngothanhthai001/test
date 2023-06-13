@@ -1,5 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
+
 namespace Amasty\BannersLite\Setup;
 
 use Amasty\BannersLite\Model\ResourceModel\Banner;
@@ -11,9 +19,11 @@ use Magento\Framework\Setup\UninstallInterface;
 class Uninstall implements UninstallInterface
 {
     /**
-     * @inheritdoc
+     * @param SchemaSetupInterface $installer
+     * @param ModuleContextInterface $context
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function uninstall(SchemaSetupInterface $installer, ModuleContextInterface $context)
+    public function uninstall(SchemaSetupInterface $installer, ModuleContextInterface $context): void
     {
         $installer->startSetup();
 

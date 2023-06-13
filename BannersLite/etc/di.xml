@@ -3,6 +3,8 @@
     <preference for="Amasty\BannersLite\Api\BannerRepositoryInterface" type="Amasty\BannersLite\Model\BannerRepository" />
     <preference for="Amasty\BannersLite\Api\Data\BannerRuleInterface" type="Amasty\BannersLite\Model\BannerRule" />
     <preference for="Amasty\BannersLite\Api\BannerRuleRepositoryInterface" type="Amasty\BannersLite\Model\BannerRuleRepository" />
+    <preference for="Amasty\BannersLite\Api\Data\FileContentInterface" type="Amasty\BannersLite\Model\Webapi\FileContent" />
+    <preference for="Amasty\BannersLite\Api\UploadFileInterface" type="Amasty\BannersLite\Model\Webapi\UploadFile" />
 
     <type name="Amasty\BannersLite\Model\BannerImageUpload">
         <arguments>
@@ -14,12 +16,6 @@
                 <item name="gif" xsi:type="string">gif</item>
                 <item name="png" xsi:type="string">png</item>
             </argument>
-        </arguments>
-    </type>
-
-    <type name="Amasty\BannersLite\Controller\Adminhtml\Banners\Upload">
-        <arguments>
-            <argument name="imageUploader" xsi:type="object">Amasty\BannersLite\Model\BannerImageUpload</argument>
         </arguments>
     </type>
 

@@ -9,6 +9,7 @@ define([
         defaults: {
             rulesActions: [
                 //SP Rules
+                'buyxgety_anyproducts',
                 'thecheapest',
                 'themostexpencive',
                 'moneyamount',

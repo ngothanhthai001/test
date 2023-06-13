@@ -1,28 +1,32 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Model;
 
-use Amasty\BannersLite\Api\Data\BannerInterface;
 use Amasty\BannersLite\Api\BannerRepositoryInterface;
-use Amasty\BannersLite\Model\BannerFactory;
+use Amasty\BannersLite\Api\Data\BannerInterface;
 use Amasty\BannersLite\Model\ResourceModel\Banner as BannerResource;
-use Amasty\BannersLite\Model\ResourceModel\Banner\CollectionFactory;
 use Amasty\BannersLite\Model\ResourceModel\Banner\Collection;
+use Amasty\BannersLite\Model\ResourceModel\Banner\CollectionFactory;
+use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Api\SortOrder;
+use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Exception\CouldNotDeleteException;
-use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Ui\Api\Data\BookmarkSearchResultsInterfaceFactory;
-use Magento\Framework\Api\SortOrder;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class BannerRepository implements BannerRepositoryInterface
 {
-    const BANNERS_COUNT = 3;
+    public const BANNERS_COUNT = 3;
 
     /**
      * @var BookmarkSearchResultsInterfaceFactory
@@ -158,7 +162,7 @@ class BannerRepository implements BannerRepositoryInterface
            ->addFieldToFilter(BannerInterface::BANNER_TYPE, $bannerType)
            ->getFirstItem();
 
-        if ($item) {
+        if ($item->getId()) {
             return $item;
         } else {
             throw new NoSuchEntityException(__('Banner with specified ID and Banner Type not found.'));
@@ -226,7 +230,6 @@ class BannerRepository implements BannerRepositoryInterface
         $bannerCollection->setPageSize($searchCriteria->getPageSize());
 
         $banners = [];
-        /** @var BannerInterface $banner */
         foreach ($bannerCollection->getItems() as $banner) {
             $banners[] = $this->getById($banner->getEntityId());
         }

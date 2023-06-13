@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Banners Lite for Magento 2 (System)
+ */
 
 namespace Amasty\BannersLite\Ui\Component\Form;
 
@@ -11,13 +16,13 @@ use Magento\Framework\UrlInterface;
 
 class BannerLink extends Field
 {
-    const MODULE_NAME = 'Amasty_PromoBanners';
+    public const MODULE_NAME = 'Amasty_PromoBanners';
 
-    const PROMO_BANNERS_GUIDE_URL = 'https://amasty.com/promo-banners-for-magento-2.html'
+    public const PROMO_BANNERS_GUIDE_URL = 'https://amasty.com/promo-banners-for-magento-2.html'
     . '?utm_source=extension&utm_medium=link&utm_campaign=sp-pbanners-m2';
-    const MARKETPLACE_URL = 'https://marketplace.magento.com/amasty-module-promo-banners.html';
+    public const MARKETPLACE_URL = 'https://marketplace.magento.com/amasty-module-promo-banners.html';
 
-    const PROMO_BANNERS_URL = 'ampromobanners/banners/index';
+    public const PROMO_BANNERS_URL = 'ampromobanners/banners/index';
 
     /**
      * @var Manager
