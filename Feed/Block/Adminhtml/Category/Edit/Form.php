@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -10,11 +10,6 @@ namespace Amasty\Feed\Block\Adminhtml\Category\Edit;
 
 use Magento\Backend\Block\Widget\Form as WidgetForm;
 
-/**
- * Class Form
- *
- * @package Amasty\Feed
- */
 class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
     /**

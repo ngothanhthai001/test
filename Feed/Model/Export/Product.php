@@ -1,66 +1,67 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model\Export;
 
 use Amasty\Feed\Model\Config\Source\NumberFormat;
+use Amasty\Feed\Model\Export\RowCustomizer\CompositeFactory;
 use Amasty\Feed\Model\InventoryResolver;
+use Amasty\Feed\Model\ResourceModel\Product\CollectionFactory;
+use Magento\Catalog\Model\Category\StoreCategories;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\LinkTypeProvider;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as ProductAttrCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\Option\CollectionFactory as ProductOptionCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\ProductFactory;
+use Magento\CatalogImportExport\Model\Export\Product as ProductBase;
+use Magento\CatalogImportExport\Model\Export\Product\Type\Factory as TypeFactory;
 use Magento\CatalogImportExport\Model\Import\Product as ImportProduct;
+use Magento\CatalogInventory\Model\ResourceModel\Stock\ItemFactory;
+use Magento\CatalogInventory\Model\StockRegistry;
+use Magento\Eav\Model\Config;
+use Magento\Eav\Model\ResourceModel\Entity\Attribute\Set\CollectionFactory as AttrSetCollectionFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\DB\Select;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\ImportExport\Model\Export;
+use Magento\ImportExport\Model\Export\ConfigInterface;
 use Magento\ImportExport\Model\Import as Import;
+use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
 
-/**
- * Class Product
- *
- * Preparing product for feed generation
- */
-class Product extends \Magento\CatalogImportExport\Model\Export\Product
+class Product extends ProductBase
 {
-    /**#@+
+    /**
      * Attributes prefixes
      */
-    const PREFIX_CATEGORY_ATTRIBUTE = 'category';
-
-    const PREFIX_CATEGORY_ID_ATTRIBUTE = 'category_id';
-
-    const PREFIX_CATEGORY_PATH_ATTRIBUTE = 'category_path';
-
-    const PREFIX_MAPPED_CATEGORY_ATTRIBUTE = 'mapped_category';
-
-    const PREFIX_MAPPED_CATEGORY_PATHS_ATTRIBUTE = 'mapped_category_path';
-
-    const PREFIX_CUSTOM_FIELD_ATTRIBUTE = 'custom_field';
-
-    const PREFIX_PRODUCT_ATTRIBUTE = 'product';
-
-    const PREFIX_BASIC_ATTRIBUTE = 'basic';
-
-    const PREFIX_INVENTORY_ATTRIBUTE = 'inventory';
-
-    const PREFIX_IMAGE_ATTRIBUTE = 'image';
-
-    const PREFIX_GALLERY_ATTRIBUTE = 'gallery';
-
-    const PREFIX_PRICE_ATTRIBUTE = 'price';
-
-    const PREFIX_URL_ATTRIBUTE = 'url';
-
-    const PREFIX_OTHER_ATTRIBUTES = 'other';
-
-    const PREFIX_ADVANCED_ATTRIBUTE = 'advanced';
-    /**#@-*/
+    public const PREFIX_CATEGORY_ATTRIBUTE = 'category';
+    public const PREFIX_CATEGORY_ID_ATTRIBUTE = 'category_id';
+    public const PREFIX_CATEGORY_PATH_ATTRIBUTE = 'category_path';
+    public const PREFIX_MAPPED_CATEGORY_ATTRIBUTE = 'mapped_category';
+    public const PREFIX_MAPPED_CATEGORY_PATHS_ATTRIBUTE = 'mapped_category_path';
+    public const PREFIX_CUSTOM_FIELD_ATTRIBUTE = 'custom_field';
+    public const PREFIX_PRODUCT_ATTRIBUTE = 'product';
+    public const PREFIX_BASIC_ATTRIBUTE = 'basic';
+    public const PREFIX_INVENTORY_ATTRIBUTE = 'inventory';
+    public const PREFIX_IMAGE_ATTRIBUTE = 'image';
+    public const PREFIX_GALLERY_ATTRIBUTE = 'gallery';
+    public const PREFIX_PRICE_ATTRIBUTE = 'price';
+    public const PREFIX_URL_ATTRIBUTE = 'url';
+    public const PREFIX_OTHER_ATTRIBUTES = 'other';
+    public const PREFIX_ADVANCED_ATTRIBUTE = 'advanced';
 
     /**
      * The shift position of the separator
      */
-    const SHIFT_OF_SEPARATOR_POSITION = 1;
+    public const SHIFT_OF_SEPARATOR_POSITION = 1;
 
     /**
      * @var array
@@ -155,7 +156,7 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
     protected $_scopeConfig;
 
     /**
-     * @var \Amasty\Feed\Model\ResourceModel\Product\CollectionFactory
+     * @var CollectionFactory
      */
     private $collectionAmastyFactory;
 
@@ -163,6 +164,11 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
      * @var string
      */
     private $currency;
+
+    /**
+     * @var bool
+     */
+    private $isExcludeDisabledParents;
 
     /**
      * @var bool
@@ -190,7 +196,7 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
     private $numberFormat;
 
     /**
-     * @var \Magento\CatalogInventory\Model\StockRegistry
+     * @var StockRegistry
      */
     private $stockRegistry;
 
@@ -199,26 +205,32 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
      */
     private $inventoryResolver;
 
+    /**
+     * @var StoreCategories
+     */
+    private $storeCategories;
+
     public function __construct(
-        \Magento\CatalogInventory\Model\StockRegistry $stockRegistry,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-        \Magento\Eav\Model\Config $config,
-        \Magento\Framework\App\ResourceConnection $resource,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Psr\Log\LoggerInterface $logger,
-        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory,
-        \Magento\ImportExport\Model\Export\ConfigInterface $exportConfig,
-        \Magento\Catalog\Model\ResourceModel\ProductFactory $productFactory,
-        \Magento\Eav\Model\ResourceModel\Entity\Attribute\Set\CollectionFactory $attrSetColFactory,
-        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryColFactory,
-        \Magento\CatalogInventory\Model\ResourceModel\Stock\ItemFactory $itemFactory,
-        \Magento\Catalog\Model\ResourceModel\Product\Option\CollectionFactory $optionColFactory,
-        \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeColFactory,
-        \Magento\CatalogImportExport\Model\Export\Product\Type\Factory $_typeFactory,
-        \Magento\Catalog\Model\Product\LinkTypeProvider $linkTypeProvider,
-        \Amasty\Feed\Model\Export\RowCustomizer\CompositeFactory $rowCustomizer,
+        StockRegistry $stockRegistry,
+        TimezoneInterface $localeDate,
+        Config $config,
+        ResourceConnection $resource,
+        StoreManagerInterface $storeManager,
+        StoreCategories $storeCategories,
+        LoggerInterface $logger,
+        ProductCollectionFactory $collectionFactory,
+        ConfigInterface $exportConfig,
+        ProductFactory $productFactory,
+        AttrSetCollectionFactory $attrSetColFactory,
+        CategoryCollectionFactory $categoryColFactory,
+        ItemFactory $itemFactory,
+        ProductOptionCollectionFactory $optionColFactory,
+        ProductAttrCollectionFactory $attributeColFactory,
+        TypeFactory $typeFactory,
+        LinkTypeProvider $linkTypeProvider,
+        CompositeFactory $rowCustomizer,
         ScopeConfigInterface $scopeConfig,
-        \Amasty\Feed\Model\ResourceModel\Product\CollectionFactory $collectionAmastyFactory,
+        CollectionFactory $collectionAmastyFactory,
         NumberFormat $numberFormat,
         InventoryResolver $inventoryResolver,
         $storeId = null
@@ -230,8 +242,9 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
         $this->_storeId = $storeId;
         $this->stockRegistry = $stockRegistry;
         $this->inventoryResolver = $inventoryResolver;
+        $this->storeCategories = $storeCategories;
 
-        return parent::__construct(
+        parent::__construct(
             $localeDate,
             $config,
             $resource,
@@ -245,7 +258,7 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
             $itemFactory,
             $optionColFactory,
             $attributeColFactory,
-            $_typeFactory,
+            $typeFactory,
             $linkTypeProvider,
             $this->_rowCustomizer
         );
@@ -253,6 +266,10 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
 
     protected function _initStores()
     {
+        $this->_storeId = $this->_storeManager->isSingleStoreMode()
+            ? Store::DEFAULT_STORE_ID
+            : $this->_storeId;
+
         $this->_storeIdToCode = [
             $this->_storeId => $this->_storeManager->getStore($this->_storeId)->getCode()
         ];
@@ -266,11 +283,13 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
     {
         $this->_initStores();
 
-        $this->_rowCustomizer->skipRelationCustomizer(true);
+        $this->_rowCustomizer->setIsParentExport(true);
 
         $entityCollection = $this->_getEntityCollection(true);
 
         $entityCollection->setStoreId($this->_storeId);
+
+        $entityCollection->addStoreFilter($this->_storeId);
 
         $this->_rowCustomizer->setStoreId($this->_storeId);
 
@@ -279,13 +298,20 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
             ['in' => $ids]
         );
 
+        if ($this->getExcludeDisabledParents()) {
+            $entityCollection->addAttributeToFilter(
+                'status',
+                ['eq' => Status::STATUS_ENABLED]
+            );
+        }
+
         parent::_prepareEntityCollection($entityCollection);
 
         $this->_matchingProductIds = $ids;
 
         $ret = $this->getExportData();
 
-        $this->_rowCustomizer->skipRelationCustomizer(false);
+        $this->_rowCustomizer->setIsParentExport(false);
 
         return $ret;
     }
@@ -320,6 +346,11 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
         return $this->currency;
     }
 
+    public function getAttributeValues()
+    {
+        return $this->_attributeValues;
+    }
+
     /**
      * @param string $currency
      * @return $this
@@ -327,6 +358,25 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
     public function setFormatPriceCurrency($currency)
     {
         $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getExcludeDisabledParents()
+    {
+        return $this->isExcludeDisabledParents;
+    }
+
+    /**
+     * @param bool $isExclude
+     * @return $this
+     */
+    public function setExcludeDisabledParents($isExclude)
+    {
+        $this->isExcludeDisabledParents = $isExclude;
 
         return $this;
     }
@@ -508,6 +558,23 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
         return $exportData;
     }
 
+    public function getRawExport(): array
+    {
+        $this->_initStores();
+        $entityCollection = $this->_getEntityCollection(true);
+        $entityCollection->setStoreId($this->_storeId);
+        $this->_rowCustomizer->setStoreId($this->_storeId);
+        $this->_prepareEntityCollection($entityCollection);
+
+        $result = [];
+        $exportData = $this->getExportData();
+        foreach ($exportData as $dataRow) {
+            $result[$dataRow['sku']] = $this->_prepareRowBeforeWrite($dataRow);
+        }
+
+        return $result;
+    }
+
     public function setParentAttributes($attributes)
     {
         $this->_parentAttributes = $attributes;
@@ -538,6 +605,10 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
                     break;
                 }
             }
+        }
+
+        if (!$ret) {
+            $ret = isset($this->getAttributesByType(self::PREFIX_URL_ATTRIBUTE)['configurable']);
         }
 
         return $ret;
@@ -613,9 +684,7 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
         }
 
         if (is_array($this->_parentAttributes) && !empty($this->_parentAttributes)) {
-            $parentDataRow = isset($dataRow['amasty_custom_data']['parent_data'])
-                ? $dataRow['amasty_custom_data']['parent_data']
-                : [];
+            $parentDataRow = $dataRow['amasty_custom_data']['parent_data'] ?? [];
             $this->_createExportRow(
                 $this->_parentAttributes,
                 $parentDataRow,
@@ -640,15 +709,13 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
                         ?: $this->getAttributeValue($childDataRow, $code);
 
                     if ($code === 'is_in_stock') {
-                        $stockStatusBySku = $this->stockRegistry->getStockStatusBySku(
-                            $dataRow['sku'],
-                            $this->_storeManager->getWebsite()->getId()
-                        )->getStockStatus();
-
-                        if ($stockStatusBySku !== null) {
-                            $attributeValue = $stockStatusBySku;
-                        } else {
+                        if ($this->getAttributeValue($dataRow, $code) !== false) {
                             $attributeValue = $this->getAttributeValue($dataRow, $code);
+                        } elseif (isset($dataRow['sku'])) {
+                            $attributeValue = $this->stockRegistry->getStockStatusBySku(
+                                $dataRow['sku'],
+                                $this->_storeManager->getWebsite()->getId()
+                            )->getStockStatus();
                         }
                     }
 
@@ -659,18 +726,26 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
             }
         }
 
-        $customData = isset($dataRow['amasty_custom_data']) ? $dataRow['amasty_custom_data'] : [];
-        $childCustomData = isset($childDataRow['amasty_custom_data']) ? $childDataRow['amasty_custom_data'] : [];
+        $customData = (array)($dataRow['amasty_custom_data'] ?? []);
+        $childCustomData = (array)($childDataRow['amasty_custom_data']?? []);
 
         foreach ($customTypes as $type) {
             if (isset($attributes[$type]) && is_array($attributes[$type])) {
                 foreach ($attributes[$type] as $code) {
-                    if (isset($customData[$type]) && isset($customData[$type][$code])
-                        && $customData[$type][$code] !== ""
-                    ) {
-                        $exportRow[$type . '|' . $code . $postfix] = $customData[$type][$code];
-                    } elseif (isset($childCustomData[$type]) && isset($childCustomData[$type][$code])) {
-                        $exportRow[$type . '|' . $code . $postfix] = $childCustomData[$type][$code];
+                    $customDataValue = $this->getAttrValueFromCustomData(
+                        $customData,
+                        (string)$type,
+                        (string)$code
+                    );
+                    $childCustomDataValue = $this->getAttrValueFromCustomData(
+                        $childCustomData,
+                        (string)$type,
+                        (string)$code
+                    );
+                    if ($customDataValue !== null && $customDataValue !== '') {
+                        $exportRow[$type . '|' . $code . $postfix] = $customDataValue;
+                    } elseif ($childCustomDataValue !== null) {
+                        $exportRow[$type . '|' . $code . $postfix] = $childCustomDataValue;
                     }
                 }
             }
@@ -728,6 +803,23 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
         return false;
     }
 
+    /**
+     * @param array $customData
+     * @param string $type
+     * @param string $code
+     * @return mixed|string|null
+     */
+    private function getAttrValueFromCustomData(array $customData, string $type, string $code)
+    {
+        if (isset($customData[$type][$code])) {
+            return is_array($customData[$type][$code])
+                ? implode(ImportProduct::PSEUDO_MULTI_LINE_SEPARATOR, $customData[$type][$code])
+                : $customData[$type][$code];
+        }
+
+        return null;
+    }
+
     protected function _getExportAttrCodes()
     {
         if (null === $this->_attrCodes) {
@@ -771,8 +863,7 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
 
     public function getAttributesByType($type)
     {
-        return isset($this->_attributes[$type]) ?
-            $this->_attributes[$type] : [];
+        return $this->_attributes[$type] ?? [];
     }
 
     public function filterAttributeCollection(\Magento\Eav\Model\ResourceModel\Entity\Attribute\Collection $collection)
@@ -808,11 +899,16 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
 
         if (isset($rowCategories[$productId]) && !empty($rowCategories[$productId])) {
             $categories = $rowCategories[$productId];
-            $lastCategoryId = end($categories);
 
-            $customData[self::PREFIX_CATEGORY_ATTRIBUTE]['category'] = isset($this->_categoriesLast[$lastCategoryId])
-                ? $this->_categoriesLast[$lastCategoryId]
-                : '';
+            $storeGroupId = $this->_storeManager->getStore()->getStoreGroupId();
+            $categoriesInCurrentStore = array_intersect(
+                $categories,
+                $this->storeCategories->getCategoryIds($storeGroupId)
+            );
+            $lastCategoryId = end($categoriesInCurrentStore);
+
+            $customData[self::PREFIX_CATEGORY_ATTRIBUTE]['category'] =
+                $this->_categoriesLast[$lastCategoryId] ?? '';
             $customData[self::PREFIX_CATEGORY_ID_ATTRIBUTE] = $lastCategoryId;
         }
 
@@ -915,7 +1011,7 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
         if ($attribute->usesSource()) {
             $index = in_array($attribute->getAttributeCode(), $this->_indexValueAttributes) ? 'value' : 'label';
 
-            $attribute->setStoreId($this->_storeId ?: \Magento\Store\Model\Store::DEFAULT_STORE_ID);
+            $attribute->setStoreId($this->_storeId ?: Store::DEFAULT_STORE_ID);
 
             try {
                 foreach ($attribute->getSource()->getAllOptions(false) as $option) {
@@ -957,7 +1053,9 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
             ]
         )->joinLeft(
             ['mgv' => $this->_resourceModel->getTableName('catalog_product_entity_media_gallery_value')],
-            "(mg.value_id = mgv.value_id) and (mgvte.$productEntityJoinField = mgv.$productEntityJoinField)",
+            "(mg.value_id = mgv.value_id)"
+            . "and (mgvte.$productEntityJoinField = mgv.$productEntityJoinField)"
+            . 'and mgv.disabled = 0',
             [
                 'mgv.label',
                 'mgv.position',
@@ -973,7 +1071,11 @@ class Product extends \Magento\CatalogImportExport\Model\Export\Product
         )->where(
             "ent.entity_id IN (?)",
             $productIds
-        );
+        )->where(
+            "mgv.store_id IN (?)",
+            [Store::DEFAULT_STORE_ID, $this->_storeId]
+        )->order('mgv.position ASC');
+
         $rowMediaGallery = [];
         $stmt = $this->_connection->query($select);
 

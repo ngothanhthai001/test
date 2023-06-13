@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -14,26 +14,47 @@ use Amasty\Feed\Model\Export\Product;
 use Magento\CatalogImportExport\Model\Export\RowCustomizerInterface;
 use Magento\CatalogImportExport\Model\Import\Product as ImportProduct;
 
-/**
- * Class Category
- */
 class Category implements RowCustomizerInterface
 {
-    protected $_storeManager;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $storeManager;
 
-    protected $_export;
+    /**
+     * @var Product
+     */
+    protected $export;
 
-    protected $_mapping;
+    /**
+     * @var array
+     */
+    protected $mapping;
 
-    protected $_mappingCategories;
+    /**
+     * @var array
+     */
+    protected $mappingCategories;
 
-    protected $_mappingData;
+    /**
+     * @var array
+     */
+    protected $mappingData;
 
-    protected $_rowCategories;
+    /**
+     * @var array
+     */
+    protected $rowCategories;
 
-    protected $_categoriesPath;
+    /**
+     * @var array
+     */
+    protected $categoriesPath;
 
-    protected $_categoriesLast;
+    /**
+     * @var array
+     */
+    protected $categoriesLast;
 
     /**
      * @var CollectionFactory
@@ -51,8 +72,8 @@ class Category implements RowCustomizerInterface
         CollectionFactory $categoryCollectionFactory,
         Repository $categoryRepository
     ) {
-        $this->_storeManager = $storeManager;
-        $this->_export = $export;
+        $this->storeManager = $storeManager;
+        $this->export = $export;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->categoryRepository = $categoryRepository;
     }
@@ -62,46 +83,48 @@ class Category implements RowCustomizerInterface
      */
     public function prepareData($collection, $productIds)
     {
-        if ($this->_export->hasAttributes(Product::PREFIX_MAPPED_CATEGORY_ATTRIBUTE)
-            || $this->_export->hasAttributes(Product::PREFIX_MAPPED_CATEGORY_PATHS_ATTRIBUTE)
+        if ($this->export->hasAttributes(Product::PREFIX_MAPPED_CATEGORY_ATTRIBUTE)
+            || $this->export->hasAttributes(Product::PREFIX_MAPPED_CATEGORY_PATHS_ATTRIBUTE)
         ) {
             $_skippedCategories = [];
 
-            $this->_mappingCategories = array_merge(
-                $this->_export->getAttributesByType(Product::PREFIX_MAPPED_CATEGORY_ATTRIBUTE),
-                $this->_export->getAttributesByType(Product::PREFIX_MAPPED_CATEGORY_PATHS_ATTRIBUTE)
+            $this->mappingCategories = array_merge(
+                $this->export->getAttributesByType(Product::PREFIX_MAPPED_CATEGORY_ATTRIBUTE),
+                $this->export->getAttributesByType(Product::PREFIX_MAPPED_CATEGORY_PATHS_ATTRIBUTE)
             );
 
             /** @var \Amasty\Feed\Model\Category\ResourceModel\Collection $categoryCollection */
             $categoryCollection = $this->categoryCollectionFactory->create()
                 ->addOrder('name')
-                ->addFieldToFilter('code', ['in' => $this->_mappingCategories]);
+                ->addFieldToFilter('code', ['in' => $this->mappingCategories]);
             foreach ($this->categoryRepository->getItemsWithDeps($categoryCollection) as $category) {
-                $this->_mappingData[$category->getCode()] = [];
+                $this->mappingData[$category->getCode()] = [];
 
                 foreach ($category->getMapping() as $mapping) {
                     if ($mapping->getData('skip')) {
-                        $_skippedCategories[] = $mapping->getCategoryId();
+                        $_skippedCategories[$category->getCode()][] = $mapping->getCategoryId();
                     }
-                    $this->_mappingData[$category->getCode()][$mapping->getCategoryId()] = $mapping->getVariable();
+                    $this->mappingData[$category->getCode()][$mapping->getCategoryId()] = $mapping->getVariable();
                 }
             }
 
             $rowsCategoriesNew = [];
-            $multiRowData = $this->_export->getMultiRowData();
+            $multiRowData = $this->export->getMultiRowData();
             $rowsCategories = $multiRowData['rowCategories'];
 
             foreach ($rowsCategories as $id => $rowCategories) {
-                $rowCategories = array_diff($rowCategories, $_skippedCategories);
+                foreach ($_skippedCategories as $feedCategoryId => $feedCategory) {
+                    $rowCategoriesMap = array_diff($rowCategories, $feedCategory);
 
-                if (!empty($rowCategories)) {
-                    $rowsCategoriesNew[$id] = $rowCategories;
+                    if (!empty($rowCategoriesMap)) {
+                        $rowsCategoriesNew[$feedCategoryId][$id] = $rowCategoriesMap;
+                    }
                 }
             }
-            $this->_rowCategories = $rowsCategoriesNew;
+            $this->rowCategories = $rowsCategoriesNew;
 
-            $this->_categoriesPath = $this->_export->getCategoriesPath();
-            $this->_categoriesLast = $this->_export->getCategoriesLast();
+            $this->categoriesPath = $this->export->getCategoriesPath();
+            $this->categoriesLast = $this->export->getCategoriesLast();
         }
     }
 
@@ -122,21 +145,18 @@ class Category implements RowCustomizerInterface
         $customData[Product::PREFIX_MAPPED_CATEGORY_ATTRIBUTE] = [];
         $customData[Product::PREFIX_MAPPED_CATEGORY_PATHS_ATTRIBUTE] = [];
 
-        if (is_array($this->_mappingCategories)) {
-            foreach ($this->_mappingCategories as $code) {
-                if (isset($this->_rowCategories[$productId])) {
-                    $categories = $this->_rowCategories[$productId];
+        if (is_array($this->mappingCategories)) {
+            foreach ($this->mappingCategories as $code) {
+                if (isset($this->rowCategories[$code][$productId])) {
+                    $categories = $this->rowCategories[$code][$productId];
                     $lastCategoryId = $this->getLastCategoryId($categories);
 
-                    if (isset($this->_categoriesLast[$lastCategoryId]) && is_array($this->_mappingCategories)) {
-                        $lastCategoryVar = $this->_categoriesLast[$lastCategoryId];
+                    if (isset($this->categoriesLast[$lastCategoryId]) && is_array($this->mappingCategories)) {
+                        $lastCategoryVar = $this->categoriesLast[$lastCategoryId];
 
-                        if (isset($this->_mappingData[$code][$lastCategoryId])) {
-                            $customData[Product::PREFIX_MAPPED_CATEGORY_ATTRIBUTE][$code] =
-                                $this->_mappingData[$code][$lastCategoryId];
-                        } else {
-                            $customData[Product::PREFIX_MAPPED_CATEGORY_ATTRIBUTE][$code] = $lastCategoryVar;
-                        }
+                        $customData[Product::PREFIX_MAPPED_CATEGORY_ATTRIBUTE][$code] =
+                            $this->mappingData[$code][$lastCategoryId]
+                            ?? $lastCategoryVar;
                     }
 
                     $customData[Product::PREFIX_MAPPED_CATEGORY_PATHS_ATTRIBUTE][$code] = implode(
@@ -160,8 +180,8 @@ class Category implements RowCustomizerInterface
         while (count($categories) > 0) {
             $endCategoryId = array_pop($categories);
 
-            foreach ($this->_mappingCategories as $code) {
-                if (isset($this->_mappingData[$code][$endCategoryId])) {
+            foreach ($this->mappingCategories as $code) {
+                if (isset($this->mappingData[$code][$endCategoryId])) {
                     return $endCategoryId;
                 }
             }
@@ -181,18 +201,17 @@ class Category implements RowCustomizerInterface
         $categoriesPath = [];
 
         foreach ($categories as $categoryId) {
-            if (isset($this->_categoriesPath[$categoryId])) {
-                $path = $this->_categoriesPath[$categoryId];
+            if (isset($this->categoriesPath[$categoryId])) {
+                $path = $this->categoriesPath[$categoryId];
+                $mappingPath = [];
 
                 foreach ($path as $id => $var) {
-                    if (isset($this->_mappingData[$code][$id])) {
-                        $path[$id] = $this->_mappingData[$code][$id];
-                    } else {
-                        $path[$id] = $var;
+                    if (isset($this->mappingData[$code][$id])) {
+                        $mappingPath[$id] = $this->mappingData[$code][$id];
                     }
                 }
 
-                $categoriesPath[] = implode('/', $path);
+                $categoriesPath[] = implode('/', $mappingPath);
             }
         }
 

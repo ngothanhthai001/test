@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -20,5 +20,5 @@ abstract class AbstractCategory extends \Magento\Backend\App\Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Amasty_Feed::feed';
+    public const ADMIN_RESOURCE = 'Amasty_Feed::feed';
 }

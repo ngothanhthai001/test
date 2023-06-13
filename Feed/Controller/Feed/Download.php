@@ -1,18 +1,13 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Controller\Feed;
 
-/**
- * Class Download
- *
- * @package Amasty\Feed
- */
 class Download extends \Magento\Framework\App\Action\Action
 {
     /**
@@ -47,7 +42,7 @@ class Download extends \Magento\Framework\App\Action\Action
         try {
             $feedModel = $this->feedRepository->getById($feedId);
         } catch (\Exception $exception) {
-            return $this->_redirect($this->_redirect->getRefererUrl());
+            return $this->resultRedirectFactory->create()->setRefererUrl();
         }
 
         if ($fileName) {
@@ -58,6 +53,6 @@ class Download extends \Magento\Framework\App\Action\Action
             return $this->feedDownloader->getResponse($feedModel);
         }
 
-        return $this->_redirect($this->_redirect->getRefererUrl());
+        return $this->resultRedirectFactory->create()->setRefererUrl();
     }
 }

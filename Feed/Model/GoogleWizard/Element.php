@@ -1,45 +1,84 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model\GoogleWizard;
 
-/**
- * Class Element
- */
 class Element
 {
+    /**
+     * @var string
+     */
     protected $type = '';
 
+    /**
+     * @var string
+     */
     protected $value = '';
 
+    /**
+     * @var string
+     */
     protected $modify = '';
 
+    /**
+     * @var string
+     */
     protected $optional = 'yes';
 
+    /**
+     * @var string
+     */
     protected $code;
 
+    /**
+     * @var string
+     */
     protected $tag;
 
+    /**
+     * @var string
+     */
     protected $limit = '';
 
+    /**
+     * @var string
+     */
     protected $format = 'as_is';
 
+    /**
+     * @var bool
+     */
     protected $required = false;
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var string
+     */
     protected $description;
 
+    /**
+     * @var string
+     */
     protected $template = '<:tag>{attribute=":value" format=":format" parent=":parent"'
         . ' optional=":optional" modify=":modify"}</:tag>' . PHP_EOL;
 
+    /**
+     * @var \Amasty\Feed\Model\Feed
+     */
     protected $feed;
 
+    /**
+     * @var \Magento\Directory\Helper\Data
+     */
     protected $direcotryData;
 
     public function __construct(

@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -31,29 +31,29 @@ class FeedExportTest extends \PHPUnit\Framework\TestCase
     use Traits\ObjectManagerTrait;
     use Traits\ReflectionTrait;
 
-    const STORE_ID = 1;
+    public const STORE_ID = 1;
 
-    const FILENAME = 'test';
+    public const FILENAME = 'test';
 
-    const UTM_PARAMS = [];
+    public const UTM_PARAMS = [];
 
-    const FORMAT_PRICE_CURRENCY = 'test_currency';
+    public const FORMAT_PRICE_CURRENCY = 'test_currency';
 
-    const FORMAT_PRICE_CURRENCY_SHOW = 'test_currency_show';
+    public const FORMAT_PRICE_CURRENCY_SHOW = 'test_currency_show';
 
-    const FORMAT_PRICE_DECIMALS = 'test_price_decimals';
+    public const FORMAT_PRICE_DECIMALS = 'test_price_decimals';
 
-    const FORMAT_PRICE_DECIMAL_POINT = 'test_decimal_point';
+    public const FORMAT_PRICE_DECIMAL_POINT = 'test_decimal_point';
 
-    const FORMAT_PRICE_SEPARATOR = 'test_separator';
+    public const FORMAT_PRICE_SEPARATOR = 'test_separator';
 
-    const WRITER = 'test_writer';
+    public const WRITER = 'test_writer';
 
-    const ATTRIBUTES = 'test_attrs';
+    public const ATTRIBUTES = 'test_attrs';
 
-    const PARENT_ATTRIBUTES = 'test_parent_attrs';
+    public const PARENT_ATTRIBUTES = 'test_parent_attrs';
 
-    const EXPORT = 'test_export';
+    public const EXPORT = 'test_export';
 
     /**
      * @var FeedExport|MockObject

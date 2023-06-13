@@ -1,21 +1,15 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
-
 
 namespace Amasty\Feed\Block\Adminhtml\GoogleWizard\Edit\Tab\Content;
 
 use Magento\Framework\Data\Form\Element\Renderer\RendererInterface;
 use Amasty\Feed\Model\Export\Product as ExportProduct;
 
-/**
- * Class Element
- *
- * @package Amasty\Feed
- */
 class Element extends \Magento\Backend\Block\Template implements RendererInterface
 {
     /**
@@ -166,6 +160,7 @@ class Element extends \Magento\Backend\Block\Template implements RendererInterfa
             ExportProduct::PREFIX_BASIC_ATTRIBUTE . '|product_websites' => __('Websites'),
             ExportProduct::PREFIX_BASIC_ATTRIBUTE . '|created_at' => __('Created'),
             ExportProduct::PREFIX_BASIC_ATTRIBUTE . '|updated_at' => __('Updated'),
+            ExportProduct::PREFIX_BASIC_ATTRIBUTE . '|product_id' => __('Product ID'),
         ];
     }
 
@@ -234,11 +229,13 @@ class Element extends \Magento\Backend\Block\Template implements RendererInterfa
         return [
             ExportProduct::PREFIX_PRICE_ATTRIBUTE . '|price'           => __('Price'),
             ExportProduct::PREFIX_PRICE_ATTRIBUTE . '|final_price'     => __('Final Price'),
+            ExportProduct::PREFIX_PRICE_ATTRIBUTE . '|regular_price'   => __('Regular Price'),
             ExportProduct::PREFIX_PRICE_ATTRIBUTE . '|min_price'       => __('Min Price'),
             ExportProduct::PREFIX_PRICE_ATTRIBUTE . '|max_price'       => __('Max Price'),
             ExportProduct::PREFIX_PRICE_ATTRIBUTE . '|tax_price'       => __('Price with TAX(VAT)'),
             ExportProduct::PREFIX_PRICE_ATTRIBUTE . '|tax_final_price' => __('Final Price with TAX(VAT)'),
             ExportProduct::PREFIX_PRICE_ATTRIBUTE . '|tax_min_price'   => __('Min Price with TAX(VAT)'),
+            ExportProduct::PREFIX_PRICE_ATTRIBUTE . '|special_price'   => __('Special Price'),
         ];
     }
 

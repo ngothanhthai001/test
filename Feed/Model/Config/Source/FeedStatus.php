@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -15,11 +15,11 @@ class FeedStatus implements ArrayInterface
     /**#@+
      * Feed status
      */
-    const FAILED = 3;
-    const GENERATE_NEXT_CRON = 4;
-    const PROCESSING = 2;
-    const READY = 1;
-    const NOT_GENERATED = 0;
+    public const FAILED = 3;
+    public const GENERATE_NEXT_CRON = 4;
+    public const PROCESSING = 2;
+    public const READY = 1;
+    public const NOT_GENERATED = 0;
     /**#@-*/
 
     /**

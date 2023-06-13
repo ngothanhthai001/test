@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -12,26 +12,30 @@ use Amasty\Feed\Model\Export\Product;
 use Magento\Framework\UrlInterface;
 use Magento\CatalogImportExport\Model\Export\RowCustomizerInterface;
 use Magento\Sitemap\Model\ResourceModel\Catalog\Product as ProductSitemap;
+use Magento\Store\Model\StoreManagerInterface;
 
-/**
- * Class Image
- */
 class Image implements RowCustomizerInterface
 {
-    const THUMBNAIL_TYPE = 'thumbnail';
+    public const THUMBNAIL_TYPE = 'thumbnail';
 
-    const IMAGE_TYPE = 'image';
+    public const IMAGE_TYPE = 'image';
 
-    const SMALL_IMAGE_TYPE = 'small_image';
+    public const SMALL_IMAGE_TYPE = 'small_image';
 
-    protected $_storeManager;
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
 
-    protected $_urlPrefix;
+    /**
+     * @var string
+     */
+    protected $urlPrefix;
 
     public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager
     ) {
-        $this->_storeManager = $storeManager;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -39,7 +43,7 @@ class Image implements RowCustomizerInterface
      */
     public function prepareData($collection, $productIds)
     {
-        $this->_urlPrefix = $this->_storeManager->getStore($collection->getStoreId())
+        $this->urlPrefix = $this->storeManager->getStore($collection->getStoreId())
                 ->getBaseUrl(UrlInterface::URL_TYPE_MEDIA)
             . 'catalog/product';
     }
@@ -79,7 +83,9 @@ class Image implements RowCustomizerInterface
         if (isset($dataRow[$imgType])
             && $dataRow[$imgType] !== ProductSitemap::NOT_SELECTED_IMAGE
         ) {
-            return $this->_urlPrefix . $dataRow[$imgType];
+            $dataRow[$imgType] = '/' . ltrim($dataRow[$imgType], '/');
+
+            return $this->urlPrefix . $dataRow[$imgType];
         }
 
         return null;

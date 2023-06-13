@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -10,25 +10,46 @@ namespace Amasty\Feed\Model\GoogleWizard;
 
 use Amasty\Feed\Model\Export\Product as ExportProduct;
 
-/**
- * Class Link
- */
 class Link extends Element
 {
+    /**
+     * @var string
+     */
     protected $type = 'attribute';
 
+    /**
+     * @var string
+     */
     protected $tag = 'link';
 
+    /**
+     * @var int
+     */
     protected $limit = 2000;
 
+    /**
+     * @var string
+     */
     protected $modify = 'html_escape';
 
+    /**
+     * @var string
+     */
     protected $value = ExportProduct::PREFIX_URL_ATTRIBUTE . '|with_category';
 
+    /**
+     * @var string
+     */
     protected $name =  'link';
 
+    /**
+     * @var string
+     */
     protected $description = "URL directly linking to your item's page on your website";
 
+    /**
+     * @var bool
+     */
     protected $required = true;
 
     /**

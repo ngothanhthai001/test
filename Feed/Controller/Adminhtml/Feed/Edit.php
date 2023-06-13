@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -11,17 +11,12 @@ namespace Amasty\Feed\Controller\Adminhtml\Feed;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-/**
- * Class Edit
- *
- * @package Amasty\Feed
- */
 class Edit extends \Amasty\Feed\Controller\Adminhtml\AbstractFeed
 {
     /**
      * If Google Merchant Center rejects feed
      */
-    const FAQ_LINK = 'https://amasty.com/knowledge-base/topic-product-feed-for-magento-2.html';
+    public const FAQ_LINK = 'https://amasty.com/knowledge-base/topic-product-feed-for-magento-2.html';
 
     /**
      * @var \Amasty\Feed\Model\Rule\RuleFactory
@@ -66,7 +61,7 @@ class Edit extends \Amasty\Feed\Controller\Adminhtml\AbstractFeed
             } catch (NoSuchEntityException $exception) {
                 $this->messageManager->addErrorMessage(__('This feed no longer exists.'));
 
-                return $this->_redirect('amfeed/*');
+                return $this->resultRedirectFactory->create()->setPath('amfeed/*');
             }
         } else {
             $model = $this->repository->getEmptyModel();

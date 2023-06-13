@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -25,13 +25,13 @@ class CsvTest extends \PHPUnit\Framework\TestCase
     use Traits\ObjectManagerTrait;
     use Traits\ReflectionTrait;
 
-    const DATE = [
+    public const DATE = [
             'format' => 'date'
     ];
-    const PRICE = [
+    public const PRICE = [
             'format' => 'price'
     ];
-    const INTEGER = [
+    public const INTEGER = [
             'format' => 'integer'
     ];
 
@@ -48,12 +48,12 @@ class CsvTest extends \PHPUnit\Framework\TestCase
         $model = $this->createPartialMock(Csv::class, ['getCurrencyRate']);
         $model->expects($this->any())->method('getCurrencyRate')->willReturn(2);
 
-        $this->setProperty($model, '_formatDate', "Y", Csv::class);
-        $this->setProperty($model, '_formatPriceDecimals', 2, Csv::class);
-        $this->setProperty($model, '_formatPriceDecimalPoint', ",", Csv::class);
-        $this->setProperty($model, '_formatPriceThousandsSeparator', " ", Csv::class);
-        $this->setProperty($model, '_formatPriceCurrencyShow', true, Csv::class);
-        $this->setProperty($model, '_formatPriceCurrency', "$", Csv::class);
+        $this->setProperty($model, 'formatDate', "Y", Csv::class);
+        $this->setProperty($model, 'formatPriceDecimals', 2, Csv::class);
+        $this->setProperty($model, 'formatPriceDecimalPoint', ",", Csv::class);
+        $this->setProperty($model, 'formatPriceThousandsSeparator', " ", Csv::class);
+        $this->setProperty($model, 'formatPriceCurrencyShow', true, Csv::class);
+        $this->setProperty($model, 'formatPriceCurrency', "$", Csv::class);
 
         $result = $this->invokeMethod($model, '_formatValue', [$field, $value]);
         $this->assertEquals($expectedResult, $result);

@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 namespace Amasty\Feed\Block\Adminhtml\Feed;
@@ -11,11 +11,6 @@ use Amasty\Feed\Api\Data\FeedInterface;
 use Amasty\Feed\Model\ResourceModel\Feed\CollectionFactory;
 use Magento\Backend\Block\Widget\Context;
 
-/**
- * Class Template
- *
- * @package Amasty\Feed
- */
 class Template extends \Magento\Backend\Block\Widget\Container
 {
     /**
@@ -33,6 +28,7 @@ class Template extends \Magento\Backend\Block\Widget\Container
 
         $this->addSetupGoogleFeedButton();
         $this->addNewButton();
+        $this->addUnlockButton();
     }
 
     /**
@@ -126,5 +122,28 @@ class Template extends \Magento\Backend\Block\Widget\Container
     public function getCreateGoogleFeedUrl()
     {
         return $this->getUrl('*/googleWizard/index');
+    }
+
+    public function addUnlockButton()
+    {
+        $alertMessage = __('Are you sure you want to do this?');
+        $onClick = sprintf('confirmSetLocation("%s", "%s")', $alertMessage, $this->getUnlockUrl());
+
+        $this->addButton(
+            'forceUnlock',
+            [
+                'label' => __("Force Unlock"),
+                'class' => 'unlock',
+                'onclick' => $onClick,
+                'sort_order' => 5
+            ]
+        );
+
+        return $this;
+    }
+
+    private function getUnlockUrl()
+    {
+        return $this->getUrl('*/feed/unlock');
     }
 }

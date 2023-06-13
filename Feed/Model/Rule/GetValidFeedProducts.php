@@ -1,32 +1,32 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model\Rule;
 
+use Amasty\Feed\Model\Feed;
 use Amasty\Feed\Model\InventoryResolver;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Amasty\Feed\Model\Rule\Condition\Sql\Builder;
 use Amasty\Feed\Model\ValidProduct\ResourceModel\ValidProduct;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Framework\DB\Select;
-use Magento\Rule\Model\Condition\Sql\Builder;
+use Magento\Store\Model\StoreManagerInterface;
 
 class GetValidFeedProducts
 {
+    public const BATCH_SIZE = 1000;
+
     /**
      * @var CollectionFactory
      */
     private $productCollectionFactory;
-
-    /**
-     * @var array
-     */
-    private $productIds = [];
 
     /**
      * @var RuleFactory
@@ -43,38 +43,38 @@ class GetValidFeedProducts
      */
     private $inventoryResolver;
 
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
+
     public function __construct(
         RuleFactory $ruleFactory,
         CollectionFactory $productCollectionFactory,
         Builder $sqlBuilder,
-        InventoryResolver $inventoryResolver
+        InventoryResolver $inventoryResolver,
+        StoreManagerInterface $storeManager
     ) {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->ruleFactory = $ruleFactory;
         $this->sqlBuilder = $sqlBuilder;
         $this->inventoryResolver = $inventoryResolver;
+        $this->storeManager = $storeManager;
     }
 
-    /**
-     * @param \Amasty\Feed\Model\Feed $model
-     * @param array $ids
-     *
-     * @return array
-     */
-    public function execute(\Amasty\Feed\Model\Feed $model, array $ids = [])
+    public function execute(Feed $model, array $ids = []): void
     {
         $rule = $this->ruleFactory->create();
         $rule->setConditionsSerialized($model->getConditionsSerialized());
         $rule->setStoreId($model->getStoreId());
+        $this->storeManager->setCurrentStore($model->getStoreId());
         $model->setRule($rule);
         $this->updateIndex($model, $ids);
     }
 
-    public function updateIndex(\Amasty\Feed\Model\Feed $model, array $ids = [])
+    public function updateIndex(Feed $model, array $ids = []): void
     {
-        /** @var $productCollection \Magento\Catalog\Model\ResourceModel\Product\Collection */
         $productCollection = $this->prepareCollection($model, $ids);
-        $this->productIds = [];
 
         $conditions = $model->getRule()->getConditions();
         $conditions->collectValidatedAttributes($productCollection);
@@ -84,30 +84,33 @@ class GetValidFeedProducts
          * several allowed values from condition simultaneously
          */
         $productCollection->distinct(true);
-        $productCollection->getSelect()->reset(Select::COLUMNS);
-        $select = $productCollection->getSelect()->columns(
-            [
-                'entity_id' => new \Zend_Db_Expr('null'),
-                'feed_id' => new \Zend_Db_Expr((int)$model->getEntityId()),
-                'valid_product_id' => 'e.' . $productCollection->getEntity()->getIdFieldName()
-            ]
-        );
-        //fix for magento 2.3.2 for big number of products
-        $select->reset(Select::ORDER);
+        $currentPage = 1;
+        $productCollection->setPageSize(self::BATCH_SIZE);
+        $lastPage = $productCollection->getLastPageNumber();
+        while ($currentPage <= $lastPage) {
+            $productCollection->setCurPage($currentPage);
 
-        $query = $select->insertFromSelect($productCollection->getResource()->getTable(ValidProduct::TABLE_NAME));
-        $productCollection->getConnection()->query($query);
+            $productCollection->getSelect()->reset(Select::COLUMNS);
+            $select = $productCollection->getSelect()->columns(
+                [
+                    'entity_id' => new \Zend_Db_Expr('null'),
+                    'feed_id' => new \Zend_Db_Expr((int)$model->getEntityId()),
+                    'valid_product_id' => 'e.' . $productCollection->getEntity()->getIdFieldName()
+                ]
+            );
+            //fix for magento 2.3.2 for big number of products
+            $select->reset(Select::ORDER);
+            $select->limitPage($currentPage, self::BATCH_SIZE);
+
+            $query = $select->insertFromSelect($productCollection->getResource()->getTable(ValidProduct::TABLE_NAME));
+            $productCollection->getConnection()->query($query);
+
+            $currentPage++;
+        }
     }
 
-    /**
-     * @param \Amasty\Feed\Model\Feed $model
-     * @param array $ids
-     *
-     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection
-     */
-    private function prepareCollection(\Amasty\Feed\Model\Feed $model, $ids = [])
+    private function prepareCollection(Feed $model, array $ids = []): ProductCollection
     {
-        /** @var $productCollection \Magento\Catalog\Model\ResourceModel\Product\Collection */
         $productCollection = $this->productCollectionFactory->create();
         $productCollection->addStoreFilter($model->getStoreId());
 
@@ -115,13 +118,16 @@ class GetValidFeedProducts
             $productCollection->addAttributeToFilter('entity_id', ['in' => $ids]);
         }
 
-        // DBEST-1250
         if ($model->getExcludeDisabled()) {
             $productCollection->addAttributeToFilter(
                 'status',
                 ['eq' => Status::STATUS_ENABLED]
             );
+            if ($model->getExcludeSubDisabled()) {
+                $this->addDisabledParentsFilter($productCollection);
+            }
         }
+
         if ($model->getExcludeNotVisible()) {
             $productCollection->addAttributeToFilter(
                 'visibility',
@@ -142,5 +148,37 @@ class GetValidFeedProducts
         $model->getRule()->getConditions()->collectValidatedAttributes($productCollection);
 
         return $productCollection;
+    }
+
+    private function addDisabledParentsFilter(ProductCollection $productCollection): void
+    {
+        $subSelect = $this->getDisabledParentProductsSelect((int)$productCollection->getStoreId());
+
+        $productCollection->getSelect()->joinLeft(
+            ['rel' => $productCollection->getResource()->getTable('catalog_product_relation')],
+            'rel.child_id = e.entity_id',
+            []
+        )->where('rel.parent_id NOT IN (?) OR rel.parent_id IS NULL', $subSelect);
+    }
+
+    private function getDisabledParentProductsSelect(int $storeId): Select
+    {
+        $disabledParentsCollection = $this->productCollectionFactory->create();
+        $linkField = $disabledParentsCollection->getProductEntityMetadata()->getLinkField();
+
+        $disabledParentsCollection->addStoreFilter($storeId);
+        $disabledParentsCollection->addAttributeToFilter(
+            'status',
+            ['eq' => Status::STATUS_DISABLED]
+        );
+
+        return $disabledParentsCollection->getSelect()
+            ->reset(Select::COLUMNS)
+            ->columns(['e.' . $linkField])
+            ->joinLeft(
+                ['rel' => $disabledParentsCollection->getResource()->getTable('catalog_product_relation')],
+                'rel.parent_id = e.' . $linkField,
+                []
+            )->distinct();
     }
 }

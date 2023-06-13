@@ -68,7 +68,7 @@ td.amasty-modify-cell table {
 .amasty-xml-table td.amasty-modify-cell,
 .amasty-csv-table td.amasty-modify-cell {
     border-bottom-width: 1px;
-    border-color: white;
+    border-color: #FFFFFF;
     border-style: solid;
     padding-top: 0;
 }
@@ -109,4 +109,27 @@ td.amasty-modify-cell table {
     height: 500px;
     border: none;
     background-color: #f8f8f8;
+}
+
+[id^="attribute-result[merged_text]"].field > .label,
+[id^="attribute-default[merged_text]"].field > .label {
+    display: block;
+    float: left;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    width: calc((100%) * 0.25 - 30px);
+    text-align: right;
+    font-weight: revert;
+}
+
+[id^="attribute-result[merged_text]"].field > .control,
+[id^="attribute-default[merged_text]"].field > .control {
+    float: left;
+    margin-left: 30px;
+    width: calc( (100%) * 0.5 - 30px );
+}
+
+[id^="attribute-result[merged_text]"] .CodeMirror,
+[id^="attribute-default[merged_text]"] .CodeMirror {
+    max-height: 200px;
 }

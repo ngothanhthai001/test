@@ -1,8 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -13,18 +16,16 @@ use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem\Driver\File;
 use Magento\Framework\Module\Dir;
 use Magento\Framework\Module\Dir\Reader;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
 
-/**
- * Class UpgradeTo200
- */
-class UpgradeTo200
+class UpgradeTo200 implements OperationInterface
 {
-    const MODULE_DIR = 'Amasty_Feed';
-    const SUCCESS_TEMPLATE_NAME = 'amasty_feed_notifications_success_template';
-    const SUCCESS_TEMPLATE_SUBJECT = 'Amasty Succsessfull Feed Generation';
-    const UNSUCCESS_TEMPLATE_NAME = 'amasty_feed_notifications_unsuccess_template';
-    const UNSUCCESS_TEMPLATE_SUBJECT  = 'Amasty Unsuccsessfull Feed Generation';
-    const TEMPLATE_VARIABLES = 'amasty_feed_notifications_generation_variables';
+    private const MODULE_DIR = 'Amasty_Feed';
+    public const SUCCESS_TEMPLATE_NAME = 'amasty_feed_notifications_success_template';
+    private const SUCCESS_TEMPLATE_SUBJECT = 'Amasty Successful Feed Generation';
+    public const UNSUCCESS_TEMPLATE_NAME = 'amasty_feed_notifications_unsuccess_template';
+    private const UNSUCCESS_TEMPLATE_SUBJECT  = 'Amasty Unsuccessful Feed Generation';
+    private const TEMPLATE_VARIABLES = 'amasty_feed_notifications_generation_variables';
 
     /**
      * @var Template
@@ -54,21 +55,23 @@ class UpgradeTo200
     /**
      * @throws FileSystemException
      */
-    public function execute()
+    public function execute(ModuleDataSetupInterface $moduleDataSetup, string $setupVersion): void
     {
-        $templateVars = $this->filesystem->fileGetContents(
-            $this->getDirectory(self::TEMPLATE_VARIABLES . '.html')
-        );
-        $this->createGenerationEmailTemplate(
-            $templateVars,
-            self::SUCCESS_TEMPLATE_NAME,
-            self::SUCCESS_TEMPLATE_SUBJECT
-        );
-        $this->createGenerationEmailTemplate(
-            $templateVars,
-            self::UNSUCCESS_TEMPLATE_NAME,
-            self::UNSUCCESS_TEMPLATE_SUBJECT
-        );
+        if (version_compare($setupVersion, '2.0.0', '<')) {
+            $templateVars = $this->filesystem->fileGetContents(
+                $this->getDirectory(self::TEMPLATE_VARIABLES . '.html')
+            );
+            $this->createGenerationEmailTemplate(
+                $templateVars,
+                self::SUCCESS_TEMPLATE_NAME,
+                self::SUCCESS_TEMPLATE_SUBJECT
+            );
+            $this->createGenerationEmailTemplate(
+                $templateVars,
+                self::UNSUCCESS_TEMPLATE_NAME,
+                self::UNSUCCESS_TEMPLATE_SUBJECT
+            );
+        }
     }
 
     /**

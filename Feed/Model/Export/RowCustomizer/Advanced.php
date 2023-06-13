@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -13,12 +13,9 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\CatalogImportExport\Model\Export\RowCustomizerInterface;
 use Magento\CatalogInventory\Api\StockItemRepositoryInterface;
 
-/**
- * Class Advanced
- */
 class Advanced implements RowCustomizerInterface
 {
-    const ATTRIBUTES = [
+    public const ATTRIBUTES = [
         'category_ids' => 'Category Ids',
     ];
 

@@ -1,34 +1,50 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Setup\Operation;
 
-/**
- * Class UpgradeTo135
- */
-class UpgradeTo135
+use Amasty\Base\Setup\SerializedFieldDataConverter;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
+
+class UpgradeTo135 implements OperationInterface
 {
     /**
-     * @var \Amasty\Base\Setup\SerializedFieldDataConverter
+     * @var SerializedFieldDataConverter
      */
     private $fieldDataConverter;
 
-    public function __construct(\Amasty\Base\Setup\SerializedFieldDataConverter $fieldDataConverter)
-    {
+    /**
+     * @var ProductMetadataInterface
+     */
+    private $productMetaData;
+
+    public function __construct(
+        SerializedFieldDataConverter $fieldDataConverter,
+        ProductMetadataInterface $productMetaData
+    ) {
         $this->fieldDataConverter = $fieldDataConverter;
+        $this->productMetaData = $productMetaData;
     }
 
-    public function execute()
+    public function execute(ModuleDataSetupInterface $moduleDataSetup, string $setupVersion): void
     {
-        $this->fieldDataConverter->convertSerializedDataToJson(
-            'amasty_feed_entity',
-            'entity_id',
-            ['conditions_serialized']
-        );
+        if (version_compare($setupVersion, '1.3.5', '<')
+            && $this->productMetaData->getVersion() >= "2.2.0"
+        ) {
+            $this->fieldDataConverter->convertSerializedDataToJson(
+                'amasty_feed_entity',
+                'entity_id',
+                ['conditions_serialized']
+            );
+        }
     }
 }

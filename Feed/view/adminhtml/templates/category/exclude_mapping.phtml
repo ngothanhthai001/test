@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 ?>
 <?php
@@ -12,9 +12,12 @@ $htmlId = $block->getElement()->getHtmlId();
 ?>
 <div class="field" id="attribute-<?= $block->escapeHtml($htmlId) ?>-container">
     <label class="label"><?= $block->escapeHtml($block->getElement()->getLabel()); ?></label>
+    <a href="#" id="select_deselect_all" onclick="mappingControl.selectDeselectAll()">
+        <?= $block->escapeHtml(__('Select All / Deselect All')) ?>
+    </a>
     <div class="control">
         <ul class="amfeed-exclude-categories">
-            <?php foreach ($block->getCategoriesList() as $category) : ?>
+            <?php foreach ($block->getCategoriesList() as $category): ?>
                 <li class="amfeed-category" style="padding-left: <?= ((int)$category['level'] * 30) ?>px;">
                     <input  class="amfeed-checkbox"
                             data-amfeed-js="category-<?= $block->escapeHtml($category['id']) ?>"
@@ -47,6 +50,15 @@ $htmlId = $block->getElement()->getHtmlId();
                     input.parents('[data-amfeed-js="category-item"]').show();
                     input.addClass('required-entry _required');
                 }
+            },
+            selectDeselectAll: function () {
+                var selector = $('.amfeed-exclude-categories [type="checkbox"]'),
+                    state = !!(selector.first().attr('checked'));
+
+                $.each(selector, function (key, element) {
+                    $(element).attr('checked', !state);
+                    mappingControl.disableCategory(element);
+                });
             }
         };
     });

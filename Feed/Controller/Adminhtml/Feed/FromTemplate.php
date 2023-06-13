@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -10,11 +10,6 @@ namespace Amasty\Feed\Controller\Adminhtml\Feed;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 
-/**
- * Class FromTemplate
- *
- * @package Amasty\Feed
- */
 class FromTemplate extends \Amasty\Feed\Controller\Adminhtml\AbstractFeed
 {
     /**
@@ -59,7 +54,7 @@ class FromTemplate extends \Amasty\Feed\Controller\Adminhtml\AbstractFeed
             } catch (NoSuchEntityException $exception) {
                 $this->messageManager->addErrorMessage(__('This feed no longer exists.'));
 
-                return $this->_redirect('amfeed/*');
+                return $this->resultRedirectFactory->create()->setPath('amfeed/*');
             }
 
             try {
@@ -69,7 +64,10 @@ class FromTemplate extends \Amasty\Feed\Controller\Adminhtml\AbstractFeed
 
                 $this->messageManager->addSuccessMessage(__('Feed %1 created', $newModel->getName()));
 
-                return $this->_redirect('amfeed/*/edit', ['id' => $newModel->getId()]);
+                return $this->resultRedirectFactory->create()->setPath(
+                    'amfeed/*/edit',
+                    ['id' => $newModel->getId()]
+                );
             } catch (\Exception $e) {
                 $this->messageManager->addErrorMessage(
                     __('Something went wrong while export feed data. Please review the error log.')
@@ -79,6 +77,6 @@ class FromTemplate extends \Amasty\Feed\Controller\Adminhtml\AbstractFeed
             }
         }
 
-        return $this->_redirect('amfeed/*');
+        return $this->resultRedirectFactory->create()->setPath('amfeed/*');
     }
 }

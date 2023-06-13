@@ -1,56 +1,95 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model\Export\Adapter;
 
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\App\Filesystem\DirectoryList;
-use Magento\Framework\Filesystem\Driver\File;
+use Amasty\Feed\Model\Config;
 use Amasty\Feed\Model\Config\Source\NumberFormat;
 use Amasty\Feed\Model\Config\Source\StorageFolder;
-use Amasty\Feed\Block\Adminhtml\Feed\Edit\Tab\Content;
-use Amasty\Feed\Model\Config;
+use Amasty\Feed\Model\OptionSource\Feed\Modifier;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Directory\Model\CurrencyFactory;
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Escaper;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Filesystem;
+use Magento\Framework\Filesystem\Driver\File;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
 {
-    /**#@+
-     * Transfer Protocols
+    public const HTTP = 'http://';
+    public const HTTPS = 'https://';
+
+    /**
+     * @var array
      */
-    const HTTP = 'http://';
+    protected $csvField = [];
 
-    const HTTPS = 'https://';
-    /**#@-*/
+    /**
+     * @var bool
+     */
+    protected $columnName;
 
-    protected $_csvField = [];
+    /**
+     * @var string|null
+     */
+    protected $header;
 
-    protected $_columnName;
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
 
-    protected $_header;
+    /**
+     * @var CurrencyFactory
+     */
+    protected $currencyFactory;
 
-    protected $_storeManager;
+    /**
+     * @var array
+     */
+    protected $rates;
 
-    protected $_currencyFactory;
+    /**
+     * @var string
+     */
+    protected $formatPriceCurrency;
 
-    protected $_rates;
+    /**
+     * @var int
+     */
+    protected $formatPriceCurrencyShow;
 
-    protected $_formatPriceCurrency;
+    /**
+     * @var int
+     */
+    protected $formatPriceDecimals;
 
-    protected $_formatPriceCurrencyShow;
+    /**
+     * @var string
+     */
+    protected $formatPriceDecimalPoint;
 
-    protected $_formatPriceDecimals;
+    /**
+     * @var string
+     */
+    protected $formatPriceThousandsSeparator;
 
-    protected $_formatPriceDecimalPoint;
+    /**
+     * @var string
+     */
+    protected $formatDate;
 
-    protected $_formatPriceThousandsSeparator;
-
-    protected $_formatDate;
-
-    protected $_page;
+    /**
+     * @var int|null
+     */
+    protected $page;
 
     /**
      * @var NumberFormat
@@ -58,17 +97,17 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
     private $numberFormat;
 
     /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
+     * @var ProductRepositoryInterface
      */
     private $productRepository;
 
     /**
-     * @var \Magento\Framework\Escaper
+     * @var Escaper
      */
     private $escaper;
 
     /**
-     * @var \Magento\Framework\Filesystem
+     * @var Filesystem
      */
     private $filesystem;
 
@@ -83,21 +122,21 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
     private $file;
 
     public function __construct(
-        \Magento\Framework\Filesystem $filesystem,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Directory\Model\CurrencyFactory $currencyFactory,
-        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
-        \Magento\Framework\Escaper $escaper,
+        Filesystem $filesystem,
+        StoreManagerInterface $storeManager,
+        CurrencyFactory $currencyFactory,
+        ProductRepositoryInterface $productRepository,
+        Escaper $escaper,
         NumberFormat $numberFormat,
         Config $config,
         File $file,
         $destination = null,
         $page = null
     ) {
-        $this->_storeManager = $storeManager;
-        $this->_currencyFactory = $currencyFactory;
+        $this->storeManager = $storeManager;
+        $this->currencyFactory = $currencyFactory;
         $this->productRepository = $productRepository;
-        $this->_page = $page;
+        $this->page = $page;
         $this->numberFormat = $numberFormat;
         $this->file = $file;
         $this->filesystem = $filesystem;
@@ -124,7 +163,7 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
             'none' => '/n'
         ];
 
-        $this->_enclosure = isset($enclosures[$enclosure]) ? $enclosures[$enclosure] : '"';
+        $this->_enclosure = $enclosures[$enclosure] ?? '"';
 
         $delimiters = [
             'comma' => ',',
@@ -134,7 +173,7 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
             'tab' => chr(9)
         ];
 
-        $mode = $this->_page == 0 ? 'w' : 'a';
+        $mode = $this->page == 0 ? 'w' : 'a';
 
         if ($this->config->getStorageFolder() == StorageFolder::VAR_FOLDER) {
             $dir = $this->filesystem->getDirectoryWrite(DirectoryList::VAR_DIR);
@@ -150,11 +189,11 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
 
         $this->_delimiter = isset($delimiters[$delimiter]) ? $delimiters[$delimiter] : ',';
 
-        $this->_columnName = $feed->getCsvColumnName() == 1;
+        $this->columnName = $feed->getCsvColumnName() == 1;
 
-        $this->_header = $feed->getCsvHeader();
+        $this->header = $feed->getCsvHeader();
 
-        $this->_csvField = $feed->getCsvField();
+        $this->csvField = $feed->getCsvField();
 
         $this->initPrice($feed);
 
@@ -171,17 +210,15 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
         $formatPriceThousandsSeparator = $feed->getFormatPriceThousandsSeparator();
         $formatDate = $feed->getFormatDate();
 
-        $this->_formatPriceCurrency = $feed->getFormatPriceCurrency();
-        $this->_formatPriceCurrencyShow = $feed->getFormatPriceCurrencyShow() == 1;
+        $this->formatPriceCurrency = $feed->getFormatPriceCurrency();
+        $this->formatPriceCurrencyShow = $feed->getFormatPriceCurrencyShow() == 1;
 
-        $this->_formatPriceDecimals = isset($decimals[$formatPriceDecimals]) ? $decimals[$formatPriceDecimals] : 2;
-        $this->_formatPriceDecimalPoint =
-            isset($separators[$formatPriceDecimalPoint]) ? $separators[$formatPriceDecimalPoint] : '.';
+        $this->formatPriceDecimals = $decimals[$formatPriceDecimals] ?? 2;
+        $this->formatPriceDecimalPoint = $separators[$formatPriceDecimalPoint] ?? '.';
 
-        $this->_formatPriceThousandsSeparator =
-            isset($separators[$formatPriceThousandsSeparator]) ? $separators[$formatPriceThousandsSeparator] : ',';
+        $this->formatPriceThousandsSeparator = $separators[$formatPriceThousandsSeparator] ?? ',';
 
-        $this->_formatDate = !empty($formatDate) ? $formatDate : "Y-m-d";
+        $this->formatDate = !empty($formatDate) ? $formatDate : "Y-m-d";
     }
 
     protected function _getFieldKey($field)
@@ -195,17 +232,21 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
     {
         $columns = [];
 
-        foreach ($this->_csvField as $idx => $field) {
+        foreach ($this->csvField as $idx => $field) {
             $this->_headerCols[$idx . "_idx"] = false;
             $columns[] = $field['header'];
         }
 
-        if (!empty($this->_header)) {
-            $this->_fileHandler->write($this->_header . "\n");
+        if (!empty($this->header)) {
+            $this->_fileHandler->write($this->header . "\n");
         }
 
-        if ($this->_columnName !== false) {
-            $this->_fileHandler->writeCsv($columns, $this->_delimiter, $this->_enclosure);
+        if ($this->columnName !== false) {
+            if ($this->_enclosure == '/n') {
+                $this->_fileHandler->write(implode($this->_delimiter, $columns) . "\n");
+            } else {
+                $this->_fileHandler->writeCsv($columns, $this->_delimiter, $this->_enclosure);
+            }
         }
 
         return $this;
@@ -234,7 +275,7 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
     {
         $writeRow = [];
 
-        foreach ($this->_csvField as $idx => $field) {
+        foreach ($this->csvField as $idx => $field) {
             if ($field['static_text']) {
                 $value = $field['static_text'];
             } else {
@@ -297,20 +338,23 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
     protected function _modify($value, $modify, $arg0 = null, $arg1 = null)
     {
         switch ($modify) {
-            case Content::STRIP_TAGS:
+            case Modifier::STRIP_TAGS:
                 $value = strtr($value, ["\n" => '', "\r" => '']);
                 $value = strip_tags($value);
                 break;
-            case Content::HTML_ESCAPE:
+            case Modifier::GOOGLE_HTML_ESCAPE:
+                $value = $this->googleEscapeHtml((string)$value);
+                break;
+            case Modifier::HTML_ESCAPE:
                 $value = $this->escaper->escapeHtml($value);
                 break;
-            case Content::LOWERCASE:
+            case Modifier::LOWERCASE:
                 $value = $this->lowerCase($value);
                 break;
-            case Content::INTEGER:
+            case Modifier::INTEGER:
                 $value = (int)$value;
                 break;
-            case Content::LENGTH:
+            case Modifier::LENGTH:
                 $length = (int)$arg0;
 
                 if ($arg0 != '') {
@@ -318,38 +362,41 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
                         ? mb_substr($value, 0, $length, "UTF-8") : substr($value, 0, $length);
                 }
                 break;
-            case Content::PREPEND:
+            case Modifier::PREPEND:
                 $value = $arg0 . $value;
                 break;
-            case Content::APPEND:
+            case Modifier::APPEND:
                 $value .= $arg0;
                 break;
-            case Content::REPLACE:
+            case Modifier::REPLACE:
                 $value = str_replace($arg0, $arg1, $value);
                 break;
-            case Content::UPPERCASE:
+            case Modifier::UPPERCASE:
                 $value = function_exists("mb_strtoupper")
                     ? mb_strtoupper($value, "UTF-8") : strtoupper($value);
                 break;
-            case Content::CAPITALIZE:
+            case Modifier::CAPITALIZE_FIRST:
                 $value = ucfirst($this->lowerCase($value));
                 break;
-            case Content::ROUND:
+            case Modifier::CAPITALIZE_EACH_WORD:
+                $value = ucwords($this->lowerCase($value));
+                break;
+            case Modifier::ROUND:
                 if (is_numeric($value)) {
                     $value = round($value);
                 }
                 break;
-            case Content::IF_EMPTY:
+            case Modifier::IF_EMPTY:
                 if (!strlen($value)) {
                     $value = $arg0;
                 }
                 break;
-            case Content::IF_NOT_EMPTY:
+            case Modifier::IF_NOT_EMPTY:
                 if (strlen($value)) {
                     $value = $arg0;
                 }
                 break;
-            case Content::FULL_IF_NOT_EMPTY:
+            case Modifier::FULL_IF_NOT_EMPTY:
                 if (!strlen($value)) {
                     $value = $arg0;
                 } else {
@@ -357,15 +404,29 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
                 }
                 break;
 
-            case Content::TO_SECURE_URL:
+            case Modifier::TO_SECURE_URL:
                 $this->replaceFirst($value, self::HTTP, self::HTTPS);
                 break;
-            case Content::TO_UNSECURE_URL:
+            case Modifier::TO_UNSECURE_URL:
                 $this->replaceFirst($value, self::HTTPS, self::HTTP);
                 break;
         }
 
         return $value;
+    }
+
+    private function googleEscapeHtml(string $value): string
+    {
+        // Remove HTML tags with content
+        foreach (['style', 'canvas'] as $tag) {
+            $value = preg_replace('/(<' . $tag . '.*?>.*?<\/' . $tag . '>)/is', '', $value);
+            $value = preg_replace('/(<' . $tag . ' .*?\/>)/is', '', $value);
+        }
+
+        // Remove all attributes from HTML tags
+        $value = preg_replace("/<([a-z][a-z0-9]*)[^>]*?(\/?)>/si", '<$1$2>', $value);
+
+        return $this->escaper->escapeHtml(trim($value));
     }
 
     /**
@@ -394,14 +455,15 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
 
     protected function _formatValue($field, $value)
     {
-        $format = isset($field['format']) ? $field['format'] : 'as_is';
+        $format = $field['format'] ?? 'as_is';
 
         switch ($format) {
+            case 'integer':
             case 'as_is':
                 break;
             case 'date':
                 if (!empty($value)) {
-                    $value = date($this->_formatDate, strtotime($value));
+                    $value = date($this->formatDate, strtotime($value));
                 }
                 break;
             case 'price':
@@ -409,18 +471,16 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
                     $value = $value * $this->getCurrencyRate();
                     $value = number_format(
                         $value,
-                        $this->_formatPriceDecimals,
-                        $this->_formatPriceDecimalPoint,
-                        $this->_formatPriceThousandsSeparator
+                        $this->formatPriceDecimals,
+                        $this->formatPriceDecimalPoint,
+                        $this->formatPriceThousandsSeparator
                     );
 
-                    if ($this->_formatPriceCurrencyShow && $this->_formatPriceCurrency) {
-                        $value .= ' ' . $this->_formatPriceCurrency;
+                    if ($this->formatPriceCurrencyShow && $this->formatPriceCurrency) {
+                        $value .= ' ' . $this->formatPriceCurrency;
                     }
                 }
 
-                break;
-            case 'integer':
                 break;
         }
 
@@ -429,25 +489,14 @@ class Csv extends \Magento\ImportExport\Model\Export\Adapter\Csv
 
     protected function getCurrencyRate()
     {
-        if (!$this->_rates) {
-            $codes = $this->_storeManager->getStore()->getAvailableCurrencyCodes(true);
-            $this->_rates = $this->_currencyFactory->create()->getCurrencyRates(
-                $this->_storeManager->getStore()->getBaseCurrency(),
-                $codes
+        if (!$this->rates) {
+            $this->rates = $this->currencyFactory->create()->getCurrencyRates(
+                $this->storeManager->getStore()->getBaseCurrency(),
+                [$this->formatPriceCurrency]
             );
         }
 
-        return isset($this->_rates[$this->_formatPriceCurrency]) ? $this->_rates[$this->_formatPriceCurrency] : 1;
-
-            //TODO
-//        if (!$this->_rates) {
-//            $this->_rates = $this->_currencyFactory->create()->getCurrencyRates(
-//                $this->_storeManager->getStore()->getBaseCurrency(),
-//                [$this->_formatPriceCurrency]
-//            );
-//        }
-//
-//        return isset($this->_rates[$this->_formatPriceCurrency]) ? $this->_rates[$this->_formatPriceCurrency] : 1;
+        return $this->rates[$this->formatPriceCurrency] ?? 1;
     }
 
     /**

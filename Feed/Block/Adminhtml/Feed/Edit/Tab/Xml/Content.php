@@ -1,20 +1,20 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Block\Adminhtml\Feed\Edit\Tab\Xml;
 
-/**
- * Class Content
- *
- * @package Amasty\Feed
- */
 class Content extends \Amasty\Feed\Block\Adminhtml\Feed\Edit\Tab\Content
 {
+    public const CONDITION_BASED_ATTRIBUTES_KEY = 'condition_based_attributes';
+
+    /**
+     * @var string
+     */
     protected $_template = 'feed/xml.phtml';
 
     protected function _prepareLayout()
@@ -55,12 +55,26 @@ class Content extends \Amasty\Feed\Block\Adminhtml\Feed\Edit\Tab\Content
     {
         return $this->getChildHtml('update_button');
     }
-    
+
     public function escapeHtmlInContent($value)
     {
-        // phpcs:ignore
-        $html = htmlspecialchars($value, ENT_NOQUOTES, 'UTF-8');
-        
-        return $this->escapeHtml($html);
+        if ($value) {
+            //phpcs:ignore Magento2.Functions.DiscouragedFunction.DiscouragedWithAlternative
+            $html = htmlspecialchars($value, ENT_NOQUOTES, 'UTF-8');
+
+            return $this->escapeHtml($html);
+        }
+
+        return '';
+    }
+
+    public function getAttributeOptions(): array
+    {
+        $attributeOptions = parent::getAttributeOptions();
+        if ($this->getData('is_merged_attributes')) {
+            unset($attributeOptions[self::CONDITION_BASED_ATTRIBUTES_KEY]);
+        }
+
+        return $attributeOptions;
     }
 }

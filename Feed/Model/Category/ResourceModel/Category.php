@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -11,14 +11,9 @@ namespace Amasty\Feed\Model\Category\ResourceModel;
 use Amasty\Feed\Model\Category\Category as ModelCategory;
 use Magento\Framework\Model\ResourceModel\Db\VersionControl\AbstractDb;
 
-/**
- * Class Category Resource Model
- *
- * @package Amasty\Feed
- */
 class Category extends AbstractDb
 {
-    const TABLE_NAME = 'amasty_feed_category';
+    public const TABLE_NAME = 'amasty_feed_category';
 
     /**
      * Initialize table nad PK name

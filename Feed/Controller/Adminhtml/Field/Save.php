@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -49,7 +49,7 @@ class Save extends AbstractField
                 $this->dataPersistor->clear(Conditions::FORM_NAMESPACE);
 
                 if (!$this->getRequest()->getParam('back')) {
-                    return $this->_redirect('amfeed/*/');
+                    return $this->resultRedirectFactory->create()->setPath('amfeed/*/');
                 }
             } catch (\Exception $exception) {
                 $this->messageManager->addExceptionMessage(
@@ -60,14 +60,14 @@ class Save extends AbstractField
                 $this->dataPersistor->set(Conditions::FORM_NAMESPACE, $data);
 
                 if (!isset($data['feed_field_id'])) {
-                    return $this->_redirect('amfeed/*/new');
+                    return $this->resultRedirectFactory->create()->setPath('amfeed/*/new');
                 }
             }
 
-            return $this->_redirect('amfeed/field/edit', ['id' => $model->getId()]);
+            return $this->resultRedirectFactory->create()->setPath('amfeed/field/edit', ['id' => $model->getId()]);
         }
 
-        return $this->_redirect('amfeed/*/');
+        return $this->resultRedirectFactory->create()->setPath('amfeed/*/');
     }
 
     /**

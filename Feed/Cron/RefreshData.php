@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -11,7 +11,8 @@ namespace Amasty\Feed\Cron;
 use Amasty\Feed\Api\Data\FeedInterface;
 use Amasty\Feed\Api\Data\ValidProductsInterface;
 use Amasty\Feed\Api\FeedRepositoryInterface;
-use Amasty\Feed\Exceptions\ReindexInProgressException;
+use Amasty\Feed\Exceptions\LockProcessException;
+use Amasty\Feed\Model\Config;
 use Amasty\Feed\Model\Config\Source\Events;
 use Amasty\Feed\Model\Config\Source\ExecuteModeList;
 use Amasty\Feed\Model\Config\Source\FeedStatus;
@@ -19,40 +20,44 @@ use Amasty\Feed\Model\CronProvider;
 use Amasty\Feed\Model\EmailManagement;
 use Amasty\Feed\Model\Feed;
 use Amasty\Feed\Model\FeedExport;
+use Amasty\Feed\Model\FeedExportFactory;
+use Amasty\Feed\Model\Indexer\LockManager;
 use Amasty\Feed\Model\JobManager;
 use Amasty\Feed\Model\JobManagerFactory as JobManagerFactory;
+use Amasty\Feed\Model\ResourceModel\Feed\CollectionFactory as FeedCollectionFactory;
+use Amasty\Feed\Model\Schedule\Management as ScheduleManagement;
+use Amasty\Feed\Model\Schedule\ResourceModel\CollectionFactory as ScheduleCollectionFactory;
 use Amasty\Feed\Model\ValidProduct\ResourceModel\Collection as ValidProductsCollection;
+use Amasty\Feed\Model\ValidProduct\ResourceModel\CollectionFactory as ValidProductsFactory;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Psr\Log\LoggerInterface;
 
-/**
- * Class RefreshData
- *
- * Refresh feed data by cron
- */
 class RefreshData
 {
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     private $logger;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
+     * @var TimezoneInterface
      */
     private $localeDate;
 
     /**
-     * @var \Amasty\Feed\Model\ResourceModel\Feed\CollectionFactory
+     * @var FeedCollectionFactory
      */
     private $feedCollectionFactory;
 
     /**
-     * @var \Amasty\Feed\Model\Config
+     * @var Config
      */
     private $config;
 
     /**
-     * @var \Amasty\Feed\Model\ValidProduct\ResourceModel\CollectionFactory
+     * @var ValidProductsFactory
      */
     private $validProductsFactory;
 
@@ -62,19 +67,14 @@ class RefreshData
     private $emailManagement;
 
     /**
-     * @var \Amasty\Feed\Model\Schedule\Management
+     * @var ScheduleManagement
      */
     private $scheduleManagement;
 
     /**
-     * @var \Amasty\Feed\Model\Schedule\ResourceModel\CollectionFactory
+     * @var ScheduleCollectionFactory
      */
     private $scheduleCollectionFactory;
-
-    /**
-     * @var \Amasty\Feed\Model\Indexer\Feed\IndexBuilder
-     */
-    private $indexBuilder;
 
     /**
      * @var JobManagerFactory
@@ -82,7 +82,7 @@ class RefreshData
     private $jobManagerFactory;
 
     /**
-     * @var \Amasty\Feed\Model\FeedExportFactory
+     * @var FeedExportFactory
      */
     private $feedExportFactory;
 
@@ -91,20 +91,25 @@ class RefreshData
      */
     private $feedRepository;
 
+    /**
+     * @var LockManager
+     */
+    private $lockManager;
+
     public function __construct(
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-        \Psr\Log\LoggerInterface $logger,
-        \Amasty\Feed\Model\ResourceModel\Feed\CollectionFactory $feedCollectionFactory,
-        \Amasty\Feed\Model\Config $config,
+        DateTime $dateTime,
+        TimezoneInterface $localeDate,
+        LoggerInterface $logger,
+        FeedCollectionFactory $feedCollectionFactory,
+        Config $config,
         EmailManagement $emailManagement,
-        \Amasty\Feed\Model\ValidProduct\ResourceModel\CollectionFactory $validProductsFactory,
-        \Amasty\Feed\Model\Schedule\Management $scheduleManagement,
-        \Amasty\Feed\Model\Schedule\ResourceModel\CollectionFactory $scheduleCollectionFactory,
-        \Amasty\Feed\Model\Indexer\Feed\IndexBuilder $indexBuilder,
+        ValidProductsFactory $validProductsFactory,
+        ScheduleManagement $scheduleManagement,
+        ScheduleCollectionFactory $scheduleCollectionFactory,
         JobManagerFactory $jobManagerFactory,
         FeedRepositoryInterface $feedRepository,
-        \Amasty\Feed\Model\FeedExportFactory $feedExportFactory
+        FeedExportFactory $feedExportFactory,
+        LockManager $lockManager
     ) {
         $this->dateTime = $dateTime;
         $this->localeDate = $localeDate;
@@ -115,10 +120,10 @@ class RefreshData
         $this->emailManagement = $emailManagement;
         $this->scheduleManagement = $scheduleManagement;
         $this->scheduleCollectionFactory = $scheduleCollectionFactory;
-        $this->indexBuilder = $indexBuilder;
         $this->feedExportFactory = $feedExportFactory;
         $this->jobManagerFactory = $jobManagerFactory;
         $this->feedRepository = $feedRepository;
+        $this->lockManager = $lockManager;
     }
 
     public function execute()
@@ -129,13 +134,13 @@ class RefreshData
         $collection->addFieldToFilter(FeedInterface::IS_ACTIVE, 1)
             ->addFieldToFilter(FeedInterface::EXECUTE_MODE, ExecuteModeList::CRON);
 
-        $events = $this->config->getSelectedEvents();
+        $events = $this->config->getSelectedEvents() ?? '';
         $emails = $this->config->getEmails();
         $events = explode(",", $events);
 
         try {
-            $this->indexBuilder->lockReindex();
-        } catch (ReindexInProgressException $e) {
+            $this->lockManager->lockProcess();
+        } catch (LockProcessException $e) {
             try {
                 foreach ($collection as $feed) {
                     if ($this->onSchedule($feed)) {
@@ -240,7 +245,7 @@ class RefreshData
         }
 
         $collection->save();
-        $this->indexBuilder->unlockReindex();
+        $this->lockManager->unlockProcess();
     }
 
     /**

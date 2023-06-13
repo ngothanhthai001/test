@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -13,11 +13,6 @@ use Amasty\Feed\Model\Category\Repository;
 use Magento\Backend\App\Action;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class Delete
- *
- * @package Amasty\Feed
- */
 class Delete extends AbstractCategory
 {
     /**
@@ -40,28 +35,29 @@ class Delete extends AbstractCategory
         $this->repository = $repository;
     }
 
-    /**
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
-     */
     public function execute()
     {
-        if ($categoryId = $this->getRequest()->getParam('id')) {
+        if ($categoryId = $this->getRequest()->getParam('feed_category_id')) {
             try {
                 $this->repository->deleteById($categoryId);
-                $this->messageManager->addSuccessMessage(__('You deleted the category.'));
+                $this->messageManager->addSuccessMessage(__('You deleted the category mapping.'));
 
-                return $this->_redirect('amfeed/*/');
+                return $this->resultRedirectFactory->create()->setPath('amfeed/*/');
             } catch (\Exception $e) {
                 $this->messageManager->addErrorMessage(
-                    __('We can\'t delete the category right now. Please review the log and try again.')
+                    __('We can\'t delete the category mapping right now. Please review the log and try again.')
                 );
                 $this->logger->critical($e);
 
-                return $this->_redirect('amfeed/*/edit', ['id' => $this->getRequest()->getParam('id')]);
+                return $this->resultRedirectFactory->create()->setPath(
+                    'amfeed/*/edit',
+                    ['id' => $this->getRequest()->getParam('id')]
+                );
             }
         }
 
-        $this->messageManager->addErrorMessage(__('We can\'t find a category to delete.'));
-        return $this->_redirect('amfeed/*/');
+        $this->messageManager->addErrorMessage(__('We can\'t find a category mapping to delete.'));
+
+        return $this->resultRedirectFactory->create()->setPath('amfeed/*/');
     }
 }

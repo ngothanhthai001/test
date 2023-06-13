@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -11,13 +11,10 @@ namespace Amasty\Feed\Model\ResourceModel;
 use Amasty\Feed\Api\Data\FeedInterface;
 use Magento\Framework\Model\ResourceModel\Db\VersionControl\AbstractDb;
 
-/**
- * Class Feed
- */
 class Feed extends AbstractDb
 {
-    const TABLE_NAME = 'amasty_feed_entity';
-    const ID = 'entity_id';
+    public const TABLE_NAME = 'amasty_feed_entity';
+    public const ID = 'entity_id';
 
     /**
      * Initialize table nad PK name

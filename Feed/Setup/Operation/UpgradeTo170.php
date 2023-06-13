@@ -1,88 +1,64 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Setup\Operation;
 
-use Magento\Framework\Setup\SchemaSetupInterface;
-use Magento\Framework\DB\Ddl\Table;
+use Amasty\Feed\Model\Indexer\Feed\IndexBuilder;
+use Magento\Framework\App\Area;
+use Magento\Framework\App\State;
+use Magento\Framework\FlagManager;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
 
-/**
- * Class UpgradeTo170
- */
-class UpgradeTo170
+class UpgradeTo170 implements OperationInterface
 {
     /**
-     * @var \Amasty\Feed\Model\Indexer\Feed\IndexBuilder
+     * @var IndexBuilder
      */
     private $feedBuilder;
 
-    public function __construct(\Amasty\Feed\Model\Indexer\Feed\IndexBuilder $feedBuilder)
-    {
+    /**
+     * @var State
+     */
+    private $appState;
+
+    /**
+     * @var FlagManager
+     */
+    private $flagManager;
+
+    public function __construct(
+        IndexBuilder $feedBuilder,
+        State $appState,
+        FlagManager $flagManager
+    ) {
         $this->feedBuilder = $feedBuilder;
+        $this->appState = $appState;
+        $this->flagManager = $flagManager;
     }
 
-    /**
-     * @param SchemaSetupInterface $setup
-     *
-     * @throws \Zend_Db_Exception
-     */
-    public function execute(SchemaSetupInterface $setup)
+    public function execute(ModuleDataSetupInterface $moduleDataSetup, string $setupVersion): void
     {
-        $this->createTable($setup);
+        if (version_compare($setupVersion, '1.7.0', '<')
+            && !$this->flagManager->getFlagData('amasty_feed_upg_to_170')
+        ) {
+            $this->flagManager->saveFlag('amasty_feed_upg_to_170', true);
+            $this->appState->emulateAreaCode(
+                Area::AREA_FRONTEND,
+                [$this, 'reindexFeed']
+            );
+        }
+    }
+
+    public function reindexFeed()
+    {
         $this->feedBuilder->reindexFull();
-    }
-
-    /**
-     * @param \Magento\Framework\Setup\SchemaSetupInterface $setup
-     *
-     * @throws \Zend_Db_Exception
-     */
-    private function createTable(SchemaSetupInterface $setup)
-    {
-        $table = $setup->getConnection()->newTable(
-            $setup->getTable('amasty_feed_valid_products')
-        )->addColumn(
-            'entity_id',
-            Table::TYPE_BIGINT,
-            null,
-            ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
-            'Entity Id'
-        )->addColumn(
-            'feed_id',
-            Table::TYPE_INTEGER,
-            null,
-            ['unsigned' => true, 'nullable' => false, 'default' => '0'],
-            'Feed ID'
-        )->addColumn(
-            'valid_product_id',
-            Table::TYPE_INTEGER,
-            null,
-            ['unsigned' => true, 'nullable' => false, 'default' => '0'],
-            'Valid products for conditions'
-        )->addIndex(
-            $setup->getIdxName(
-                'amasty_feed_valid_products',
-                ['valid_product_id']
-            ),
-            ['valid_product_id']
-        )->addForeignKey(
-            $setup->getFkName(
-                'amasty_feed_valid_products',
-                'feed_id',
-                'amasty_feed_entity',
-                'entity_id'
-            ),
-            'feed_id',
-            $setup->getTable('amasty_feed_entity'),
-            'entity_id',
-            Table::ACTION_CASCADE
-        );
-
-        $setup->getConnection()->createTable($table);
     }
 }

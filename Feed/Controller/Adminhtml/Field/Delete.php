@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -10,11 +10,6 @@ namespace Amasty\Feed\Controller\Adminhtml\Field;
 
 use Amasty\Feed\Controller\Adminhtml\AbstractField;
 
-/**
- * Class Delete
- *
- * @package Amasty\Feed
- */
 class Delete extends AbstractField
 {
     /**
@@ -39,19 +34,22 @@ class Delete extends AbstractField
 
                 $this->messageManager->addSuccessMessage(__('You deleted the field.'));
 
-                return $this->_redirect('amfeed/*/');
+                return $this->resultRedirectFactory->create()->setPath('amfeed/*/');
             } catch (\Exception $exception) {
                 $this->messageManager->addExceptionMessage(
                     $exception,
                     __('We can\'t delete the field right now. Please review the log and try again.')
                 );
 
-                return $this->_redirect('amfeed/*/edit', ['id' => $this->getRequest()->getParam('id')]);
+                return $this->resultRedirectFactory->create()->setPath(
+                    'amfeed/*/edit',
+                    ['id' => $this->getRequest()->getParam('id')]
+                );
             }
         }
 
         $this->messageManager->addErrorMessage(__('We can\'t find a field to delete.'));
 
-        return $this->_redirect('amfeed/*/');
+        return $this->resultRedirectFactory->create()->setPath('amfeed/*/');
     }
 }

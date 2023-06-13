@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -11,11 +11,6 @@ namespace Amasty\Feed\Model\Field\ResourceModel;
 use Magento\Framework\DB\Select;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
-/**
- * Class Field Collection
- *
- * @package Amasty\Feed
- */
 class Collection extends AbstractCollection
 {
     protected function _construct()
@@ -49,7 +44,7 @@ class Collection extends AbstractCollection
         $where = $this->_translateCondition('code', ['in' => $fields]);
 
         $this->getSelect()->reset(Select::COLUMNS)->joinInner(
-            ['cond' => $this->getTable('amasty_feed_field_conditions')],
+            ['cond' => $this->getTable(Condition::TABLE_NAME)],
             'cond.feed_field_id = main_table.feed_field_id',
             ['cond.entity_id', 'main_table.code']
         )->where($where);

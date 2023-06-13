@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -17,11 +17,6 @@ use Amasty\Feed\Model\Config;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Exception\LocalizedException;
 
-/**
- * Class FeedExport
- *
- * Processing feed export
- */
 class FeedExport
 {
     /**
@@ -131,6 +126,7 @@ class FeedExport
             ->setWriter($this->getWriter($feed, $fileName, $this->multiProcessMode ? 0 : $page))
             ->setAttributes($this->getAttributes($feed))
             ->setParentAttributes($this->getAttributes($feed, true))
+            ->setExcludeDisabledParents($feed->getExcludeDisabled())
             ->setMatchingProductIds($productIds)
             ->setUtmParams($feed->getUtmParams())
             ->setStoreId($feed->getStoreId())

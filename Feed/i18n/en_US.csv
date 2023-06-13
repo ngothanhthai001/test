@@ -30,22 +30,6 @@ Analytics,Analytics
 "Test connection","Test connection"
 Conditions,Conditions
 "Conditions (don't add conditions if need export all products)","Conditions (don't add conditions if need export all products)"
-"Strip Tags","Strip Tags"
-"Html Escape","Html Escape"
-Uppercase,Uppercase
-Capitalize,Capitalize
-Lowercase,Lowercase
-Integer,Integer
-Length,Length
-Prepend,Prepend
-Append,Append
-Replace,Replace
-Round,Round
-"If Empty","If Empty"
-"If Not Empty","If Not Empty"
-"If Empty/Not Empty","If Empty/Not Empty"
-"To secure URL","To secure URL"
-"To unsecure URL","To unsecure URL"
 From,From
 To,To
 Text,Text
@@ -102,6 +86,7 @@ Active,Active
 Inactive,Inactive
 Compress,Compress
 "Exclude Disabled Products","Exclude Disabled Products"
+"Exclude Child Products if Parent Product Is Disabled","Exclude Child Products if Parent Product Is Disabled"
 "Exclude Out of Stock Products","Exclude Out of Stock Products"
 "Exclude Not Visible Products","Exclude Not Visible Products"
 Schedule,Schedule
@@ -118,26 +103,18 @@ Update,Update
 "Setup Google Feed","Setup Google Feed"
 "Custom Feed","Custom Feed"
 "Add %1 Template","Add %1 Template"
-Delete,Delete
 "Are you sure you want to do this?","Are you sure you want to do this?"
+"Force Unlock","Force Unlock"
+Delete,Delete
 Reset,Reset
 Save,Save
-"Output Value","Output Value"
-Attribute,Attribute
-"If you can't find the needed attribute in the list, please edit the needed attribute. 
-                Open the 'Storefront Properties' tab in the attribute edit menu and set 
-                'Use for Promo Rule Conditions' field to 'YES'.","If you can't find the needed attribute in the list, please edit the needed attribute. 
-                Open the 'Storefront Properties' tab in the attribute edit menu and set 
-                'Use for Promo Rule Conditions' field to 'YES'."
-Modification,Modification
-"Percentage (like +15%), or fixed value (like -20)","Percentage (like +15%), or fixed value (like -20)"
-"Custom Text","Custom Text"
 GoogleWizard,GoogleWizard
 "Setup Google Wizard","Setup Google Wizard"
 Back,Back
 "Save and Start Generation","Save and Start Generation"
 "Step 4: Basic Product Information","Step 4: Basic Product Information"
 "Please select attributes to output in feed","Please select attributes to output in feed"
+Attribute,Attribute
 Images,Images
 Basic,Basic
 Product,Product
@@ -151,6 +128,7 @@ SKU,SKU
 Websites,Websites
 Created,Created
 Updated,Updated
+"Product ID","Product ID"
 Default,Default
 Thumbnail,Thumbnail
 "Base Image","Base Image"
@@ -161,11 +139,13 @@ Thumbnail,Thumbnail
 "Image 4","Image 4"
 "Image 5","Image 5"
 "Final Price","Final Price"
+"Regular Price","Regular Price"
 "Min Price","Min Price"
 "Max Price","Max Price"
 "Price with TAX(VAT)","Price with TAX(VAT)"
 "Final Price with TAX(VAT)","Final Price with TAX(VAT)"
 "Min Price with TAX(VAT)","Min Price with TAX(VAT)"
+"Special Price","Special Price"
 Short,Short
 "With Category","With Category"
 "Tax Percents","Tax Percents"
@@ -185,20 +165,20 @@ Short,Short
 "No cron jobs found","No cron jobs found"
 "Learn more","Learn more"
 "Cron (Last 5)","Cron (Last 5)"
-"Please update Amasty Base module. Re-upload it and replace all the files.","Please update Amasty Base module. Re-upload it and replace all the files."
 "Warning: 'pcntl' php extension is required for parallel feed generation.","Warning: 'pcntl' php extension is required for parallel feed generation."
-"You deleted the category.","You deleted the category."
-"We can't delete the category right now. Please review the log and try again.","We can't delete the category right now. Please review the log and try again."
-"We can't find a category to delete.","We can't find a category to delete."
+"You deleted the category mapping.","You deleted the category mapping."
+"We can't delete the category mapping right now. Please review the log and try again.","We can't delete the category mapping right now. Please review the log and try again."
+"We can't find a category mapping to delete.","We can't find a category mapping to delete."
 "This category no longer exists.","This category no longer exists."
 "Amasty Feed","Amasty Feed"
 "Categories Mapping Edit","Categories Mapping Edit"
 "New Categories Mapping","New Categories Mapping"
 "Categories Mapping","Categories Mapping"
+"Something went wrong. Please review the error log.","Something went wrong. Please review the error log."
+"A total of %1 record(s) have been deleted.","A total of %1 record(s) have been deleted."
 "You saved the category mapping.","You saved the category mapping."
 "Something went wrong while saving the feed data. Please review the error log.","Something went wrong while saving the feed data. Please review the error log."
 "This feed no longer exists.","This feed no longer exists."
-"Something went wrong. Please review the error log.","Something went wrong. Please review the error log."
 "There are no products to generate feed. Please check Amasty Feed indexers status or feed conditions.","There are no products to generate feed. Please check Amasty Feed indexers status or feed conditions."
 Success!,Success!
 "Request params is empty","Request params is empty"
@@ -214,10 +194,10 @@ Success!,Success!
 "New Feed","New Feed"
 "Feed %1 created","Feed %1 created"
 "Something went wrong while export feed data. Please review the error log.","Something went wrong while export feed data. Please review the error log."
-"A total of %1 record(s) have been deleted.","A total of %1 record(s) have been deleted."
 "There are no products to generate feed.Please check Amasty Feed indexers status or feed conditions.","There are no products to generate feed.Please check Amasty Feed indexers status or feed conditions."
 "You saved the feed.","You saved the feed."
 "Template %1 was created","Template %1 was created"
+"Unlocked successfully!","Unlocked successfully!"
 "You deleted the field.","You deleted the field."
 "We can't delete the field right now. Please review the log and try again.","We can't delete the field right now. Please review the log and try again."
 "We can't find a field to delete.","We can't find a field to delete."
@@ -228,17 +208,18 @@ Success!,Success!
 "Condition-Based Attribute with this code are exist. Please, choose another code name.","Condition-Based Attribute with this code are exist. Please, choose another code name."
 "Google Feed Wizard","Google Feed Wizard"
 "Something went wrong while saving the Google Feed. Please review the error log.","Something went wrong while saving the Google Feed. Please review the error log."
-"Couldn't lock indexer. Reindex in progress.","Couldn't lock indexer. Reindex in progress."
+"Couldn't lock process. Feed generation or reindex is in progress. Please wait for the index process or use Force Unlock to run blocked processes.","Couldn't lock process. Feed generation or reindex is in progress. Please wait for the index process or use Force Unlock to run blocked processes."
 "Please check $1 and rename your categories to match the corresponding Google categories according to the requirements.<br/> <b>Important!</b> You should define the full path of the category exactly as it is in the taxonomy. For instance, if you are trying to associate your Shorts category with Google's, you might rename it to ""Apparel & Accessories > Clothing > Shorts"".","Please check $1 and rename your categories to match the corresponding Google categories according to the requirements.<br/> <b>Important!</b> You should define the full path of the category exactly as it is in the taxonomy. For instance, if you are trying to associate your Shorts category with Google's, you might rename it to ""Apparel & Accessories > Clothing > Shorts""."
 "Carefully review all the categories listed below and select those you want to exclude from your product feed by checking the corresponding checkbox(es). Excluded categories will not be mapped to Google Taxonomies and won't be included in the generated feed.","Carefully review all the categories listed below and select those you want to exclude from your product feed by checking the corresponding checkbox(es). Excluded categories will not be mapped to Google Taxonomies and won't be included in the generated feed."
-"Unable to save category with ID %1. Error: %2","Unable to save category with ID %1. Error: %2"
+"Unable to remove category mapping with ID %1. Error: %2","Unable to remove category mapping with ID %1. Error: %2"
+"Unable to remove category mapping. Error: %1","Unable to remove category mapping. Error: %1"
 "Unable to save new category. Error: %1","Unable to save new category. Error: %1"
-"Category with specified ID ""%1"" not found.","Category with specified ID ""%1"" not found."
-"Unable to remove category with ID %1. Error: %2","Unable to remove category with ID %1. Error: %2"
-"Unable to remove category. Error: %1","Unable to remove category. Error: %1"
+"Category mapping with specified ID ""%1"" not found.","Category mapping with specified ID ""%1"" not found."
 Zip,Zip
 Gz,Gz
 Bz,Bz
+"Custom Text","Custom Text"
+"Merged Attributes","Merged Attributes"
 "Successful Export","Successful Export"
 "Unsuccessful Export","Unsuccessful Export"
 Manually,Manually
@@ -265,13 +246,49 @@ Monthly,Monthly
 "Feed with specified ID ""%1"" not found.","Feed with specified ID ""%1"" not found."
 "Unable to remove feed with ID %1. Error: %2","Unable to remove feed with ID %1. Error: %2"
 "Unable to remove feed. Error: %1","Unable to remove feed. Error: %1"
+"If you can't find the needed attribute in the list, please edit the needed attribute.
+                Open the 'Storefront Properties' tab in the attribute edit menu and set
+                'Use for Promo Rule Conditions' field to 'YES'.","If you can't find the needed attribute in the list, please edit the needed attribute.
+                Open the 'Storefront Properties' tab in the attribute edit menu and set
+                'Use for Promo Rule Conditions' field to 'YES'."
+Modification,Modification
+"Percentage (like +15%), or fixed value (like -20)","Percentage (like +15%), or fixed value (like -20)"
+"Default value will be used if none of the conditions apply.","Default value will be used if none of the conditions apply."
+"Output Value","Output Value"
 "Unable to save field with code %1","Unable to save field with code %1"
 "Unable to remove entity with ID%","Unable to remove entity with ID%"
 "Unknown compressor","Unknown compressor"
+Qty,Qty
+"Is In Stock","Is In Stock"
+"With Predefined Product Options","With Predefined Product Options"
+"As Is","As Is"
+"Strip Tags","Strip Tags"
+"Html Escape","Html Escape"
+"Google html Escape","Google html Escape"
+Uppercase,Uppercase
+Capitalize,Capitalize
+"Capitalize Each Word","Capitalize Each Word"
+Lowercase,Lowercase
+Integer,Integer
+Length,Length
+Prepend,Prepend
+Append,Append
+Replace,Replace
+Round,Round
+"If Empty","If Empty"
+"If Not Empty","If Not Empty"
+"If Empty/Not Empty","If Empty/Not Empty"
+"To secure URL","To secure URL"
+"To unsecure URL","To unsecure URL"
+"Yes if empty","Yes if empty"
 "Please choose a condition to add.","Please choose a condition to add."
 "Conditions Combination","Conditions Combination"
 "Product Attribute","Product Attribute"
+"Inventory Conditions","Inventory Conditions"
 "Stock Status","Stock Status"
+"Product Total Quantity","Product Total Quantity"
+"Invalid field","Invalid field"
+"Unknown condition operator","Unknown condition operator"
 "Unable to save model %1","Unable to save model %1"
 "Entity with specified ID ""%1"" not found.","Entity with specified ID ""%1"" not found."
 "Unable to remove entity with ID ""%1""","Unable to remove entity with ID ""%1"""
@@ -282,6 +299,7 @@ Monthly,Monthly
 "Unable to remove quote with ID %1. Error: %2","Unable to remove quote with ID %1. Error: %2"
 "Unable to remove quote. Error: %1","Unable to remove quote. Error: %1"
 "Copy Link","Copy Link"
+"Select All / Deselect All","Select All / Deselect All"
 "Ignore category","Ignore category"
 "Please make sure all categories are renamed and mapped to Google Taxonomy. If you don't need a certain category, please go to the previous step (""Step 2: Exclude Categories"") and specify all unwanted categories that should be excluded from the feed.","Please make sure all categories are renamed and mapped to Google Taxonomy. If you don't need a certain category, please go to the previous step (""Step 2: Exclude Categories"") and specify all unwanted categories that should be excluded from the feed."
 "Default Category Name","Default Category Name"
@@ -294,8 +312,6 @@ Success,Success
 Parent,Parent
 "Add Attribute","Add Attribute"
 "Add Static Text","Add Static Text"
-Advanced,Advanced
-"Category Paths","Category Paths"
 "hide modifier(s)","hide modifier(s)"
 "add modifier","add modifier"
 "show modifier(s)","show modifier(s)"
@@ -309,7 +325,6 @@ Error,Error
 Download,Download
 Reload,Reload
 "Product Feed","Product Feed"
-Information,Information
 "Batch Size","Batch Size"
 "Indicate how many products will be handled during one iteration. Affects the feed generation time and the server memory consumption.","Indicate how many products will be handled during one iteration. Affects the feed generation time and the server memory consumption."
 "URL with category","URL with category"
@@ -333,21 +348,21 @@ Email,Email
 "Successful Email Template","Successful Email Template"
 "Unsuccessful Email Template","Unsuccessful Email Template"
 "Cronjob Information","Cronjob Information"
+Advanced,Advanced
+"Category Paths","Category Paths"
 "Amasty Feed Rule","Amasty Feed Rule"
 "Indexed feed/product associations","Indexed feed/product associations"
 "Amasty Feed Products","Amasty Feed Products"
 "Indexed product/feed association","Indexed product/feed association"
 "Add New Categories Mapping","Add New Categories Mapping"
+"Delete items","Delete items"
+"Delete selected items?","Delete selected items?"
 ID,ID
 Edit,Edit
 Duplicate,Duplicate
-"Delete items","Delete items"
-"Delete selected items?","Delete selected items?"
 File,File
 Mode,Mode
 Generated,Generated
 "Conditions for Output Value","Conditions for Output Value"
 "Default Output Value","Default Output Value"
-"Default value will be used if none of the conditions apply.","Default value will be used if none of the conditions apply."
-"If you can't find the needed attribute in the list, please edit the needed attribute. Open the 'Storefront Properties' tab in the attribute edit menu and set 'Use for Promo Rule Conditions' field to 'YES'.","If you can't find the needed attribute in the list, please edit the needed attribute. Open the 'Storefront Properties' tab in the attribute edit menu and set 'Use for Promo Rule Conditions' field to 'YES'."
 "Add Condition-Based Attribute","Add Condition-Based Attribute"

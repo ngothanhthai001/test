@@ -1,29 +1,15 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model\Indexer\Feed;
 
-use Amasty\Feed\Exceptions\ReindexInProgressException;
-use Amasty\Feed\Model\Indexer\Product\ProductFeedProcessor;
-use Magento\Framework\Indexer\StateInterface;
-
 class IndexBuilder extends \Amasty\Feed\Model\Indexer\AbstractIndexBuilder
 {
-    /**
-     * @var string
-     */
-    private $productIndexState;
-
-    /**
-     * @var string
-     */
-    private $ruleIndexState;
-
     /**
      * Reindex by id
      *
@@ -55,36 +41,6 @@ class IndexBuilder extends \Amasty\Feed\Model\Indexer\AbstractIndexBuilder
             $this->critical($e);
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()), $e);
         }
-    }
-
-    public function lockReindex()
-    {
-        $productIndexerState = $this->stateFactory->create()
-            ->loadByIndexer(ProductFeedProcessor::INDEXER_ID);
-        $this->productIndexState = $productIndexerState->getStatus();
-        $ruleIndexerState = $this->stateFactory->create()
-            ->loadByIndexer(FeedRuleProcessor::INDEXER_ID);
-        $this->ruleIndexState = $ruleIndexerState->getStatus();
-
-        if (in_array(StateInterface::STATUS_WORKING, [$this->productIndexState, $this->ruleIndexState])) {
-            throw new ReindexInProgressException();
-        }
-
-        $productIndexerState->setStatus(StateInterface::STATUS_WORKING)->save();
-        $ruleIndexerState->setStatus(StateInterface::STATUS_WORKING)->save();
-    }
-
-    public function unlockReindex()
-    {
-        $this->stateFactory->create()
-            ->loadByIndexer(ProductFeedProcessor::INDEXER_ID)
-            ->setStatus($this->productIndexState)
-            ->save();
-
-        $this->stateFactory->create()
-            ->loadByIndexer(FeedRuleProcessor::INDEXER_ID)
-            ->setStatus($this->ruleIndexState)
-            ->save();
     }
 
     /**

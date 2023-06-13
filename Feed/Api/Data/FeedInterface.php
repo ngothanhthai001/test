@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -13,52 +13,53 @@ interface FeedInterface
     /**#@+
      * Constants defined for keys of data array
      */
-    const ENTITY_ID = 'entity_id';
-    const NAME = 'name';
-    const FILENAME = 'filename';
-    const FEED_TYPE = 'feed_type';
-    const IS_ACTIVE = 'is_active';
-    const STORE_ID = 'store_id';
-    const EXECUTE_MODE = 'execute_mode';
-    const CRON_TIME = 'cron_time';
-    const CSV_COLUMN_NAME = 'csv_column_name';
-    const CSV_HEADER = 'csv_header';
-    const CSV_ENCLOSURE = 'csv_enclosure';
-    const CSV_DELIMITER = 'csv_delimiter';
-    const FORMAT_PRICE_CURRENCY = 'format_price_currency';
-    const CSV_FIELD = 'csv_field';
-    const XML_HEADER = 'xml_header';
-    const XML_ITEM = 'xml_item';
-    const XML_CONTENT = 'xml_content';
-    const XML_FOOTER = 'xml_footer';
-    const FORMAT_PRICE_CURRENCY_SHOW = 'format_price_currency_show';
-    const FORMAT_PRICE_DECIMALS = 'format_price_decimals';
-    const FORMAT_PRICE_DECIMAL_POINT = 'format_price_decimal_point';
-    const FORMAT_PRICE_THOUSANDS_SEPARATOR = 'format_price_thousands_separator';
-    const FORMAT_DATE = 'format_date';
-    const CONDITIONS_SERIALIZED = 'conditions_serialized';
-    const GENERATED_AT = 'generated_at';
-    const DELIVERY_ENABLED = 'delivery_enabled';
-    const DELIVERY_HOST = 'delivery_host';
-    const DELIVERY_TYPE = 'delivery_type';
-    const DELIVERY_USER = 'delivery_user';
-    const DELIVERY_PASSWORD = 'delivery_password';
-    const DELIVERY_PATH = 'delivery_path';
-    const DELIVERY_PASSIVE_MODE = 'delivery_passive_mode';
-    const UTM_SOURCE = 'utm_source';
-    const UTM_MEDIUM = 'utm_medium';
-    const UTM_TERM = 'utm_term';
-    const UTM_CONTENT = 'utm_content';
-    const UTM_CAMPAIGN = 'utm_campaign';
-    const IS_TEMPLATE = 'is_template';
-    const COMPRESS = 'compress';
-    const EXCLUDE_DISABLED = 'exclude_disabled';
-    const EXCLUDE_OUT_OF_STOCK = 'exclude_out_of_stock';
-    const EXCLUDE_NOT_VISIBLE = 'exclude_not_visible';
-    const CRON_DAY = 'cron_day';
-    const PRODUCTS_AMOUNT = 'products_amount';
-    const GENERATION_TYPE = 'generation_type';
-    const STATUS = 'status';
+    public const ENTITY_ID = 'entity_id';
+    public const NAME = 'name';
+    public const FILENAME = 'filename';
+    public const FEED_TYPE = 'feed_type';
+    public const IS_ACTIVE = 'is_active';
+    public const STORE_ID = 'store_id';
+    public const EXECUTE_MODE = 'execute_mode';
+    public const CRON_TIME = 'cron_time';
+    public const CSV_COLUMN_NAME = 'csv_column_name';
+    public const CSV_HEADER = 'csv_header';
+    public const CSV_ENCLOSURE = 'csv_enclosure';
+    public const CSV_DELIMITER = 'csv_delimiter';
+    public const FORMAT_PRICE_CURRENCY = 'format_price_currency';
+    public const CSV_FIELD = 'csv_field';
+    public const XML_HEADER = 'xml_header';
+    public const XML_ITEM = 'xml_item';
+    public const XML_CONTENT = 'xml_content';
+    public const XML_FOOTER = 'xml_footer';
+    public const FORMAT_PRICE_CURRENCY_SHOW = 'format_price_currency_show';
+    public const FORMAT_PRICE_DECIMALS = 'format_price_decimals';
+    public const FORMAT_PRICE_DECIMAL_POINT = 'format_price_decimal_point';
+    public const FORMAT_PRICE_THOUSANDS_SEPARATOR = 'format_price_thousands_separator';
+    public const FORMAT_DATE = 'format_date';
+    public const CONDITIONS_SERIALIZED = 'conditions_serialized';
+    public const GENERATED_AT = 'generated_at';
+    public const DELIVERY_ENABLED = 'delivery_enabled';
+    public const DELIVERY_HOST = 'delivery_host';
+    public const DELIVERY_TYPE = 'delivery_type';
+    public const DELIVERY_USER = 'delivery_user';
+    public const DELIVERY_PASSWORD = 'delivery_password';
+    public const DELIVERY_PATH = 'delivery_path';
+    public const DELIVERY_PASSIVE_MODE = 'delivery_passive_mode';
+    public const UTM_SOURCE = 'utm_source';
+    public const UTM_MEDIUM = 'utm_medium';
+    public const UTM_TERM = 'utm_term';
+    public const UTM_CONTENT = 'utm_content';
+    public const UTM_CAMPAIGN = 'utm_campaign';
+    public const IS_TEMPLATE = 'is_template';
+    public const COMPRESS = 'compress';
+    public const EXCLUDE_DISABLED = 'exclude_disabled';
+    public const EXCLUDE_SUBDISABLED = 'exclude_subdisabled';
+    public const EXCLUDE_OUT_OF_STOCK = 'exclude_out_of_stock';
+    public const EXCLUDE_NOT_VISIBLE = 'exclude_not_visible';
+    public const CRON_DAY = 'cron_day';
+    public const PRODUCTS_AMOUNT = 'products_amount';
+    public const GENERATION_TYPE = 'generation_type';
+    public const STATUS = 'status';
     /**#@-*/
 
     /**
@@ -540,6 +541,18 @@ interface FeedInterface
      * @return \Amasty\Feed\Api\Data\FeedInterface
      */
     public function setExcludeDisabled($excludeDisabled);
+
+    /**
+     * @return int
+     */
+    public function getExcludeSubDisabled();
+
+    /**
+     * @param int $excludeSubDisabled
+     *
+     * @return \Amasty\Feed\Api\Data\FeedInterface
+     */
+    public function setExcludeSubDisabled($excludeSubDisabled);
 
     /**
      * @return int

@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -11,15 +11,18 @@ namespace Amasty\Feed\Console\Command;
 use Amasty\Feed\Api\Data\FeedInterface;
 use Amasty\Feed\Api\Data\ValidProductsInterface;
 use Amasty\Feed\Api\FeedRepositoryInterface;
+use Amasty\Feed\Exceptions\LockProcessException;
 use Amasty\Feed\Model\Config;
+use Amasty\Feed\Model\Config\Source\ExecuteModeList;
 use Amasty\Feed\Model\Config\Source\FeedStatus;
 use Amasty\Feed\Model\FeedExport;
 use Amasty\Feed\Model\FeedExportFactory;
-use Amasty\Feed\Model\Config\Source\ExecuteModeList;
+use Amasty\Feed\Model\Indexer\LockManager;
 use Amasty\Feed\Model\JobManager;
 use Amasty\Feed\Model\JobManagerFactory as JobManagerFactory;
 use Amasty\Feed\Model\ValidProduct\ResourceModel\Collection as ValidProductsCollection;
 use Amasty\Feed\Model\ValidProduct\ResourceModel\CollectionFactory as ValidProductsCollectionFactory;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\State;
 use Magento\Framework\UrlFactory;
 use Magento\Setup\Console\Command\AbstractSetupCommand;
@@ -36,7 +39,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Generate extends AbstractSetupCommand
 {
-    const JOBS_AMOUNT = 'jobs';
+    public const JOBS_AMOUNT = 'jobs';
 
     /**
      * @var FeedRepositoryInterface
@@ -78,6 +81,11 @@ class Generate extends AbstractSetupCommand
      */
     private $jobManagerFactory;
 
+    /**
+     * @var LockManager
+     */
+    private $lockManager;
+
     public function __construct(
         FeedRepositoryInterface $feedRepository,
         ValidProductsCollectionFactory $vpCollectionFactory,
@@ -86,6 +94,7 @@ class Generate extends AbstractSetupCommand
         Config $config,
         State $state,
         JobManagerFactory $jobManagerFactory,
+        LockManager $lockManager = null,
         $name = null
     ) {
         $this->feedRepository = $feedRepository;
@@ -95,6 +104,7 @@ class Generate extends AbstractSetupCommand
         $this->state = $state;
         $this->feedExportFactory = $feedExportFactory;
         $this->jobManagerFactory = $jobManagerFactory;
+        $this->lockManager = $lockManager ?? ObjectManager::getInstance()->get(LockManager::class);
 
         parent::__construct($name);
     }
@@ -149,6 +159,7 @@ class Generate extends AbstractSetupCommand
     public function generate(InputInterface $input, OutputInterface $output)
     {
         try {
+            $this->lockManager->lockProcess();
             $profileId = $input->getArgument('id');
             $maxJobs = $input->getOption(self::JOBS_AMOUNT);
 
@@ -201,7 +212,9 @@ class Generate extends AbstractSetupCommand
                 $productIds = [];
 
                 foreach ($collectionData as $datum) {
-                    $productIds[] = $datum[ValidProductsInterface::VALID_PRODUCT_ID];
+                    if (isset($datum[ValidProductsInterface::VALID_PRODUCT_ID])) {
+                        $productIds[] = $datum[ValidProductsInterface::VALID_PRODUCT_ID];
+                    }
                 }
                 $currentBatch = count($productIds);
 
@@ -236,13 +249,19 @@ class Generate extends AbstractSetupCommand
                 $feed->setStatus(FeedStatus::READY);
                 $this->feedRepository->save($feed);
             }
+            $this->lockManager->unlockProcess();
             return $this->finish($output, $progressBar, $totalGenerated, $feed);
+        } catch (LockProcessException $exception) {
+            $output->writeln('<error>' . $exception->getMessage() . '</error>');
+
+            return \Magento\Framework\Console\Cli::RETURN_FAILURE;
         } catch (\Exception $exception) {
             $output->writeln('<error>' . $exception->getMessage() . '</error>');
 
             if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
                 $output->writeln($exception->getTraceAsString());
             }
+            $this->lockManager->unlockProcess();
 
             return \Magento\Framework\Console\Cli::RETURN_FAILURE;
         }

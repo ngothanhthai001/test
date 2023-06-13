@@ -1,18 +1,13 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Block\Adminhtml\Feed;
 
-/**
- * Class Edit
- *
- * @package Amasty\Feed
- */
 class Edit extends \Magento\Backend\Block\Widget\Form\Container
 {
     /**

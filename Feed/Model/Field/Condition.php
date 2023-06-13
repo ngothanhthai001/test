@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -22,15 +22,15 @@ class Condition extends AbstractModel
     /**#@+
      * Table columns
      */
-    const COLUMN_CONDITION = 'conditions_serialized';
-    const COLUMN_RESULT = 'result_serialized';
-    const COLUMN_FIELD_ID = 'feed_field_id';
+    public const COLUMN_CONDITION = 'conditions_serialized';
+    public const COLUMN_RESULT = 'result_serialized';
+    public const COLUMN_FIELD_ID = 'feed_field_id';
     /**#@-*/
 
     /**
      * Index for result array
      */
-    const RESULT_KEY = 'result';
+    public const RESULT_KEY = 'result';
 
     /**
      * @var \Magento\Framework\Json\Helper\Data
@@ -143,14 +143,21 @@ class Condition extends AbstractModel
     public function loadPost(array $data)
     {
         if (isset($data[self::RESULT_KEY])) {
-            if (isset($data[self::RESULT_KEY]['entity_type'])
-                && $data[self::RESULT_KEY]['entity_type'] == CustomFieldType::CUSTOM_TEXT
-            ) {
-                $data[self::RESULT_KEY]['attribute'] = '';
+            $entityType = $data[self::RESULT_KEY]['entity_type'] ?? null;
+            if ($entityType == CustomFieldType::CUSTOM_TEXT) {
                 if (isset($data[self::RESULT_KEY]['custom_text'])) {
                     $data[self::RESULT_KEY]['modify'] = $data[self::RESULT_KEY]['custom_text'];
                 }
             }
+
+            if (in_array($entityType, [CustomFieldType::CUSTOM_TEXT, CustomFieldType::MERGED_ATTRIBUTES])) {
+                $data[self::RESULT_KEY]['attribute'] = '';
+            }
+
+            if ($entityType != CustomFieldType::MERGED_ATTRIBUTES) {
+                unset($data[self::RESULT_KEY]['merged_text']);
+            }
+
             unset($data[self::RESULT_KEY]['entity_type']);
             unset($data[self::RESULT_KEY]['custom_text']);
 

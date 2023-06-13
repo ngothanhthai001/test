@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -27,16 +27,16 @@ class GoogleWizardTest extends \PHPUnit\Framework\TestCase
     use Traits\ObjectManagerTrait;
     use Traits\ReflectionTrait;
 
-    const FORMAT_PRICE_CURRENCY_USD = [
+    public const FORMAT_PRICE_CURRENCY_USD = [
         'format_price_currency' => 'USD'
     ];
-    const FORMAT_PRICE_CURRENCY_EUR = [
+    public const FORMAT_PRICE_CURRENCY_EUR = [
         'format_price_currency' => 'EUR'
     ];
-    const FORMAT_PRICE_CURRENCY_RUB = [
+    public const FORMAT_PRICE_CURRENCY_RUB = [
         'format_price_currency' => 'RUB'
     ];
-    const REQUEST_DATA = [
+    public const REQUEST_DATA = [
         'optional' => [
             'mpn' => [
                 'attribute' => 'value'

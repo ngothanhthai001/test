@@ -1,39 +1,38 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
-?>
-<?php
 /** @var \Amasty\Feed\Block\Adminhtml\Feed\Edit\Tab\Csv\Field $block */
+/** @var \Magento\Framework\Escaper $escaper */
 $_value       = $block->getElement()->getCsvField();
 $htmlId      = $block->getElement()->getHtmlId();
 $_htmlClass   = $block->getElement()->getClass();
 $htmlName    = $block->getElement()->getName();
 $_readonly    = $block->getElement()->getReadonly();
 ?>
-<div class="field" id="attribute-<?= $block->escapeHtml($htmlId); ?>-container">
+<div class="field" id="attribute-<?= $escaper->escapeHtml($htmlId); ?>-container">
     <div class="control">
         <table class="admin__control-table amasty-csv-table" id="fields_table">
             <thead>
             <tr>
-                <th class="required"><?= $block->escapeHtml(__('Header')); ?></th>
-                <th class="required"><?= $block->escapeHtml(__('Attribute')); ?></th>
-                <th class="required"><?= $block->escapeHtml(__('Format')); ?></th>
-                <th class="required"><?= $block->escapeHtml(__('Parent')); ?></th>
+                <th class="required"><?= $escaper->escapeHtml(__('Header')); ?></th>
+                <th class="required"><?= $escaper->escapeHtml(__('Attribute')); ?></th>
+                <th class="required"><?= $escaper->escapeHtml(__('Format')); ?></th>
+                <th class="required"><?= $escaper->escapeHtml(__('Parent')); ?></th>
                 <th>&nbsp;</th>
             </tr>
             </thead>
-            <tbody id="<?= $block->escapeHtml($htmlId); ?>_container"></tbody>
+            <tbody id="<?= $escaper->escapeHtml($htmlId); ?>_container"></tbody>
             <tfoot>
             <tr>
                 <td colspan="6" class="col-actions-add">
                     <button class="action-default add" type="button" onclick="return fieldControl.addItem();">
-                        <span><?= $block->escapeHtml(__('Add Attribute')); ?></span>
+                        <span><?= $escaper->escapeHtml(__('Add Attribute')); ?></span>
                     </button>
                     <button class="action-default add" type="button" onclick="return fieldControl.addStaticTextItem()">
-                        <span><?= $block->escapeHtml(__('Add Static Text')); ?></span>
+                        <span><?= $escaper->escapeHtml(__('Add Static Text')); ?></span>
                     </button>
                 </td>
             </tr>
@@ -46,120 +45,54 @@ $_readonly    = $block->getElement()->getReadonly();
     <tr>
         <td>
             <input id="field_row_<%- data.index %>_header"
-                   name="<?= $block->escapeHtml($htmlName); ?>[<%- data.index %>][header]"
-                   class="<?= $block->escapeHtml($_htmlClass); ?> required-entry"/>
+                   name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.index %>][header]"
+                   class="<?= $escaper->escapeHtml($_htmlClass); ?> required-entry"/>
         </td>
         <td>
             <select id="field_row_<%- data.index %>_attribute"
-                    class="<?= $block->escapeHtml($_htmlClass); ?> required-entry"
-                    name="<?= $block->escapeHtml($htmlName); ?>[<%- data.index %>][attribute]">
-                <optgroup label="<?= $block->escapeHtml(__("Basic")); ?>">
-                    <?php foreach ($block->getBasicAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </optgroup>
-                <optgroup label="<?= $block->escapeHtml(__("Advanced")); ?>">
-                    <?php foreach ($block->getAdvancedAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </optgroup>
-                <optgroup label="<?= $block->escapeHtml(__("Product")); ?>">
-                    <?php foreach ($block->getProductAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </optgroup>
-                <optgroup label="<?= $block->escapeHtml(__("Inventory")); ?>">
-                    <?php foreach ($block->getInventoryAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </optgroup>
-                <optgroup label="<?= $block->escapeHtml(__("Price")); ?>">
-                    <?php foreach ($block->getPriceAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </optgroup>
-                <optgroup label="<?= $block->escapeHtml(__("Category")); ?>">
-                    <?php foreach ($block->getCategoryAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </optgroup>
-                <optgroup label="<?= $block->escapeHtml(__("Category Paths")); ?>">
-                    <?php foreach ($block->getCategoryPathsAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </optgroup>
-                <optgroup label="<?= $block->escapeHtml(__("Condition-Based Attributes")); ?>">
-                    <?php foreach ($block->getCustomFieldsAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </optgroup>
-                <optgroup label="<?= $block->escapeHtml(__("Image")); ?>">
-                    <?php foreach ($block->getImageAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
+                    class="<?= $escaper->escapeHtml($_htmlClass); ?> required-entry"
+                    name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.index %>][attribute]">
+                <?php foreach ($block->getAttributeOptions() as $attributeOption): ?>
+                    <optgroup label="<?= $escaper->escapeHtml($attributeOption['label']); ?>">
+                        <?php foreach ($attributeOption['value'] as $attributeOptionValue): ?>
+                            <option value="<?= $escaper->escapeHtml($attributeOptionValue['value']); ?>">
+                                <?= $escaper->escapeHtml($attributeOptionValue['label']); ?>
+                            </option>
+                        <?php endforeach; ?>
                     </optgroup>
-                <optgroup label="<?= $block->escapeHtml(__("Gallery")); ?>">
-                    <?php foreach ($block->getGalleryAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </optgroup>
-                <optgroup label="<?= $block->escapeHtml(__("Url")); ?>">
-                    <?php foreach ($block->getUrlAttributes() as $attributeId => $attributeName): ?>
-                        <option value="<?= $block->escapeHtml($attributeId); ?>">
-                            <?= $block->escapeHtml($attributeName); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </optgroup>
+                <?php endforeach; ?>
             </select>
         </td>
         <td>
             <select id="field_row_<%- data.index %>_format"
-                    class="<?= $block->escapeHtml($_htmlClass); ?> required-entry"
-                    name="<?= $block->escapeHtml($htmlName); ?>[<%- data.index %>][format]" >
-                <?php foreach ($block->getFormats() as $formatId => $formatName): ?>
-                    <option value="<?= $block->escapeHtml($formatId); ?>">
-                        <?= $block->escapeHtml($formatName); ?>
+                    class="<?= $escaper->escapeHtml($_htmlClass); ?> required-entry"
+                    name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.index %>][format]" >
+                <?php foreach ($block->getFormatOptions() as $formatOption): ?>
+                    <option value="<?= $escaper->escapeHtml($formatOption['value']); ?>">
+                        <?= $escaper->escapeHtml($formatOption['label']); ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </td>
         <td>
             <select id="field_row_<%- data.index %>_parent"
-                    class="<?= $block->escapeHtml($_htmlClass); ?> required-entry"
-                    name="<?= $block->escapeHtml($htmlName); ?>[<%- data.index %>][parent]">
-                <?php foreach ($block->getYesNoVars() as $formatId => $formatName): ?>
-                    <option value="<?= $block->escapeHtml($formatId); ?>"><?= $block->escapeHtml($formatName); ?></option>
+                    class="<?= $escaper->escapeHtml($_htmlClass); ?> required-entry"
+                    name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.index %>][parent]">
+                <?php foreach ($block->getYesNoOptions() as $yesNoOption): ?>
+                    <option value="<?= $escaper->escapeHtml($yesNoOption['value']); ?>">
+                        <?= $escaper->escapeHtml($yesNoOption['label']); ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </td>
         <td class="col-delete">
-            <input type="hidden" name="<?= $block->escapeHtml($htmlName); ?>[<%- data.index %>][delete]"
+            <input type="hidden" name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.index %>][delete]"
                    class="delete" value="" id="field_row_<%- data.index %>_delete" />
-            <button title="<?= $block->escapeHtml(__('Delete')); ?>" type="button"
+            <button title="<?= $escaper->escapeHtml(__('Delete')); ?>" type="button"
                     class="action- scalable delete icon-btn delete-product-option"
                     id="field_row_<%- data.index %>_delete_button"
                     onclick="return fieldControl.deleteAttribute(event, <%- data.index %>);">
-                <span><?= $block->escapeHtml(__('Delete')); ?></span>
+                <span><?= $escaper->escapeHtml(__('Delete')); ?></span>
             </button>
         </td>
     </tr>
@@ -168,15 +101,15 @@ $_readonly    = $block->getElement()->getReadonly();
             <table id="field_row_<%- data.index %>_modify_container"></table>
             <a id="amasty_modify_link_hide_<%- data.index %>" class="amasty-modify-link amasty-hide-link"
                href="#" onclick="fieldControl.hideModifiers(<%- data.index %>); return false;">
-                <?= $block->escapeHtml(__('hide modifier(s)')); ?>
+                <?= $escaper->escapeHtml(__('hide modifier(s)')); ?>
             </a>
             <a id="amasty_modify_link_add_<%- data.index %>" class="amasty-modify-link"
                href="#" onclick="fieldControl.modifyItem(<%- data.index %>); return false;">
-                <?= $block->escapeHtml(__('add modifier')); ?>
+                <?= $escaper->escapeHtml(__('add modifier')); ?>
             </a>
             <a id="amasty_modify_link_show_<%- data.index %>" class="amasty-modify-link"
                href="#" onclick="fieldControl.showModifiers(<%- data.index %>); return false;">
-                <?= $block->escapeHtml(__('show modifier(s)')); ?>
+                <?= $escaper->escapeHtml(__('show modifier(s)')); ?>
             </a>
         </td>
     </tr>
@@ -187,25 +120,25 @@ $_readonly    = $block->getElement()->getReadonly();
         <td class="amasty-modify">
             <select onchange="return fieldControl.changeModifier(this);"
                     id="field_row_<%- data.rowIndex %>_<%- data.index %>_modify"
-                    class="<?= $block->escapeHtml($_htmlClass); ?> required-entry"
-                    name="<?= $block->escapeHtml($htmlName); ?>[<%- data.rowIndex %>][modify][<%- data.index %>][modify]">
+                    class="<?= $escaper->escapeHtml($_htmlClass); ?> required-entry"
+                    name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.rowIndex %>][modify][<%- data.index %>][modify]">
                 <?php foreach ($block->getModiftVars() as $modifyId => $modifyName): ?>
-                    <option value="<?= $block->escapeHtml($modifyId); ?>">
-                        <?= $block->escapeHtml($modifyName); ?>
+                    <option value="<?= $escaper->escapeHtml($modifyId); ?>">
+                        <?= $escaper->escapeHtml($modifyName); ?>
                     </option>
                 <?php endforeach; ?>
             </select>
             <input style="display: none;" id="field_row_<%- data.rowIndex %>_<%- data.index %>_arg0"
-                   name="<?= $block->escapeHtml($htmlName); ?>[<%- data.rowIndex %>][modify][<%- data.index %>][arg0]"
-                   class="<?= $block->escapeHtml($_htmlClass); ?>"/>
+                   name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.rowIndex %>][modify][<%- data.index %>][arg0]"
+                   class="<?= $escaper->escapeHtml($_htmlClass); ?>"/>
             <input style="display: none;" id="field_row_<%- data.rowIndex %>_<%- data.index %>_arg1"
-                   name="<?= $block->escapeHtml($htmlName); ?>[<%- data.rowIndex %>][modify][<%- data.index %>][arg1]"
-                   class="<?= $block->escapeHtml($_htmlClass); ?>"/>
-            <button title="<?= $block->escapeHtml(__('Delete')); ?>" type="button"
+                   name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.rowIndex %>][modify][<%- data.index %>][arg1]"
+                   class="<?= $escaper->escapeHtml($_htmlClass); ?>"/>
+            <button title="<?= $escaper->escapeHtml(__('Delete')); ?>" type="button"
                     class="action- scalable delete icon-btn delete-product-option"
                     id="field_row_<%- data.rowIndex %>_<%- data.index %>_delete_button"
                     onclick="return fieldControl.deleteItem(event);" >
-                <span><?= $block->escapeHtml(__('Delete')); ?></span>
+                <span><?= $escaper->escapeHtml(__('Delete')); ?></span>
             </button>
         </td>
     </tr>
@@ -215,20 +148,20 @@ $_readonly    = $block->getElement()->getReadonly();
     <tr>
         <td>
             <input id="field_row_<%- data.index %>_header"
-                   name="<?= $block->escapeHtml($htmlName); ?>[<%- data.index %>][header]"
-                   class="<?= $block->escapeHtml($_htmlClass); ?> required-entry"/>
+                   name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.index %>][header]"
+                   class="<?= $escaper->escapeHtml($_htmlClass); ?> required-entry"/>
         </td>
         <td colspan=3>
-            <input id="field_row_<%- data.index %>_static_text" class="<?= $block->escapeHtml($_htmlClass); ?>
-                required-entry" name="<?= $block->escapeHtml($htmlName); ?>[<%- data.index %>][static_text]" />
+            <input id="field_row_<%- data.index %>_static_text" class="<?= $escaper->escapeHtml($_htmlClass); ?>
+                required-entry" name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.index %>][static_text]" />
         </td>
         <td class="col-delete">
-            <input type="hidden" name="<?= $block->escapeHtml($htmlName); ?>[<%- data.index %>][delete]"
+            <input type="hidden" name="<?= $escaper->escapeHtml($htmlName); ?>[<%- data.index %>][delete]"
                    class="delete" value="" id="field_row_<%- data.index %>_delete" />
-            <button title="<?= $block->escapeHtml(__('Delete')); ?>" type="button"
+            <button title="<?= $escaper->escapeHtml(__('Delete')); ?>" type="button"
                     class="action- scalable delete icon-btn delete-product-option"
                     id="field_row_<%- data.index %>_delete_button" onclick="return fieldControl.deleteItem(event);">
-                <span><?= $block->escapeHtml(__('Delete')); ?></span>
+                <span><?= $escaper->escapeHtml(__('Delete')); ?></span>
             </button>
         </td>
     </tr>
@@ -253,7 +186,7 @@ $_readonly    = $block->getElement()->getReadonly();
                     index: this.itemsCount++
                 };
 
-                Element.insert($('<?= $block->escapeHtml($htmlId); ?>_container'), {
+                Element.insert($('<?= $escaper->escapeHtml($htmlId); ?>_container'), {
                     bottom: this.rowTemplate({
                         data: data
                     })
@@ -285,7 +218,7 @@ $_readonly    = $block->getElement()->getReadonly();
                     index: this.itemsCount++
                 };
 
-                Element.insert($('<?= $block->escapeHtml($htmlId); ?>_container'), {
+                Element.insert($('<?= $escaper->escapeHtml($htmlId); ?>_container'), {
                     bottom: this.staticTextRowTemplate({
                         data: data
                     })
@@ -422,21 +355,21 @@ $_readonly    = $block->getElement()->getReadonly();
         <?php foreach ($_value as $_item): ?>
             <?php if ($_item['static_text']): ?>
                 var rowIndex = window.fieldControl.addStaticTextItem(
-                    '<?= $block->escapeHtml($_item['header'], true); ?>',
-                    '<?= $block->escapeHtml($_item['static_text'], true); ?>'
+                    '<?= $escaper->escapeHtml($_item['header'], true); ?>',
+                    '<?= $escaper->escapeHtml($_item['static_text'], true); ?>'
                 );
             <?php else: ?>
                 var rowIndex = fieldControl.addItem(
-                    '<?= $block->escapeHtml($_item['header'], true); ?>',
-                    '<?= $block->escapeHtml($_item['attribute'], true); ?>',
-                    '<?= $block->escapeHtml($_item['format'], true); ?>',
-                    '<?= $block->escapeHtml($_item['parent'], true); ?>'
+                    '<?= $escaper->escapeHtml($_item['header'], true); ?>',
+                    '<?= $escaper->escapeHtml($_item['attribute'], true); ?>',
+                    '<?= $escaper->escapeHtml($_item['format'], true); ?>',
+                    '<?= $escaper->escapeHtml($_item['parent'], true); ?>'
                 );
                 <?php foreach ($_item['modify'] as $_modify): ?>
                     window.fieldControl.modifyItem(rowIndex,
-                            '<?= $block->escapeHtml($_modify['modify'], true); ?>',
-                            '<?= $block->escapeHtml($_modify['arg0'], true); ?>',
-                            '<?= $block->escapeHtml($_modify['arg1'], true); ?>'
+                            '<?= $escaper->escapeHtml($_modify['modify'], true); ?>',
+                            '<?= $escaper->escapeHtml($_modify['arg0'], true); ?>',
+                            '<?= $escaper->escapeHtml($_modify['arg1'], true); ?>'
                     );
                 <?php endforeach; ?>
 

@@ -1,20 +1,31 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
-
 
 namespace Amasty\Feed\Block\Adminhtml\Category;
 
-/**
- * Class Edit
- *
- * @package Amasty\Feed
- */
+use Magento\Backend\Block\Widget\Context;
+use Magento\Framework\Registry;
+
 class Edit extends \Magento\Backend\Block\Widget\Form\Container
 {
+    /**
+     * @var Registry
+     */
+    protected $registry;
+
+    public function __construct(
+        Context $context,
+        Registry $registry,
+        array $data = []
+    ) {
+        $this->registry = $registry;
+        parent::__construct($context, $data);
+    }
+
     /**
      * Initialize form
      * Add standard buttons
@@ -24,7 +35,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
      */
     protected function _construct()
     {
-        $this->_objectId = 'id';
+        $this->_objectId = 'feed_category_id';
         $this->_blockGroup = 'Amasty_Feed';
         $this->_controller = 'adminhtml_category';
 

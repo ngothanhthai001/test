@@ -1,29 +1,32 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model;
 
+use Amasty\Base\Model\Serializer as BaseSerializer;
 use Amasty\Feed\Model\ResourceModel\Feed\CollectionFactory;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Filesystem;
+use Magento\Framework\Serialize\Serializer\Serialize;
 use Magento\Framework\Setup\SampleData\Context as SampleDataContext;
+use Magento\Framework\Setup\SampleData\FixtureManager;
 
-/**
- * Class Import
- */
 class Import
 {
     /**
-     * @var \Amasty\Base\Model\Serializer
+     * @var Serialize
      */
     private $serializer;
 
+    /**
+     * @var string[]
+     */
     private $templates = [
         'google', 'bing', 'shopping'
     ];
@@ -38,18 +41,35 @@ class Import
      */
     private $collectionFactory;
 
+    /**
+     * @var BaseSerializer
+     */
+    private $baseSerializer;
+
+    /**
+     * @var FixtureManager
+     */
+    private $fixtureManager;
+
+    /**
+     * @var FeedRepository
+     */
+    private $feedRepository;
+
     public function __construct(
         SampleDataContext $sampleDataContext,
         CollectionFactory $collectionFactory,
         FeedRepository $feedRepository,
         Filesystem $filesystem,
-        \Amasty\Base\Model\Serializer $serializer
+        Serialize $serializer,
+        BaseSerializer $baseSerializer
     ) {
         $this->fixtureManager = $sampleDataContext->getFixtureManager();
         $this->collectionFactory = $collectionFactory;
         $this->serializer = $serializer;
         $this->filesystem = $filesystem;
         $this->feedRepository = $feedRepository;
+        $this->baseSerializer = $baseSerializer;
     }
 
     public function install()
@@ -71,6 +91,9 @@ class Import
             $data = $this->serializer->unserialize($content);
 
             if (is_array($data)) {
+                if (isset($data['csv_field'])) {
+                    $data['csv_field'] = $this->convertCsvFieldSerialization($data['csv_field']);
+                }
                 $feedCollection = $this->collectionFactory->create()
                     ->addFieldToFilter('name', $data['name'])
                     ->addFieldToFilter('is_template', 1);
@@ -100,5 +123,17 @@ class Import
         $this->templates = $templates;
 
         $this->install();
+    }
+
+    private function convertCsvFieldSerialization($csvField)
+    {
+        try {
+            $unserializedValue = $this->serializer->unserialize($csvField);
+            $convertedValue = $this->baseSerializer->serialize($unserializedValue);
+
+            return $convertedValue !== false ? $convertedValue : $csvField;
+        } catch (\Exception $e) {
+            return $csvField;
+        }
     }
 }

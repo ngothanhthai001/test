@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -11,9 +11,6 @@ namespace Amasty\Feed\Model\Export\RowCustomizer;
 use Amasty\Feed\Model\Export\Product as ExportProduct;
 use Magento\CatalogImportExport\Model\Export\RowCustomizerInterface;
 
-/**
- * Class Taxpercents
- */
 class Taxpercents implements RowCustomizerInterface
 {
     /**
@@ -54,7 +51,7 @@ class Taxpercents implements RowCustomizerInterface
         $prefixOtherAttributes = ExportProduct::PREFIX_OTHER_ATTRIBUTES;
         if ($this->export->hasAttributes($prefixOtherAttributes)) {
             $collection->applyFrontendPriceLimitations();
-            $storeId = $this->request->getParam('store_id');
+            $storeId = $this->request->getParam('store_id') ?? $collection->getStoreId();
 
             foreach ($collection as &$item) {
                 $addressRequestObject

@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -10,17 +10,26 @@ namespace Amasty\Feed\Model\Export\RowCustomizer;
 
 use Amasty\Feed\Model\Export\Product as ExportProduct;
 
-/**
- * Class Composite
- */
 class Composite extends \Magento\CatalogImportExport\Model\Export\RowCustomizer\Composite
 {
-    protected $_storeId;
+    /**
+     * @var int|string
+     */
+    protected $storeId;
 
-    protected $_skipRelationCustomizer = false;
+    /**
+     * @var bool
+     */
+    protected $isParentExport = false;
 
-    protected $_objects = [];
+    /**
+     * @var array
+     */
+    protected $objects = [];
 
+    /**
+     * @var ExportProduct
+     */
     private $exportModel;
 
     /**
@@ -63,8 +72,14 @@ class Composite extends \Magento\CatalogImportExport\Model\Export\RowCustomizer\
             unset($this->customizers['priceData']);
         }
 
-        if (!$exportProduct->hasParentAttributes()) {
+        if ($this->isParentExport || !$exportProduct->hasParentAttributes()) {
             unset($this->customizers['relationData']);
+        }
+
+        if (!$this->isParentExport
+            || !isset($exportProduct->getAttributesByType(ExportProduct::PREFIX_URL_ATTRIBUTE)['configurable'])
+        ) {
+            unset($this->customizers['configurableProduct']);
         }
     }
 
@@ -73,15 +88,12 @@ class Composite extends \Magento\CatalogImportExport\Model\Export\RowCustomizer\
      */
     public function setStoreId($storeId)
     {
-        $this->_storeId = $storeId;
+        $this->storeId = $storeId;
     }
 
-    /**
-     * @param bool $skipRelationCustomizer
-     */
-    public function skipRelationCustomizer($skipRelationCustomizer)
+    public function setIsParentExport(bool $isParentExport): void
     {
-        $this->_skipRelationCustomizer = $skipRelationCustomizer;
+        $this->isParentExport = $isParentExport;
     }
 
     /**
@@ -91,11 +103,11 @@ class Composite extends \Magento\CatalogImportExport\Model\Export\RowCustomizer\
      */
     protected function _getObject($className)
     {
-        if (!isset($this->_objects[$className])) {
-            $this->_objects[$className] = $this->objectManager->create($className, ['export' => $this->exportModel]);
+        if (!isset($this->objects[$className])) {
+            $this->objects[$className] = $this->objectManager->create($className, ['export' => $this->exportModel]);
         }
 
-        return $this->_objects[$className];
+        return $this->objects[$className];
     }
 
     /**
@@ -104,10 +116,7 @@ class Composite extends \Magento\CatalogImportExport\Model\Export\RowCustomizer\
     public function prepareData($collection, $productIds)
     {
         foreach ($this->customizers as $key => $className) {
-            if ($this->_skipRelationCustomizer && $key == 'relationData') {
-                continue;
-            }
-            $collection->setStoreId($this->_storeId);
+            $collection->setStoreId($this->storeId);
             $this->_getObject($className)->prepareData(clone $collection, $productIds);
         }
     }
@@ -124,9 +133,6 @@ class Composite extends \Magento\CatalogImportExport\Model\Export\RowCustomizer\
         }
 
         foreach ($this->customizers as $key => $className) {
-            if ($this->_skipRelationCustomizer && $key == 'relationData') {
-                continue;
-            }
             $dataRow = $this->_getObject($className)->addData($dataRow, $productId);
         }
 

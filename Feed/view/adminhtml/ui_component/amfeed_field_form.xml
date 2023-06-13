@@ -2,10 +2,9 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
- */
--->
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
+ */-->
 <form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
@@ -115,117 +114,11 @@
                 <item name="collapsible" xsi:type="boolean">true</item>
                 <item name="label" xsi:type="string" translate="true">Default Output Value</item>
                 <item name="sortOrder" xsi:type="number">40</item>
+                <item name="opened" xsi:type="boolean">true</item>
             </item>
         </argument>
-        <fieldset name="warning">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="label" xsi:type="string" translate="true">Default value will be used if none of the conditions apply.</item>
-                </item>
-            </argument>
-            <field name="entity_type">
-                <argument name="data" xsi:type="array">
-                    <item name="options" xsi:type="object">Amasty\Feed\Model\Config\Source\CustomFieldType</item>
-                    <item name="config" xsi:type="array">
-                        <item name="formElement" xsi:type="string">select</item>
-                        <item name="label" xsi:type="string" translate="true">Type</item>
-                        <item name="dataScope" xsi:type="string">default[result][entity_type]</item>
-                        <item name="sortOrder" xsi:type="number">10</item>
-                        <item name="switcherConfig" xsi:type="array">
-                            <item name="enabled" xsi:type="boolean">true</item>
-                            <item name="rules" xsi:type="array">
-                                <item name="0" xsi:type="array">
-                                    <item name="value" xsi:type="number">0</item>
-                                    <item name="actions" xsi:type="array">
-                                        <item name="0" xsi:type="array">
-                                            <item name="target" xsi:type="string">${ $.ns }.${ $.ns }.field_default.warning.attribute</item>
-                                            <item name="callback" xsi:type="string">visible</item>
-                                            <item name="params" xsi:type="array">
-                                                <item name="0" xsi:type="boolean">true</item>
-                                            </item>
-                                        </item>
-                                        <item name="1" xsi:type="array">
-                                            <item name="target" xsi:type="string">${ $.ns }.${ $.ns }.field_default.warning.modify</item>
-                                            <item name="callback" xsi:type="string">visible</item>
-                                            <item name="params" xsi:type="array">
-                                                <item name="0" xsi:type="boolean">true</item>
-                                            </item>
-                                        </item>
-                                        <item name="2" xsi:type="array">
-                                            <item name="target" xsi:type="string">${ $.ns }.${ $.ns }.field_default.warning.custom_text</item>
-                                            <item name="callback" xsi:type="string">visible</item>
-                                            <item name="params" xsi:type="array">
-                                                <item name="0" xsi:type="boolean">false</item>
-                                            </item>
-                                        </item>
-                                    </item>
-                                </item>
-                                <item name="1" xsi:type="array">
-                                    <item name="value" xsi:type="number">1</item>
-                                    <item name="actions" xsi:type="array">
-                                        <item name="0" xsi:type="array">
-                                            <item name="target" xsi:type="string">${ $.ns }.${ $.ns }.field_default.warning.attribute</item>
-                                            <item name="callback" xsi:type="string">visible</item>
-                                            <item name="params" xsi:type="array">
-                                                <item name="0" xsi:type="boolean">false</item>
-                                            </item>
-                                        </item>
-                                        <item name="1" xsi:type="array">
-                                            <item name="target" xsi:type="string">${ $.ns }.${ $.ns }.field_default.warning.modify</item>
-                                            <item name="callback" xsi:type="string">visible</item>
-                                            <item name="params" xsi:type="array">
-                                                <item name="0" xsi:type="boolean">false</item>
-                                            </item>
-                                        </item>
-                                        <item name="2" xsi:type="array">
-                                            <item name="target" xsi:type="string">${ $.ns }.${ $.ns }.field_default.warning.custom_text</item>
-                                            <item name="callback" xsi:type="string">visible</item>
-                                            <item name="params" xsi:type="array">
-                                                <item name="0" xsi:type="boolean">true</item>
-                                            </item>
-                                        </item>
-                                    </item>
-                                </item>
-                            </item>
-                        </item>
-                    </item>
-                </argument>
-            </field>
-            <field name="attribute">
-                <argument name="data" xsi:type="array">
-                    <item name="options" xsi:type="object">Amasty\Feed\Ui\Component\Form\ProductAttributeOptions</item>
-                    <item name="config" xsi:type="array">
-                        <item name="formElement" xsi:type="string">select</item>
-                        <item name="label" xsi:type="string" translate="true">Attribute</item>
-                        <item name="dataScope" xsi:type="string">default[result][attribute]</item>
-                        <item name="sortOrder" xsi:type="number">20</item>
-                        <item name="notice" xsi:type="string" translate="true">If you can't find the needed attribute in the list, please edit the needed attribute. Open the 'Storefront Properties' tab in the attribute edit menu and set 'Use for Promo Rule Conditions' field to 'YES'.</item>
-                    </item>
-                </argument>
-            </field>
-            <field name="modify">
-                <argument name="data" xsi:type="array">
-                    <item name="config" xsi:type="array">
-                        <item name="dataType" xsi:type="string">text</item>
-                        <item name="label" xsi:type="string" translate="true">Modification</item>
-                        <item name="placeholder" xsi:type="string" translate="true">Percentage (like +15%), or fixed value (like -20)</item>
-                        <item name="formElement" xsi:type="string">input</item>
-                        <item name="dataScope" xsi:type="string">default[result][modify]</item>
-                        <item name="sortOrder" xsi:type="number">30</item>
-                    </item>
-                </argument>
-            </field>
-            <field name="custom_text">
-                <argument name="data" xsi:type="array">
-                    <item name="config" xsi:type="array">
-                        <item name="dataType" xsi:type="string">text</item>
-                        <item name="label" xsi:type="string" translate="true">Custom Text</item>
-                        <item name="formElement" xsi:type="string">input</item>
-                        <item name="dataScope" xsi:type="string">default[result][custom_text]</item>
-                        <item name="sortOrder" xsi:type="number">30</item>
-                    </item>
-                </argument>
-            </field>
-        </fieldset>
+        <htmlContent name="html_content_default">
+            <argument name="block" xsi:type="object">Amasty\Feed\Block\Adminhtml\Field\Edit\Defaults</argument>
+        </htmlContent>
     </fieldset>
 </form>

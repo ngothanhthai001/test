@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -25,9 +25,9 @@ class XmlTest extends \PHPUnit\Framework\TestCase
     use Traits\ObjectManagerTrait;
     use Traits\ReflectionTrait;
 
-    const VALUE = 'test_value';
+    public const VALUE = 'test_value';
 
-    const MODIFIED_VALUE = 'modified_value';
+    public const MODIFIED_VALUE = 'modified_value';
 
     /**
      * @var Xml|MockObject
@@ -48,7 +48,7 @@ class XmlTest extends \PHPUnit\Framework\TestCase
     public function testWriteHeader()
     {
         $header = '<created_at>{{DATE}}</created_at>';
-        $this->setProperty($this->xml, '_header', $header, Xml::class);
+        $this->setProperty($this->xml, 'header', $header, Xml::class);
 
         $fileHandler = $this->createPartialMock(
             \Magento\Framework\Filesystem\File\Write::class,

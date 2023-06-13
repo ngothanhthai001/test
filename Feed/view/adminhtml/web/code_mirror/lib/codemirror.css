@@ -4,7 +4,7 @@
   /* Set height, width, borders, and global font properties here */
   font-family: monospace;
   height: 300px;
-  color: black;
+  color: #000000;
 }
 
 /* PADDING */
@@ -17,7 +17,7 @@
 }
 
 .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
-  background-color: white; /* The little square between H and V scrollbars */
+  background-color: #FFFFFF; /* The little square between H and V scrollbars */
 }
 
 /* GUTTER */
@@ -36,17 +36,17 @@
   white-space: nowrap;
 }
 
-.CodeMirror-guttermarker { color: black; }
+.CodeMirror-guttermarker { color: #000000; }
 .CodeMirror-guttermarker-subtle { color: #999; }
 
 /* CURSOR */
 
 .CodeMirror div.CodeMirror-cursor {
-  border-left: 1px solid black;
+  border-left: 1px solid #000000;
 }
 /* Shown when moving in bi-directional text */
 .CodeMirror div.CodeMirror-secondarycursor {
-  border-left: 1px solid silver;
+  border-left: 1px solid #C0C0C0;
 }
 .CodeMirror.cm-fat-cursor div.CodeMirror-cursor {
   width: auto;
@@ -111,7 +111,7 @@ div.CodeMirror-overwrite div.CodeMirror-cursor {}
 .cm-s-default .cm-bracket {color: #997;}
 .cm-s-default .cm-tag {color: #170;}
 .cm-s-default .cm-attribute {color: #00c;}
-.cm-s-default .cm-header {color: blue;}
+.cm-s-default .cm-header {color: #0000FF;}
 .cm-s-default .cm-quote {color: #090;}
 .cm-s-default .cm-hr {color: #999;}
 .cm-s-default .cm-link {color: #00c;}
@@ -141,7 +141,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 .CodeMirror {
   position: relative;
   overflow: hidden;
-  background: white;
+  background: #FFFFFF;
 }
 
 .CodeMirror-scroll {

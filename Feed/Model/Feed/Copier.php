@@ -1,8 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -10,26 +13,38 @@ namespace Amasty\Feed\Model\Feed;
 
 use Amasty\Feed\Api\Data\FeedInterface;
 use Amasty\Feed\Model\Config\Source\FeedStatus;
+use Amasty\Feed\Model\FeedRepository;
+use Magento\Directory\Model\CurrencyFactory;
+use Magento\Store\Model\StoreManagerInterface;
 
-/**
- * Class Copier
- *
- * @package Amasty\Feed
- */
 class Copier
 {
     /**
-     * @var \Amasty\Feed\Model\FeedRepository
+     * @var FeedRepository
      */
     private $feedRepository;
 
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * @var CurrencyFactory
+     */
+    private $currencyFactory;
+
     public function __construct(
-        \Amasty\Feed\Model\FeedRepository $feedRepository
+        FeedRepository $feedRepository,
+        StoreManagerInterface $storeManager,
+        CurrencyFactory $currencyFactory
     ) {
         $this->feedRepository = $feedRepository;
+        $this->storeManager = $storeManager;
+        $this->currencyFactory = $currencyFactory;
     }
 
-    private function duplicate(FeedInterface $feed)
+    private function duplicate(FeedInterface $feed): FeedInterface
     {
         $duplicate = $this->feedRepository->getEmptyModel();
         $duplicate->setData($feed->getData());
@@ -40,10 +55,16 @@ class Copier
         $duplicate->setStatus(FeedStatus::NOT_GENERATED);
         $duplicate->setGeneratedAt(null);
         $duplicate->setId(null);
+        $availableCurrencyCodes = $this->currencyFactory->create()->getConfigAllowCurrencies();
+
+        if (!in_array($duplicate->getFormatPriceCurrency(), $availableCurrencyCodes)) {
+            $duplicate->setFormatPriceCurrency($this->storeManager->getStore()->getDefaultCurrencyCode());
+        }
+
         return $duplicate;
     }
 
-    public function copy(FeedInterface $feed)
+    public function copy(FeedInterface $feed): FeedInterface
     {
         $duplicate = $this->duplicate($feed);
 
@@ -56,12 +77,9 @@ class Copier
     /**
      * Create a new feed template based on this feed
      *
-     * @param FeedInterface $feed
-     *
-     * @return mixed
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      */
-    public function template(FeedInterface $feed)
+    public function template(FeedInterface $feed): FeedInterface
     {
         $duplicate = $this->duplicate($feed);
 
@@ -71,7 +89,7 @@ class Copier
         return $this->feedRepository->save($duplicate, true);
     }
 
-    public function fromTemplate(FeedInterface $template, $storeId)
+    public function fromTemplate(FeedInterface $template, $storeId): FeedInterface
     {
         $duplicate = $this->duplicate($template);
 

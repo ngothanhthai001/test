@@ -1,35 +1,40 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Setup\Operation;
 
-/**
- * Class UpgradeTo114
- */
-class UpgradeTo114
+use Magento\Catalog\Model\Product\Attribute\Repository;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
+
+class UpgradeTo114 implements OperationInterface
 {
     /**
-     * @var \Magento\Catalog\Model\Product\Attribute\Repository
+     * @var Repository
      */
     private $attributeRepository;
 
-    public function __construct(\Magento\Catalog\Model\Product\Attribute\Repository $attributeRepository)
+    public function __construct(Repository $attributeRepository)
     {
         $this->attributeRepository = $attributeRepository;
     }
 
-    public function execute()
+    public function execute(ModuleDataSetupInterface $moduleDataSetup, string $setupVersion): void
     {
-        $attributesForConditions = ['status', 'quantity_and_stock_status'];
-        foreach ($attributesForConditions as $code) {
-            $attribute = $this->attributeRepository->get($code);
-            $attribute->setIsUsedForPromoRules(true);
-            $this->attributeRepository->save($attribute);
+        if (version_compare($setupVersion, '2.3.1', '<')) {
+            $attributesForConditions = ['status', 'quantity_and_stock_status'];
+            foreach ($attributesForConditions as $code) {
+                $attribute = $this->attributeRepository->get($code);
+                $attribute->setIsUsedForPromoRules(true);
+                $this->attributeRepository->save($attribute);
+            }
         }
     }
 }

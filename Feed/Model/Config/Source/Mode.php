@@ -1,25 +1,22 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model\Config\Source;
 
-use Magento\Framework\Option\ArrayInterface;
+use Magento\Framework\Data\OptionSourceInterface;
 
-/**
- * Class Mode
- */
-class Mode implements ArrayInterface
+class Mode implements OptionSourceInterface
 {
-    const MANUALLY  = 'manual';
-    const HOURLY    = 'hourly';
-    const DAILY     = 'daily';
-    const WEEKLY    = 'weekly';
-    const MONTHLY   = 'monthly';
+    public const MANUALLY  = 'manual';
+    public const HOURLY    = 'hourly';
+    public const DAILY     = 'daily';
+    public const WEEKLY    = 'weekly';
+    public const MONTHLY   = 'monthly';
 
     /**
      * Return array of options as value-label pairs

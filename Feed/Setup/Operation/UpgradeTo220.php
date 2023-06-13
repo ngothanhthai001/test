@@ -1,156 +1,119 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Setup\Operation;
 
-use Amasty\Feed\Api\Data\ScheduleInterface;
-use Amasty\Feed\Model\Category\ResourceModel\Category;
-use Amasty\Feed\Model\ResourceModel\Feed;
-use Amasty\Feed\Model\Schedule\ResourceModel\Schedule;
-use Magento\Framework\DB\Ddl\Table;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Amasty\Feed\Api\Data\ValidProductsInterface;
+use Amasty\Feed\Model\Config\Source\ExecuteModeList;
+use Amasty\Feed\Model\Config\Source\FeedStatus;
+use Amasty\Feed\Model\Feed as FeedModel;
+use Amasty\Feed\Model\Import;
+use Amasty\Feed\Model\ResourceModel\Feed\Collection;
+use Amasty\Feed\Model\ResourceModel\Feed\CollectionFactory;
+use Amasty\Feed\Model\Schedule\ResourceModel\Schedule as ScheduleResource;
+use Amasty\Feed\Model\ValidProduct\ResourceModel\CollectionFactory as ValidProductsCollectionFactory;
+use Amasty\Feed\Setup\Operation\MigrateFeedSchedule\ScheduleRegistry;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
 
-/**
- * Class UpgradeTo220
- */
-class UpgradeTo220
+class UpgradeTo220 implements OperationInterface
 {
     /**
-     * @param SchemaSetupInterface $setup
+     * @var CollectionFactory
      */
-    public function execute(SchemaSetupInterface $setup)
+    private $feedCollectionFactory;
+
+    /**
+     * @var ValidProductsCollectionFactory
+     */
+    private $validProductsFactory;
+
+    /**
+     * @var Import
+     */
+    private $import;
+
+    /**
+     * @var ScheduleRegistry
+     */
+    private $scheduleRegistry;
+
+    public function __construct(
+        CollectionFactory $feedCollectionFactory,
+        ValidProductsCollectionFactory $validProductsFactory,
+        Import $import,
+        ScheduleRegistry $scheduleRegistry
+    ) {
+        $this->feedCollectionFactory = $feedCollectionFactory;
+        $this->validProductsFactory = $validProductsFactory;
+        $this->import = $import;
+        $this->scheduleRegistry = $scheduleRegistry;
+    }
+
+    public function execute(ModuleDataSetupInterface $moduleDataSetup, string $setupVersion): void
     {
-        $this->addScheduleTable($setup);
-        $this->addFlagTaxonomyColumn($setup);
-        $this->addAttributesToGeneratedColumn($setup);
+        if (version_compare($setupVersion, '2.2.0', '<')) {
+            $this->import->update('google');
+
+            /** @var Collection $feedCollection */
+            $feedCollection = $this->feedCollectionFactory->create();
+            $feedCollection->addFieldToFilter('is_template', 0);
+
+            /** @var FeedModel $feed */
+            foreach ($feedCollection->getItems() as $feed) {
+                $this->fillDataToNewColumns($feed);
+                $this->addOptionModificatorToExisted($feed);
+            }
+
+            $feedCollection->save();
+
+            $this->transferScheduleData($moduleDataSetup);
+        }
+    }
+
+    private function transferScheduleData(ModuleDataSetupInterface $moduleDataSetup)
+    {
+        $scheduleData = (array)$this->scheduleRegistry->registry(ScheduleRegistry::SCHEDULE_DATA);
+        if ($scheduleData) {
+            $moduleDataSetup->getConnection()->insertMultiple(
+                $moduleDataSetup->getTable(ScheduleResource::TABLE_NAME),
+                $scheduleData
+            );
+        }
     }
 
     /**
-     * @param SchemaSetupInterface $setup
+     * @param FeedModel $feed
      */
-    private function addScheduleTable(SchemaSetupInterface $setup)
+    private function addOptionModificatorToExisted($feed)
     {
-        $connection = $setup->getConnection();
-
-        $table = $connection->newTable(
-            $setup->getTable(Schedule::TABLE)
-        )->addColumn(
-            ScheduleInterface::ID,
-            Table::TYPE_INTEGER,
-            null,
-            ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
-            'ID'
-        )->addColumn(
-            ScheduleInterface::CRON_TIME,
-            Table::TYPE_INTEGER,
-            null,
-            [],
-            'Cron Time Execution'
-        )->addColumn(
-            ScheduleInterface::CRON_DAY,
-            Table::TYPE_INTEGER,
-            null,
-            [],
-            'Cron Day Execution'
-        )->addColumn(
-            ScheduleInterface::FEED_ID,
-            Table::TYPE_INTEGER,
-            null,
-            ['unsigned' => true, 'nullable' => false],
-            'Feed Id'
-        )->addForeignKey(
-            $setup->getFkName(
-                Schedule::TABLE,
-                ScheduleInterface::FEED_ID,
-                Feed::TABLE_NAME,
-                Feed::ID
-            ),
-            ScheduleInterface::FEED_ID,
-            $setup->getTable(Feed::TABLE_NAME),
-            Feed::ID,
-            Table::ACTION_CASCADE
-        )->setComment(
-            'Cron Schedule Execution'
-        );
-
-        $connection->createTable($table);
+        if ($feed->isXml()) {
+            $content = $feed->getXmlContent();
+            $content = str_replace('modify=', 'optional="no" modify=', $content);
+            $feed->setXmlContent($content);
+        }
     }
 
     /**
-     * @param SchemaSetupInterface $setup
+     * @param FeedModel $feed
      */
-    private function addFlagTaxonomyColumn(SchemaSetupInterface $setup)
+    private function fillDataToNewColumns($feed)
     {
-        $table = $setup->getTable(Category::TABLE_NAME);
-        $connection = $setup->getConnection();
-
-        $connection->addColumn(
-            $table,
-            'use_taxonomy',
-            [
-                'type' => Table::TYPE_SMALLINT,
-                'nullable' => false,
-                'length' => null,
-                'comment' => 'Flag to use taxonomy'
-            ]
-        );
-
-        $connection->addColumn(
-            $table,
-            'taxonomy_source',
-            [
-                'type' => Table::TYPE_TEXT,
-                'nullable' => false,
-                'length' => 25,
-                'comment' => 'Source for taxonomy '
-            ]
-        );
-    }
-
-    /**
-     * @param SchemaSetupInterface $setup
-     */
-    private function addAttributesToGeneratedColumn($setup)
-    {
-        $table = $setup->getTable(Feed::TABLE_NAME);
-        $connection = $setup->getConnection();
-
-        $connection->addColumn(
-            $table,
-            'products_amount',
-            [
-                'type' => Table::TYPE_INTEGER,
-                'nullable' => false,
-                'length' => null,
-                'comment' => 'Number of products'
-            ]
-        );
-
-        $connection->addColumn(
-            $table,
-            'generation_type',
-            [
-                'type' => Table::TYPE_TEXT,
-                'nullable' => false,
-                'length' => 255,
-                'comment' => 'Used generation type'
-            ]
-        );
-
-        $connection->addColumn(
-            $table,
-            'status',
-            [
-                'type' => Table::TYPE_SMALLINT,
-                'nullable' => false,
-                'length' => null,
-                'comment' => 'Last feed generation status'
-            ]
+        $validProductsCollection = $this->validProductsFactory->create();
+        $validProductsCollection->addFieldToFilter(ValidProductsInterface::FEED_ID, $feed->getId());
+        $feed->setProductsAmount($validProductsCollection->getSize());
+        $feed->setStatus($feed->getGeneratedAt() ? FeedStatus::READY : FeedStatus::NOT_GENERATED);
+        $feed->setGenerationType(
+            $feed->getExecuteMode() === 'manual'
+                ? ExecuteModeList::MANUAL_GENERATED
+                : ExecuteModeList::CRON_GENERATED
         );
     }
 }

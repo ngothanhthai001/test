@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -19,26 +19,25 @@ class Generated extends \Magento\Ui\Component\Listing\Columns\Date
     /**#@+
      * Attributes to column
      */
-    const READY_ATTRIBUTES = [
+    public const READY_ATTRIBUTES = [
         'generated_at' => 'Date',
         'generation_type' => 'Executed',
         'products_amount' => 'Products'
     ];
 
-    const PROCESSING_ATTRIBUTES = [
+    public const PROCESSING_ATTRIBUTES = [
         'products_amount' => 'Products'
     ];
 
-    const DEFAULT_ATTRIBUTE = [
+    public const DEFAULT_ATTRIBUTE = [
         'status' => 'Status',
     ];
+    /**#@-*/
 
     /**
      * @var FeedStatus
      */
     private $feedStatus;
-
-    /**#@-*/
 
     public function __construct(
         FeedStatus $feedStatus,
@@ -89,6 +88,14 @@ class Generated extends \Magento\Ui\Component\Listing\Columns\Date
         /** @var \Amasty\Feed\Ui\DataProvider\Feed\FeedDataProvider $dataProvider */
         $dataProvider = $this->getContext()->getDataProvider();
         $item['status'] = $this->feedStatus->toArray()[$item['status']];
+
+        if (!empty($item['generated_at'])) {
+            $item['generated_at'] = $this->timezone->formatDate(
+                $item['generated_at'],
+                \IntlDateFormatter::MEDIUM,
+                true
+            );
+        }
 
         foreach ($columns as $key => $value) {
             $result .= $dataProvider->getEscaper()->escapeHtml(__($value)) . " : "

@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -12,8 +12,9 @@ use Magento\Framework\Option\ArrayInterface;
 
 class CustomFieldType implements ArrayInterface
 {
-    const ATTRIBUTE = 0;
-    const CUSTOM_TEXT = 1;
+    public const ATTRIBUTE = 0;
+    public const CUSTOM_TEXT = 1;
+    public const MERGED_ATTRIBUTES = 2;
 
     public function toOptionArray()
     {
@@ -37,7 +38,8 @@ class CustomFieldType implements ArrayInterface
     {
         $options = [
             self::ATTRIBUTE => __('Attribute'),
-            self::CUSTOM_TEXT => __('Custom Text')
+            self::CUSTOM_TEXT => __('Custom Text'),
+            self::MERGED_ATTRIBUTES => __('Merged Attributes')
         ];
 
         return $options;

@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -13,9 +13,9 @@ interface ValidProductsInterface
     /**#@+
      * Constants defined for keys of data array
      */
-    const ENTITY_ID = 'entity_id';
-    const FEED_ID = 'feed_id';
-    const VALID_PRODUCT_ID = 'valid_product_id';
+    public const ENTITY_ID = 'entity_id';
+    public const FEED_ID = 'feed_id';
+    public const VALID_PRODUCT_ID = 'valid_product_id';
     /**#@-*/
 
     /**

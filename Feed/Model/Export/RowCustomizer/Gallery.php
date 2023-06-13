@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -12,23 +12,41 @@ use Amasty\Feed\Model\Export\Product;
 use Magento\CatalogImportExport\Model\Export\RowCustomizerInterface;
 use Magento\Framework\UrlInterface;
 
-/**
- * Class Gallery
- */
 class Gallery implements RowCustomizerInterface
 {
-    protected $_storeManager;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $storeManager;
 
-    protected $_urlPrefix;
+    /**
+     * @var string
+     */
+    protected $urlPrefix;
 
-    protected $_gallery = [];
+    /**
+     * @var array
+     */
+    protected $gallery = [];
 
-    protected $_export;
+    /**
+     * @var Product
+     */
+    protected $export;
 
+    /**
+     * @var \Magento\Framework\App\ProductMetadataInterface
+     */
     protected $productMetadata;
 
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
     protected $resource;
 
+    /**
+     * @var \Magento\Framework\DB\Adapter\AdapterInterface
+     */
     protected $connection;
 
     public function __construct(
@@ -37,8 +55,8 @@ class Gallery implements RowCustomizerInterface
         \Magento\Framework\App\ResourceConnection $resource,
         Product $export
     ) {
-        $this->_storeManager = $storeManager;
-        $this->_export = $export;
+        $this->storeManager = $storeManager;
+        $this->export = $export;
         $this->productMetadata = $productMetadata;
         $this->connection = $resource->getConnection();
         $this->resource = $resource;
@@ -49,12 +67,12 @@ class Gallery implements RowCustomizerInterface
      */
     public function prepareData($collection, $productIds)
     {
-        if ($this->_export->hasAttributes(Product::PREFIX_GALLERY_ATTRIBUTE)) {
-            $this->_urlPrefix = $this->_storeManager->getStore($collection->getStoreId())
+        if ($this->export->hasAttributes(Product::PREFIX_GALLERY_ATTRIBUTE)) {
+            $this->urlPrefix = $this->storeManager->getStore($collection->getStoreId())
                     ->getBaseUrl(UrlInterface::URL_TYPE_MEDIA)
                 . 'catalog/product';
 
-            $this->_gallery = $this->_export->getMediaGallery($productIds);
+            $this->gallery = $this->export->getMediaGallery($productIds);
         }
     }
 
@@ -63,7 +81,7 @@ class Gallery implements RowCustomizerInterface
      */
     public function getGallery()
     {
-        return $this->_gallery;
+        return $this->gallery;
     }
 
     /**
@@ -79,22 +97,19 @@ class Gallery implements RowCustomizerInterface
      */
     public function addData($dataRow, $productId)
     {
-        $productId = $this->convertEntityIdToRowIdIfNeed($productId);
+        $productId = $this->convertEntityIdToRowIdIfNeed((int)$productId);
         $customData = &$dataRow['amasty_custom_data'];
         $gallery = $this->getGallery();
-        $gallery = isset($gallery[$productId]) ? $gallery[$productId] : [];
-        $storeId = 0;
-        $galleryImg = array();
-
-        if ($gallery) {
-            $storeId = $gallery[0]['_media_store_id'];
-        }
+        $gallery = $gallery[$productId] ?? [];
+        $galleryImg = [];
 
         foreach ($gallery as $key => $data) {
-            if ($data['_media_store_id'] == $storeId
-                && (!isset($customData['image']) || !in_array($this->_urlPrefix . $data['_media_image'], $customData['image']))
+            $data['_media_image'] = '/' . ltrim($data['_media_image'], '/');
+
+            if (!isset($customData['image'])
+                || !in_array($this->urlPrefix . $data['_media_image'], $customData['image'])
             ) {
-                $galleryImg[] = $this->_urlPrefix . $data['_media_image'];
+                $galleryImg[] = $this->urlPrefix . $data['_media_image'];
             }
         }
 
@@ -117,22 +132,19 @@ class Gallery implements RowCustomizerInterface
         return $additionalRowsCount;
     }
 
-    /**
-     * @param $ids
-     * @return array
-     */
-    protected function convertEntityIdToRowIdIfNeed($ids)
+    protected function convertEntityIdToRowIdIfNeed(int $id): int
     {
         if ($this->productMetadata->getEdition() == 'Community') {
-            return $ids;
+            return $id;
         }
 
         $tableName = $this->resource->getTableName('catalog_product_entity');
         $select = $this->connection->select()
             ->from($tableName, ['row_id'])
-            ->where('entity_id IN (?)', $ids);
-        $result = $this->connection->fetchCol($select)[0];
+            ->where('entity_id = ?', $id)
+            ->group('row_id');
+        $result = $this->connection->fetchOne($select);
 
-        return $result;
+        return (int)$result;
     }
 }

@@ -1,11 +1,9 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
-?>
-<?php
     /**
      * @var \Amasty\Feed\Block\Adminhtml\GoogleWizard\Edit\Tab\Content\Element $block
      */
@@ -17,7 +15,7 @@
     $htmlNote    = $element->getNote();
     $readonly    = $element->getReadonly();
 ?>
-<?php if ($htmlNote) : ?>
+<?php if ($htmlNote): ?>
     <p><?= $block->escapeHtml(__($htmlNote->getText())); ?></p>
 <?php endif; ?>
 <table class="data border data-grid">
@@ -28,24 +26,24 @@
         </tr>
     </thead>
     <tbody>
-    <?php foreach ($value as $idx => $element) : ?>
+    <?php foreach ($value as $idx => $element): ?>
         <tr>
             <td>
                 <div><?= $block->escapeHtml($element->getName()); ?></div>
                 <small><?= $block->escapeHtml($element->getDescription()); ?></small>
             </td>
             <td>
-                <?php if ($idx !== 'condition') : ?>
+                <?php if ($idx !== 'condition'): ?>
                     <select name="<?= $block->escapeHtml($htmlName); ?>[<?= $block->escapeHtml($idx); ?>][attribute]"
                             id="amasty_feed_content_attributes_<?= $block->escapeHtml($idx);?>">
-                        <?php if (!$element->getRequired()) : ?>
+                        <?php if (!$element->getRequired()): ?>
                             <option value=''><?= $block->escapeHtml(__('None')); ?></option>
                         <?php endif;?>
 
-                        <?php foreach ($block->getAttributes() as $type => $config) : ?>
+                        <?php foreach ($block->getAttributes() as $type => $config): ?>
                             <?php $label = $config['label']; ?>
                             <optgroup label="<?= $block->escapeHtml($label); ?>">
-                                <?php foreach ($config['options'] as $value => $label) : ?>
+                                <?php foreach ($config['options'] as $value => $label): ?>
                                     <?php $selected = $block->isSelectedAttribute($element, $value); ?>
 
                                     <option<?= ($selected ? ' selected' : ''); ?>
@@ -57,7 +55,7 @@
                             </optgroup>
                         <?php endforeach; ?>
                     </select>
-                <?php else : ?>
+                <?php else: ?>
                     <input type="text" value="<?= $block->escapeHtml($element->getValue()); ?>"
                            name="<?= $block->escapeHtml($htmlName); ?>[<?= $block->escapeHtml($idx) ?>][attribute]"
                            id="amasty_feed_content_attributes_<?= $block->escapeHtml($idx); ?>"/>

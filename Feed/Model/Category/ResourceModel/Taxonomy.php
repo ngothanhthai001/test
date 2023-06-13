@@ -1,23 +1,18 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model\Category\ResourceModel;
 
-/**
- * Class Taxonomy Resource Model
- *
- * @package Amasty\Feed
- */
 class Taxonomy extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-    const TABLE_NAME = 'amasty_feed_google_taxonomy';
+    public const TABLE_NAME = 'amasty_feed_google_taxonomy';
 
-    const ID_FIELD_NAME = 'id';
+    public const ID_FIELD_NAME = 'id';
 
     protected function _construct()
     {

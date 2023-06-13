@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -82,7 +82,7 @@ abstract class AbstractMassAction extends \Amasty\Feed\Controller\Adminhtml\Abst
             $this->logger->critical($e);
         }
 
-        $this->_redirect('amfeed/*/index');
+        return $this->resultRedirectFactory->create()->setPath('amfeed/*/index');
     }
 
     /**

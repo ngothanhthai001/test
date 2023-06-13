@@ -1,12 +1,12 @@
 <?php
-/**
- * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
- */
-
 
 declare(strict_types=1);
+
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
+ */
 
 namespace Amasty\Feed\Model;
 
@@ -20,7 +20,7 @@ use Magento\InventoryIndexer\Model\StockIndexTableNameResolverInterface;
 
 class InventoryResolver
 {
-    const MAGENTO_INVENTORY_MODULE_NAMESPACE = 'Magento_Inventory';
+    public const MAGENTO_INVENTORY_MODULE_NAMESPACE = 'Magento_Inventory';
 
     /**
      * @var ResourceConnection
@@ -134,8 +134,11 @@ class InventoryResolver
         return $this->connection->select()
             ->from(
                 ['stock_index' => $this->resource->getTableName($stockIndexTableName)],
-                ['qty' => 'stock_index.quantity']
-            )->join(
+                [
+                    'qty' => 'stock_index.quantity',
+                    'is_in_stock' => 'stock_index.is_salable'
+                ]
+            )->joinRight(
                 ['product' => $this->resource->getTableName('catalog_product_entity')],
                 'product.sku = stock_index.sku',
                 ['product_id' => 'product.entity_id']
@@ -167,11 +170,13 @@ class InventoryResolver
     private function getProductIdsFromInventoryProducts(): array
     {
         $select = $this->getSelectInventoryProducts()
-            ->reset(\Zend_Db_Select::COLUMNS)
+            ->reset(Select::COLUMNS)
             ->columns(['product.entity_id'])
             ->where(
                 'stock_index.is_salable = ?',
                 0
+            )->orWhere(
+                'stock_index.is_salable IS NULL'
             );
 
         return $this->connection->fetchCol($select);
@@ -197,7 +202,7 @@ class InventoryResolver
     private function getProductIdsFromCatalogInventoryProducts(): array
     {
         $select = $this->getSelectCatalogInventoryProducts()
-            ->reset(\Zend_Db_Select::COLUMNS)
+            ->reset(Select::COLUMNS)
             ->columns(['stock_item.product_id'])
             ->where(
                 'stock_item.is_in_stock = ?',

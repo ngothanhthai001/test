@@ -53,3 +53,25 @@
 .amfeed-exclude-categories .amfeed-category {
     padding: 3px 0;
 }
+
+.amfeed-category-edit,
+.amfeed-googlewizard-index {
+    .ui-helper-hidden-accessible {
+        border: 0;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+
+    [data-amfeed-js="amfeed-category-list"] {
+        .ui-menu-item-wrapper {
+            color: #007bdb;
+            text-decoration: underline;
+            padding: 5px;
+        }
+    }
+}

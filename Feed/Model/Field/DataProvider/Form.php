@@ -1,30 +1,24 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model\Field\DataProvider;
 
-use Amasty\Feed\Model\Config\Source\CustomFieldType;
+use Amasty\Feed\Block\Adminhtml\Field\Edit\Conditions;
 use Amasty\Feed\Model\Field\ResourceModel\CollectionFactory;
 use Magento\Framework\App\Request\DataPersistorInterface;
-use Amasty\Feed\Block\Adminhtml\Field\Edit\Conditions;
-use Amasty\Feed\Model\Field\ResourceModel\ConditionCollectionFactory as ConditionCollectionFactory;
+use Magento\Ui\DataProvider\AbstractDataProvider;
 
-class Form extends \Magento\Ui\DataProvider\AbstractDataProvider
+class Form extends AbstractDataProvider
 {
     /**
      * @var DataPersistorInterface
      */
     private $dataPersistor;
-
-    /**
-     * @var \Amasty\Feed\Model\Field\ResourceModel\ConditionCollection
-     */
-    private $conditions;
 
     public function __construct(
         $name,
@@ -32,85 +26,44 @@ class Form extends \Magento\Ui\DataProvider\AbstractDataProvider
         $requestFieldName,
         CollectionFactory $collectionFactory,
         DataPersistorInterface $dataPersistor,
-        ConditionCollectionFactory $conditionCollFactory,
         array $meta = [],
         array $data = []
     ) {
         $this->dataPersistor = $dataPersistor;
         $this->collection = $collectionFactory->create();
-        $this->conditions = $conditionCollFactory->create();
-
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
     }
 
     /**
      * @return array
+     *
+     * Used to process data of fieldset "field_general"
      */
-    public function getData()
+    public function getData(): array
     {
-        $result = [];
-        $items = parent::getData()['items'];
-
-        foreach ($items as $item) {
-            if ($item) {
-                $defaultResult = $this->conditions->addFieldToFilter('feed_field_id', $item[$this->primaryFieldName])
-                    ->getLastItem()
-                    ->getFieldResult();
-
-                $item['default[result][modify]'] = '';
-                $item['default[result][attribute]'] = '';
-
-                if (isset($defaultResult['modify'])) {
-                    $item['default[result][modify]'] = $defaultResult['modify'];
-                }
-
-                if (isset($defaultResult['attribute'])) {
-                    $item['default[result][attribute]']= $defaultResult['attribute'];
-                }
-
-                if ($item['default[result][attribute]'] === '') {
-                    $item['default[result][custom_text]'] = $item['default[result][modify]'];
-                    $item['default[result][modify]'] = '';
-                    $item['default[result][entity_type]'] = CustomFieldType::CUSTOM_TEXT;
-                } else {
-                    $item['default[result][entity_type]'] = CustomFieldType::ATTRIBUTE;
-                }
-
-                $result[$item[$this->primaryFieldName]] = $item;
-            }
+        $data = [];
+        $item = parent::getData()['items'][0] ?? null;
+        if ($item) {
+            $data[$item[$this->primaryFieldName]] = $item;
         }
-        $this->restoreUnsavedData($result);
+        $this->restoreUnsavedData($data);
 
-        return $result;
+        return $data;
     }
 
     /**
      * Try to get unsaved data if error was occurred.
      *
-     * @param array $result
+     * @param array $data
      */
-    private function restoreUnsavedData(&$result)
+    private function restoreUnsavedData(array &$data)
     {
         $tempData = $this->dataPersistor->get(Conditions::FORM_NAMESPACE);
-
         if ($tempData) {
-            /** @var \Amasty\Feed\Model\Field $tempModel */
+            /** @var \Amasty\Feed\Model\Field\Field $tempModel */
             $tempModel = $this->collection->getNewEmptyItem();
-
-            $tempData['default[result][modify]'] = '';
-            $tempData['default[result][attribute]'] = '';
-
-            if (isset($tempData['default']['result']['modify'])) {
-                $tempData['default[result][modify]'] = $tempData['default']['result']['modify'];
-            }
-
-            if (isset($tempData['default']['result']['attribute'])) {
-                $tempData['default[result][attribute]'] = $tempData['default']['result']['attribute'];
-            }
-
             $tempModel->setData($tempData);
-            $result[$tempModel->getId()] = $tempModel->getData();
-
+            $data[$tempModel->getId()] = $tempModel->getData();
             $this->dataPersistor->clear(Conditions::FORM_NAMESPACE);
         }
     }

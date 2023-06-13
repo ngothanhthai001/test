@@ -1,33 +1,26 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
-
 
 namespace Amasty\Feed\Block\Adminhtml\GoogleWizard\Edit\Tab;
 
+use Amasty\Feed\Api\Data\FeedInterface;
+use Amasty\Feed\Model\OptionSource\Feed\StoreOption;
+use Magento\Backend\Block\Widget\Form\Element\Dependence;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-/**
- * Class General
- *
- * @package Amasty\Feed
- */
 class General extends TabGeneric
 {
-    const HTML_ID_PREFIX = 'feed_googlewizard_general_';
+    public const HTML_ID_PREFIX = 'feed_googlewizard_general_';
 
     /**
      * @var \Amasty\Feed\Model\GoogleWizard
      */
     private $googleWizard;
-
-    /**
-     * @var \Magento\Store\Model\System\Store
-     */
-    private $systemStore;
 
     /**
      * @var \Magento\Directory\Model\CurrencyFactory
@@ -39,22 +32,28 @@ class General extends TabGeneric
      */
     private $feedRepository;
 
+    /**
+     * @var StoreOption
+     */
+    private $storeOption;
+
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Data\FormFactory $formFactory,
         \Amasty\Feed\Model\RegistryContainer $registryContainer,
         \Amasty\Feed\Model\GoogleWizard $googleWizard,
-        \Magento\Store\Model\System\Store $systemStore,
+        \Magento\Store\Model\System\Store $systemStore = null, // @deprecated. Backward compatibility
         \Magento\Directory\Model\CurrencyFactory $currencyFactory,
         \Amasty\Feed\Model\FeedRepository $feedRepository,
+        StoreOption $storeOption = null,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $registryContainer, $data);
         $this->googleWizard = $googleWizard;
-        $this->systemStore = $systemStore;
         $this->currencyFactory = $currencyFactory;
         $this->feedRepository = $feedRepository;
+        $this->storeOption = $storeOption ?? ObjectManager::getInstance()->get(StoreOption::class);
     }
 
     /**
@@ -89,36 +88,32 @@ class General extends TabGeneric
             $model = $this->feedRepository->getEmptyModel();
         }
 
-        /** @var \Magento\Framework\Data\Form $form */
-        $form = $this->_formFactory->create();
-        $form->setHtmlIdPrefix('feed_');
-
-        /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix(self::HTML_ID_PREFIX);
+        $htmlIdPrefix = $form->getHtmlIdPrefix();
 
         $fieldset = $form->addFieldset('general_fieldset', ['legend' => $this->getLegend()]);
 
         if ($model->getId()) {
-            $fieldset->addField('entity_id', 'hidden', ['name' => 'feed_entity_id']);
+            $fieldset->addField(FeedInterface::ENTITY_ID, 'hidden', ['name' => 'feed_entity_id']);
         } else {
-            $model->setData('is_active', 1);
+            $model->setData(FeedInterface::IS_ACTIVE, 1);
 
-            $model->setData('csv_column_name', 1);
+            $model->setData(FeedInterface::CSV_COLUMN_NAME, 1);
 
-            $model->setData('format_price_currency_show', 1);
-            $model->setData('format_price_decimals', 'two');
-            $model->setData('format_price_decimal_point', 'dot');
-            $model->setData('format_price_thousands_separator', 'comma');
+            $model->setData(FeedInterface::FORMAT_PRICE_CURRENCY_SHOW, 1);
+            $model->setData(FeedInterface::FORMAT_PRICE_DECIMALS, 'two');
+            $model->setData(FeedInterface::FORMAT_PRICE_DECIMAL_POINT, 'dot');
+            $model->setData(FeedInterface::FORMAT_PRICE_THOUSANDS_SEPARATOR, 'comma');
 
-            $model->setData('format_date', 'Y-m-d');
+            $model->setData(FeedInterface::FORMAT_DATE, 'Y-m-d');
         }
 
         $fieldset->addField(
-            'name',
+            FeedInterface::NAME,
             'text',
             [
-                'name' => 'name',
+                'name' => FeedInterface::NAME,
                 'label' => __('Feed Name'),
                 'title' => __('Feed Name'),
                 'required' => true
@@ -126,10 +121,10 @@ class General extends TabGeneric
         );
 
         $fieldset->addField(
-            'filename',
+            FeedInterface::FILENAME,
             'text',
             [
-                'name' => 'filename',
+                'name' => FeedInterface::FILENAME,
                 'label' => __('File Name'),
                 'title' => __('File Name'),
                 'required' => true
@@ -137,12 +132,12 @@ class General extends TabGeneric
         );
 
         $fieldset->addField(
-            'is_active',
+            FeedInterface::IS_ACTIVE,
             'select',
             [
                 'label' => __('Status'),
                 'title' => __('Status'),
-                'name' => 'is_active',
+                'name' => FeedInterface::IS_ACTIVE,
                 'required' => true,
                 'options' => [
                     '1' => __('Active'),
@@ -153,20 +148,20 @@ class General extends TabGeneric
 
         if (!$this->_storeManager->isSingleStoreMode()) {
             $fieldset->addField(
-                'store_id',
+                FeedInterface::STORE_ID,
                 'select',
                 [
                     'label' => __('Store View'),
                     'class' => 'required-entry',
                     'required' => true,
-                    'name' => 'store_id',
+                    'name' => FeedInterface::STORE_ID,
                     'value' => $this->googleWizard->getStoreId(),
-                    'values' => $this->systemStore->getStoreValuesForForm()
+                    'values' => $this->storeOption->toOptionArray()
                 ]
             );
         } else {
             $fieldset->addField(
-                'store_id',
+                FeedInterface::STORE_ID,
                 'hidden',
                 [
                     'value' => $this->googleWizard->getStoreId()
@@ -175,48 +170,65 @@ class General extends TabGeneric
         }
 
         $fieldset->addField(
-            'format_price_currency',
+            FeedInterface::FORMAT_PRICE_CURRENCY,
             'select',
             [
                 'label' => __('Price Currency'),
-                'name'  => 'format_price_currency',
+                'name'  => FeedInterface::FORMAT_PRICE_CURRENCY,
                 'value' => $this->googleWizard->getCurrency(),
                 'options' => $this->getCurrencyList(),
             ]
         );
+
         $fieldset->addField(
-            'exclude_disabled',
+            FeedInterface::EXCLUDE_DISABLED,
             'select',
             [
                 'label' => __('Exclude Disabled Products'),
                 'title' => __('Exclude Disabled Products'),
-                'name' => 'exclude_disabled',
+                'name' => FeedInterface::EXCLUDE_DISABLED,
                 'options' => [
                     '1' => __('Yes'),
                     '0' => __('No')
                 ]
             ]
         );
+
         $fieldset->addField(
-            'exclude_out_of_stock',
+            FeedInterface::EXCLUDE_SUBDISABLED,
+            'select',
+            [
+                'label' => __('Exclude Child Products if Parent Product Is Disabled'),
+                'title' => __('Exclude Child Products if Parent Product Is Disabled'),
+                'name' => FeedInterface::EXCLUDE_SUBDISABLED,
+                'options' => [
+                    '1' => __('Yes'),
+                    '0' => __('No')
+                ]
+            ]
+        );
+
+        $fieldset->addField(
+            FeedInterface::EXCLUDE_OUT_OF_STOCK,
             'select',
             [
                 'label' => __('Exclude Out of Stock Products'),
                 'title' => __('Exclude Out of Stock Products'),
-                'name' => 'exclude_out_of_stock',
+                'name' => FeedInterface::EXCLUDE_OUT_OF_STOCK,
                 'options' => [
                     '1' => __('Yes'),
                     '0' => __('No')
                 ]
             ]
         );
+
         $fieldset->addField(
-            'exclude_not_visible',
+            FeedInterface::EXCLUDE_NOT_VISIBLE,
             'select',
             [
                 'label' => __('Exclude Not Visible Products'),
                 'title' => __('Exclude Not Visible Products'),
-                'name' => 'exclude_not_visible',
+                'name' => FeedInterface::EXCLUDE_NOT_VISIBLE,
                 'options' => [
                     '1' => __('Yes'),
                     '0' => __('No')
@@ -224,9 +236,14 @@ class General extends TabGeneric
             ]
         );
 
-        $form->setValues($model->getData());
+        $dependencies = $this->getLayout()->createBlock(Dependence::class)
+            ->addFieldMap($htmlIdPrefix . FeedInterface::EXCLUDE_DISABLED, FeedInterface::EXCLUDE_DISABLED)
+            ->addFieldMap($htmlIdPrefix . FeedInterface::EXCLUDE_SUBDISABLED, FeedInterface::EXCLUDE_SUBDISABLED)
+            ->addFieldDependence(FeedInterface::EXCLUDE_SUBDISABLED, FeedInterface::EXCLUDE_DISABLED, 1);
 
+        $form->setValues($model->getData());
         $this->setForm($form);
+        $this->setChild('form_after', $dependencies);
 
         return $this;
     }

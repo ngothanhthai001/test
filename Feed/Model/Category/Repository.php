@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -12,11 +12,6 @@ use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-/**
- * Class Category Repository
- *
- * @package Amasty\Feed
- */
 class Repository
 {
     /**
@@ -88,8 +83,15 @@ class Repository
             if ($category->getFeedCategoryId()) {
                 throw new CouldNotSaveException(
                     __(
-                        'Unable to save category with ID %1. Error: %2',
+                        'Unable to remove category mapping with ID %1. Error: %2',
                         [$category->getFeedCategoryId(), $e->getMessage()]
+                    )
+                );
+            } else {
+                throw new CouldNotDeleteException(
+                    __(
+                        'Unable to remove category mapping. Error: %1',
+                        $e->getMessage()
                     )
                 );
             }
@@ -108,7 +110,7 @@ class Repository
             $this->categoryResource->load($category, $categoryId);
 
             if (!$category->getFeedCategoryId()) {
-                throw new NoSuchEntityException(__('Category with specified ID "%1" not found.', $categoryId));
+                throw new NoSuchEntityException(__('Category mapping with specified ID "%1" not found.', $categoryId));
             }
 
             $this->getCategoryDeps($category);
@@ -123,22 +125,26 @@ class Repository
         return $this->delete($this->getById($categoryId));
     }
 
-    public function delete(\Amasty\Feed\Model\Category $category)
+    public function delete(\Amasty\Feed\Model\Category\Category $category)
     {
         try {
             $this->categoryResource->delete($category);
-            unset($this->icons[$icon->getIconId()]);
         } catch (\Exception $e) {
             if ($category->getFeedCategoryId()) {
                 throw new CouldNotDeleteException(
                     __(
-                        'Unable to remove category with ID %1. Error: %2',
-                        [$icon->getIconId(), $e->getMessage()]
+                        'Unable to remove category mapping with ID %1. Error: %2',
+                        [$category->getFeedCategoryId(), $e->getMessage()]
+                    )
+                );
+            } else {
+                throw new CouldNotDeleteException(
+                    __(
+                        'Unable to remove category mapping. Error: %1',
+                        $e->getMessage()
                     )
                 );
             }
-
-            throw new CouldNotDeleteException(__('Unable to remove category. Error: %1', $e->getMessage()));
         }
 
         return true;

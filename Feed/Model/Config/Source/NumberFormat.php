@@ -1,32 +1,29 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model\Config\Source;
 
-/**
- * Class NumberFormat
- */
 class NumberFormat
 {
     /**
      * Points constants
      */
-    const ONE_POINT = 'one';
-    const TWO_POINTS = 'two';
-    const THREE_POINTS = 'three';
-    const FOUR_POINTS = 'four';
+    public const ONE_POINT = 'one';
+    public const TWO_POINTS = 'two';
+    public const THREE_POINTS = 'three';
+    public const FOUR_POINTS = 'four';
 
     /**
      * Separate constants
      */
-    const DOT = 'dot';
-    const COMMA = 'comma';
-    const SPACE = 'space';
+    public const DOT = 'dot';
+    public const COMMA = 'comma';
+    public const SPACE = 'space';
 
     /**
      * @return array

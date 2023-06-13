@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -11,11 +11,6 @@ namespace Amasty\Feed\Controller\Adminhtml\GoogleWizard;
 use Amasty\Feed\Model\RegistryContainer;
 use Magento\Framework\Exception\LocalizedException;
 
-/**
- * Class Save
- *
- * @package Amasty\Feed
- */
 class Save extends \Amasty\Feed\Controller\Adminhtml\AbstractGoogleWizard
 {
     /**
@@ -72,12 +67,12 @@ class Save extends \Amasty\Feed\Controller\Adminhtml\AbstractGoogleWizard
                     if ($this->getRequest()->getParam('force_generate')) {
                         $arguments['_fragment'] = 'forcegenerate';
 
-                        return $this->_redirect('amfeed/feed/edit', $arguments);
+                        return $this->resultRedirectFactory->create()->setPath('amfeed/feed/edit', $arguments);
                     }
 
-                    return $this->_redirect('amfeed/feed/index');
+                    return $this->resultRedirectFactory->create()->setPath('amfeed/feed/index');
                 } else {
-                    return $this->_redirect('amfeed/feed/index', $args);
+                    return $this->resultRedirectFactory->create()->setPath('amfeed/feed/index', $args);
                 }
             } catch (\Exception $exception) {
                 $this->messageManager->addExceptionMessage(
@@ -85,11 +80,11 @@ class Save extends \Amasty\Feed\Controller\Adminhtml\AbstractGoogleWizard
                     __('Something went wrong while saving the Google Feed. Please review the error log.')
                 );
 
-                return $this->_redirect('amfeed/googleWizard/index');
+                return $this->resultRedirectFactory->create()->setPath('amfeed/googleWizard/index');
             }
         }
 
-        return $this->_redirect('amfeed/feed/index');
+        return $this->resultRedirectFactory->create()->setPath('amfeed/feed/index');
     }
 
     /**

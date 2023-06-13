@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -13,10 +13,10 @@ interface ScheduleInterface
     /**#@+
      * Constants defined for keys of data array
      */
-    const ID = 'id';
-    const FEED_ID = 'feed_id';
-    const CRON_TIME = 'cron_time';
-    const CRON_DAY = 'cron_day';
+    public const ID = 'id';
+    public const FEED_ID = 'feed_id';
+    public const CRON_TIME = 'cron_time';
+    public const CRON_DAY = 'cron_day';
     /**#@-*/
 
     /**

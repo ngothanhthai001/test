@@ -1,33 +1,29 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
-
 
 namespace Amasty\Feed\Model;
 
-/**
- * Class RegistryContainer
- */
 class RegistryContainer
 {
-    const TYPE_ATTRIBUTE = 'attribute';
-    const TYPE_CUSTOM_FIELD = 'custom_field';
-    const TYPE_CATEGORY = 'category';
-    const TYPE_IMAGE = 'image';
-    const TYPE_TEXT = 'text';
+    public const TYPE_ATTRIBUTE = 'attribute';
+    public const TYPE_CUSTOM_FIELD = 'custom_field';
+    public const TYPE_CATEGORY = 'category';
+    public const TYPE_IMAGE = 'image';
+    public const TYPE_TEXT = 'text';
 
-    const VAR_STEP = 'amfeed_step';
-    const VAR_CATEGORY_MAPPER = 'amfeed_category_mapper';
-    const VAR_IDENTIFIER_EXISTS = 'amfeed_identifier_exists';
-    const VAR_FEED = 'amfeed_id';
+    public const VAR_STEP = 'amfeed_step';
+    public const VAR_CATEGORY_MAPPER = 'amfeed_category_mapper';
+    public const VAR_IDENTIFIER_EXISTS = 'amfeed_identifier_exists';
+    public const VAR_FEED = 'amfeed_id';
 
-    const VALUE_FIRST_STEP = 1;
-    const VALUE_LAST_STEP = 6;
+    public const VALUE_FIRST_STEP = 1;
+    public const VALUE_LAST_STEP = 6;
 
-    const MAX_ADDITIONAL_IMAGES = 5;
+    public const MAX_ADDITIONAL_IMAGES = 5;
 
     /**
      * @var \Magento\Framework\Registry

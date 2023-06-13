@@ -1,39 +1,44 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
-
 
 namespace Amasty\Feed\Setup\Operation;
 
-/**
- * Class UpgradeTo101
- */
-class UpgradeTo101
+use Amasty\Feed\Setup\SampleData\Updater;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\SampleData\Executor;
+
+class UpgradeTo101 implements OperationInterface
 {
     /**
-     * @var \Magento\Framework\Setup\SampleData\Executor
+     * @var Executor
      */
     private $executor;
 
     /**
-     * @var \Amasty\Feed\Setup\Updater
+     * @var Updater
      */
     private $updater;
 
     public function __construct(
-        \Magento\Framework\Setup\SampleData\Executor $executor,
-        \Amasty\Feed\Setup\Updater $updater
+        Executor $executor,
+        Updater $updater
     ) {
         $this->executor = $executor;
         $this->updater = $updater;
     }
 
-    public function execute()
+    public function execute(ModuleDataSetupInterface $moduleDataSetup, string $setupVersion): void
     {
-        $this->updater->setTemplates(['bing']);
-        $this->executor->exec($this->updater);
+        if (version_compare($setupVersion, '1.0.1') < 0) {
+            $this->updater->setTemplates(['bing']);
+            $this->executor->exec($this->updater);
+        }
     }
 }

@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -11,18 +11,15 @@ namespace Amasty\Feed\Model\Export\RowCustomizer;
 use Amasty\Feed\Model\Export\Product;
 use Magento\CatalogImportExport\Model\Export\RowCustomizerInterface;
 
-/**
- * Class Effectivedate
- */
 class Effectivedate implements RowCustomizerInterface
 {
-    const DS = DIRECTORY_SEPARATOR;
+    public const DS = DIRECTORY_SEPARATOR;
 
-    const START_UNIX_DATE = '1978-01-01T00:00';
+    public const START_UNIX_DATE = '1978-01-01T00:00';
 
-    const END_UNIX_DATE = '2038-01-01T00:00';
+    public const END_UNIX_DATE = '2038-01-01T00:00';
 
-    const SALE_PRICE_EFFECITVEDATE_INDEX = 'sale_price_effective_date';
+    public const SALE_PRICE_EFFECITVEDATE_INDEX = 'sale_price_effective_date';
 
     /**
      * @var \Magento\Catalog\Api\ProductRepositoryInterface

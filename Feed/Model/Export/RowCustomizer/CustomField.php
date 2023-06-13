@@ -1,8 +1,8 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
@@ -10,6 +10,7 @@ namespace Amasty\Feed\Model\Export\RowCustomizer;
 
 use Amasty\Feed\Api\CustomFieldsRepositoryInterface;
 use Amasty\Feed\Model\Export\Product as Export;
+use Amasty\Feed\Model\Export\Utils\MergedAttributeProcessor;
 use Amasty\Feed\Model\Field\ResourceModel\CollectionFactory as FieldCollectionFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\CatalogImportExport\Model\Export\RowCustomizerInterface;
@@ -20,9 +21,9 @@ class CustomField implements RowCustomizerInterface
     /**#@+
      * Modifier constants
      */
-    const OPERATION = 0;
+    public const OPERATION = 0;
 
-    const VALUE = 1;
+    public const VALUE = 1;
     /**#@-*/
 
     /**
@@ -50,16 +51,23 @@ class CustomField implements RowCustomizerInterface
      */
     private $cFieldsRepository;
 
+    /**
+     * @var MergedAttributeProcessor
+     */
+    private $mergedAttributeProcessor;
+
     public function __construct(
         Export $export,
         CustomFieldsRepositoryInterface $cFieldsRepository,
         ProductRepositoryInterface $productRepository,
-        FieldCollectionFactory $collectionFactory
+        FieldCollectionFactory $collectionFactory,
+        MergedAttributeProcessor $mergedAttributeProcessor
     ) {
         $this->export = $export;
         $this->cFieldsRepository = $cFieldsRepository;
         $this->productRepository = $productRepository;
         $this->fieldCollection = $collectionFactory->create();
+        $this->mergedAttributeProcessor = $mergedAttributeProcessor;
     }
 
     /**
@@ -89,6 +97,12 @@ class CustomField implements RowCustomizerInterface
                     )
                 );
             }
+
+            $this->mergedAttributeProcessor->initialize(
+                $this->conditions,
+                $productIds,
+                (int)$collection->getStoreId()
+            );
         }
     }
 
@@ -107,7 +121,7 @@ class CustomField implements RowCustomizerInterface
     {
         $dataRow['amasty_custom_data'][Export::PREFIX_CUSTOM_FIELD_ATTRIBUTE] = [];
         /** @var \Magento\Catalog\Model\Product $product */
-        $product = $this->productRepository->getById($productId);
+        $product = $this->productRepository->getById($productId, false, $dataRow['store_id'] ?? null);
 
         foreach ($this->conditions as $customField) {
             foreach ($customField as $condition) {
@@ -122,19 +136,29 @@ class CustomField implements RowCustomizerInterface
                         $product->setData('tier_price', '');
                     }
 
-                    if (!empty($rule->getFieldResult()['attribute'])) {
+                    $mergedText = $rule->getFieldResult()['merged_text'] ?? null;
+                    $isMergedAttribute = $mergedText !== null;
+                    if (!empty($rule->getFieldResult()['attribute']) && !$isMergedAttribute) {
                         $currentAttribute = $rule->getFieldResult()['attribute'];
                         $productAttribute = $product->getData($currentAttribute);
 
-                        if ($product->getAttributeText($currentAttribute) && !is_array($productAttribute)) {
+                        if ($currentAttribute === 'quantity_and_stock_status') {
+                            $attributeValue = isset($dataRow['qty']) ? (int)$dataRow['qty'] : 0;
+                        } elseif ($product->getAttributeText($currentAttribute) && !is_array($productAttribute)) {
                             $attributeValue = $product->getAttributeText($currentAttribute);
-                        } else {
+                        } elseif (!is_array($productAttribute)) {
                             $attributeValue = $productAttribute;
                         }
-                    }
-                    $dataRow['amasty_custom_data'][Export::PREFIX_CUSTOM_FIELD_ATTRIBUTE][$condition['code']] =
-                        $this->modifyValue($attributeValue, $rule);
 
+                        $attributeValue = $this->modifyValue($attributeValue, $rule);
+                    } else {
+                        $attributeValue = $rule->getFieldResult()['modify'] ?? '';
+                    }
+
+                    $dataRow['amasty_custom_data'][Export::PREFIX_CUSTOM_FIELD_ATTRIBUTE][$condition['code']] =
+                        !$isMergedAttribute
+                            ? $attributeValue
+                            : $this->mergedAttributeProcessor->execute($product, $mergedText);
                     break;
                 }
             }
@@ -159,26 +183,12 @@ class CustomField implements RowCustomizerInterface
      */
     private function modifyValue($value, $rule)
     {
-        $modifier = isset($rule->getFieldResult()['modify']) ? $rule->getFieldResult()['modify'] : '';
+        if ($value) {
+            $modifier = isset($rule->getFieldResult()['modify']) ? $rule->getFieldResult()['modify'] : '';
 
-        //If value is null no sense to check modifier.
-        if ($value === '' || $value === null) {
-            return $modifier;
-        }
-
-        //If modifier is set, should check value is numeric, and return modified value or modifier itself.
-        if ($modifier) {
-            if (is_numeric($value)) {
-                return $this->modifyNumeric($modifier, $value);
+            if ($modifier && is_numeric($value)) {
+                $value = $this->modifyNumeric($modifier, $value);
             }
-
-            return $modifier;
-        }
-
-        //If modifier is null, return attribute value.
-        //If attribute value consists of several ones, return them as one string.
-        if (is_array($value)) {
-            $value = implode(', ', $value);
         }
 
         return $value;
@@ -210,9 +220,6 @@ class CustomField implements RowCustomizerInterface
                 break;
             case '+':
                 $value += $modifierValue;
-                break;
-            default:
-                $value = $modifier;
                 break;
         }
 

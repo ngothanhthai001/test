@@ -1,147 +1,188 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2021 Amasty (https://www.amasty.com)
- * @package Amasty_Feed
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Product Feed for Magento 2
  */
 
 
 namespace Amasty\Feed\Model\Export\RowCustomizer;
 
 use Amasty\Feed\Model\Export\Product;
+use Magento\Bundle\Model\Product\Type as BundleProductType;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Catalog\Pricing\Price\FinalPrice as CatalogFinalPrice;
+use Magento\Catalog\Pricing\Price\RegularPrice as CatalogRegularPrice;
 use Magento\Catalog\Pricing\Price\SpecialPrice as CatalogSpecialPrice;
 use Magento\CatalogImportExport\Model\Export\RowCustomizerInterface;
-use Magento\Framework\App\Request\Http;
-use Magento\Framework\Convert\DataObject;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Tax\Model\Calculation;
-use Magento\Tax\Model\ResourceModel\Calculation\CollectionFactory;
 
-/**
- * Class Price
- */
 class Price implements RowCustomizerInterface
 {
-    protected $_prices = [];
-
-    protected $_storeManager;
-
-    protected $_export;
-
-    protected $_calculationCollectionFactory;
-
-    protected $_objectConverter;
-
-    protected $_data;
+    /**
+     * @var array
+     */
+    protected $prices = [];
 
     /**
-     * @var Calculation
+     * @var StoreManagerInterface
      */
-    private $calculation;
+    protected $storeManager;
 
     /**
-     * @var Http
+     * @var Product
      */
-    private $request;
+    protected $export;
+
+    /**
+     * @var array
+     */
+    protected $data;
+
+    /**
+     * @var ProductRepositoryInterface
+     */
+    private $productRepository;
 
     public function __construct(
         StoreManagerInterface $storeManager,
         Product $export,
-        CollectionFactory $calculationCollectionFactory,
-        Calculation $calculation,
-        Http $request,
-        DataObject $objectConverter
+        ProductRepositoryInterface $productRepository
     ) {
-        $this->_storeManager = $storeManager;
-        $this->_export = $export;
-        $this->_calculationCollectionFactory = $calculationCollectionFactory;
-        $this->_objectConverter = $objectConverter;
-        $this->calculation = $calculation;
-        $this->request = $request;
+        $this->storeManager = $storeManager;
+        $this->export = $export;
+        $this->productRepository = $productRepository;
     }
 
     /**
-     * @inheritdoc
+     * @param Collection $collection
+     * @param array $productIds
+     *
+     * @return void
      */
     public function prepareData($collection, $productIds)
     {
-        if ($this->_export->hasAttributes(Product::PREFIX_PRICE_ATTRIBUTE)) {
+        if ($this->export->hasAttributes(Product::PREFIX_PRICE_ATTRIBUTE)) {
+            $productCollection = clone $collection;
+            $productCollection->clear();
+            $productCollection->applyFrontendPriceLimitations();
+            $productCollection->addAttributeToSelect([
+                'price',
+                'special_price',
+                'special_from_date',
+                'special_to_date'
+            ]);
+            $productCollection->getSelect()->columns(['maximal_price' => 'price_index.max_price']);
 
-            $collection->applyFrontendPriceLimitations();
-            $collection->addAttributeToSelect(['special_price', 'special_from_date', 'special_to_date']);
+            $storeId = $collection->getStoreId() === Store::DEFAULT_STORE_ID
+                ? $this->storeManager->getDefaultStoreView()->getId() // For getting valid configurable product price
+                : $collection->getStoreId();
+            $currentCurrency = $this->storeManager->getStore()->getCurrentCurrency();
+            $this->storeManager->setCurrentStore($storeId);
+            $this->storeManager->getStore()->setCurrentCurrencyCode($this->export->getFormatPriceCurrency());
 
-            $storeId = $this->request->getParam('store_id') ?: $collection->getStoreId();
-
-            $currentCurrency = $this->_storeManager->getStore()->getCurrentCurrency();
-            $this->_storeManager->setCurrentStore($storeId);
-            $this->_storeManager->getStore()->setCurrentCurrency($this->_storeManager->getStore()->getBaseCurrency());
-
-            foreach ($collection as &$item) {
-                $addressRequestObject = $this->calculation->getDefaultRateRequest($storeId);
-                $addressRequestObject->setProductClassId($item->getTaxClassId());
-
-                $taxPercent = $this->calculation->getRate($addressRequestObject);
-                $finalPrice = $item->getPriceInfo()->getPrice(CatalogFinalPrice::PRICE_CODE)->getValue();
-
-                if (null === $finalPrice || 0.0001 > $finalPrice) {
-                    $item->load($item->getId());
-
-                    if ($specialPrice = $item->getPriceInfo()->getPrice(CatalogSpecialPrice::PRICE_CODE)->getValue()) {
-                        $finalPrice = $specialPrice;
-                    } else {
-                        $finalPrice = $item->getPriceInfo()->getPrice(CatalogFinalPrice::PRICE_CODE)->getValue();
-                    }
-                }
-
-                $this->_prices[$item['entity_id']] = [
-                    'final_price' => $finalPrice,
-                    'price' => $item['price'],
-                    'min_price' => $item['min_price'],
-                    'max_price' => $item['max_price'],
-                    'tax_price' => $taxPercent != 0 ?
-                        ($item['price'] + $item['price'] * $taxPercent / 100)
-                        : $item['price'],
-                    'tax_final_price' => $taxPercent != 0 ?
-                        ($finalPrice + $finalPrice * $taxPercent / 100)
-                        : $finalPrice,
-                    'tax_min_price' => $taxPercent != 0 ?
-                        ($item['min_price'] + $item['min_price'] * $taxPercent / 100)
-                        : $item['min_price']
-                ];
+            foreach ($productCollection->getItems() as $item) {
+                $this->processItemPrices($item);
             }
 
-            $this->_storeManager->getStore()->setCurrentCurrency($currentCurrency);
+            $this->storeManager->getStore()->setCurrentCurrency($currentCurrency);
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public function addHeaderColumns($columns)
     {
         return $columns;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function addData($dataRow, $productId)
     {
         $customData = &$dataRow['amasty_custom_data'];
 
-        $customData[Product::PREFIX_PRICE_ATTRIBUTE]
-            = isset($this->_prices[$productId]) ? $this->_prices[$productId]
-            : [];
+        $customData[Product::PREFIX_PRICE_ATTRIBUTE] = $this->prices[$productId] ?? [];
 
         return $dataRow;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getAdditionalRowsCount($additionalRowsCount, $productId)
     {
         return $additionalRowsCount;
+    }
+
+    private function processItemPrices(ProductInterface $item): void
+    {
+        list($specialPriceInfo, $finalPriceInfo) = $this->getSpecialAndFinalPriceInfo($item);
+        $priceInfo = $item->getPriceInfo();
+
+        $regularPriceAmount = $priceInfo->getPrice(CatalogRegularPrice::PRICE_CODE)->getAmount();
+        $specialPrice = $specialPriceInfo->getValue();
+        $finalPrice = $finalPriceInfo->getAmount()->getValue(['tax', 'weee']);
+        $finalTaxPrice = $finalPriceInfo->getAmount()->getValue();
+        $regularPrice = $priceInfo->getPrice(CatalogRegularPrice::PRICE_CODE)->getValue();
+
+        // in case of bundle product we must recalculate some prices manually
+        if ($item->getTypeId() === BundleProductType::TYPE_CODE) {
+            if ($item->getPrice()) {//fixed price
+                $percentage = $priceInfo->getPrice(CatalogSpecialPrice::PRICE_CODE)->getDiscountPercent();
+                if ($percentage) { //special price
+                    $finalPrice = $specialPrice = $regularPriceAmount->getBaseAmount() * $percentage / 100;
+                    $finalTaxPrice = $regularPriceAmount->getValue() * $percentage / 100;
+                }
+            } else {//dynamic price
+                $finalPrice = $finalPriceInfo->getMinimalPrice()->getBaseAmount();
+                if ($specialPrice < 0.0001 && $specialPrice !== false) {
+                    $specialPrice = $finalPrice;
+                }
+            }
+        }
+
+        $this->prices[$item['entity_id']] = [
+            'price' => $regularPriceAmount->getValue(['tax','weee']),
+            'tax_price' => $regularPriceAmount->getValue(),
+            'regular_price' => $regularPrice,
+            'final_price' => $finalPrice,
+            'tax_final_price' => $finalTaxPrice,
+            'min_price' => $finalPriceInfo->getMinimalPrice()->getValue(['tax', 'weee']),
+            'max_price' => $finalPriceInfo->getMaximalPrice()->getValue(['tax', 'weee']),
+            'tax_min_price' => $finalPriceInfo->getMinimalPrice()->getValue(),
+            'special_price' => $specialPrice
+        ];
+    }
+
+    /**
+     * @param ProductInterface $item
+     *
+     * @return array
+     */
+    private function getSpecialAndFinalPriceInfo(ProductInterface &$item): array
+    {
+        if ($item->getTypeId() === BundleProductType::TYPE_CODE) {
+            $item = $this->productRepository->getById($item->getId());
+            $specialPriceInfo = $item->getPriceInfo()->getPrice(CatalogSpecialPrice::PRICE_CODE);
+            $finalPriceInfo = $item->getPriceInfo()->getPrice(CatalogFinalPrice::PRICE_CODE);
+
+            return [$specialPriceInfo, $finalPriceInfo];
+        }
+
+        $specialPriceInfo = $item->getPriceInfo()->getPrice(CatalogSpecialPrice::PRICE_CODE);
+        $finalPriceInfo = $item->getPriceInfo()->getPrice(CatalogFinalPrice::PRICE_CODE);
+
+        $specialPriceValue = $specialPriceInfo->getValue();
+        $finalPriceValue = $finalPriceInfo->getValue(['tax', 'weee']);
+        // In some cases final and special prices can be absent from collection item.
+        // Check item final and special prices & reload item in case they are absent.
+        if (($finalPriceValue < 0.0001 && $finalPriceValue !== false)
+            || ($specialPriceValue < 0.0001 && $specialPriceValue !== false)
+        ) {
+            $oldData = $item->getData();
+            $item = $this->productRepository->getById($item->getId());
+            $item->setData(array_merge($oldData, $item->getData()));
+            $specialPriceInfo = $item->getPriceInfo()->getPrice(CatalogSpecialPrice::PRICE_CODE);
+            $finalPriceInfo = $item->getPriceInfo()->getPrice(CatalogFinalPrice::PRICE_CODE);
+        }
+
+        return [$specialPriceInfo, $finalPriceInfo];
     }
 }
