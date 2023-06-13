@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Amasty\Coupons\Api\Data\RuleInterface" type="Amasty\Coupons\Model\Rule" />
     <preference for="Amasty\Coupons\Api\RuleRepositoryInterface" type="Amasty\Coupons\Model\Repository\RuleRepository" />
@@ -9,8 +15,6 @@
     <preference for="Amasty\Coupons\Api\GuestGetCouponsByCartIdInterface" type="Amasty\Coupons\Model\Coupon\GuestGetCouponsByCartId" />
     <preference for="Amasty\Coupons\Api\Data\DiscountBreakdownLineInterface" type="Amasty\Coupons\Model\DiscountBreakdownLine" />
     <preference for="Amasty\Coupons\Api\Data\CouponApplyResultListInterface" type="Amasty\Coupons\Model\Coupon\CouponApplyListResult" />
-<!--    <preference for="Magento\Checkout\Controller\Cart\CouponPost" type="Amasty\Coupons\Controller\Cart\CouponPost" />-->
-    <preference for="Magento\SalesRule\Model\Converter\ToModel" type="Amasty\Coupons\Model\Converter\ToModel" />
 
     <type name="Magento\Quote\Api\CouponManagementInterface">
         <plugin name="Amasty_Coupons::CouponManagement" type="Amasty\Coupons\Plugin\CouponManagement" />

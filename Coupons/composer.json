@@ -1,13 +1,13 @@
 {
-    "name": "amasty\/coupons",
+    "name": "amasty/coupons",
     "description": "Multiple Coupons by Amasty",
     "require": {
-        "php": "^7.3.0",
-        "amasty\/base": ">=1.13.1",
-        "magento\/framework": ">=102.0.1"
+        "php": ">=7.3",
+        "amasty/base": ">=1.13.6",
+        "magento/framework": ">=102.0.1"
     },
     "type": "magento2-module",
-    "version": "2.0.6",
+    "version": "2.1.1",
     "license": [
         "Commercial"
     ],

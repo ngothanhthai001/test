@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */
 
 namespace Amasty\Coupons\Test\Api;
 
@@ -6,9 +11,9 @@ use Magento\TestFramework\TestCase\WebapiAbstract;
 
 class ApplyCouponsToCartTest extends WebapiAbstract
 {
-    const SERVICE_VERSION = 'V1';
-    const SERVICE_NAME = 'amastyCouponsApplyCouponsToCartV1';
-    const RESOURCE_PATH = '/V1/carts/';
+    public const SERVICE_VERSION = 'V1';
+    public const SERVICE_NAME = 'amastyCouponsApplyCouponsToCartV1';
+    public const RESOURCE_PATH = '/V1/carts/';
 
     /**
      * @var \Magento\TestFramework\ObjectManager

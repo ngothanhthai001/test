@@ -2,11 +2,18 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */
+
 namespace Amasty\Coupons\Plugin;
 
 use Amasty\Coupons\Model\CouponRenderer;
 use Amasty\Coupons\Model\SalesRule\CouponListProvider;
 use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\DB\Select;
 use Magento\Quote\Model\Quote\Address;
 use Magento\Rule\Model\ResourceModel\Rule\Collection\AbstractCollection;
 use Magento\SalesRule\Model\ResourceModel\Rule\Collection;
@@ -93,7 +100,7 @@ class RuleCollection
 
         $select = $result->getSelect();
 
-        if (empty($select->getPart(\Zend_Db_Select::WHERE))) {
+        if (empty($select->getPart(Select::WHERE))) {
             $this->modifyUnionCouponCondition($result, $couponCode, $coupons);
         } else {
             $this->modifyRuleIds($result, $coupons);
@@ -127,16 +134,16 @@ class RuleCollection
             $renderedCoupons
         );
 
-        $unionPart = $select->getPart(\Zend_Db_Select::FROM)['t']['tableName']
-             ->getPart(\Zend_Db_Select::UNION)[1][0];
+        $unionPart = $select->getPart(Select::FROM)['t']['tableName']
+             ->getPart(Select::UNION)[1][0];
 
-        $fromPart = $unionPart->getPart(\Zend_Db_Select::FROM);
+        $fromPart = $unionPart->getPart(Select::FROM);
         $fromPart['rule_coupons']['joinCondition'] = str_ireplace(
             $searchCode,
             $replaceCodeIn,
             $fromPart['rule_coupons']['joinCondition']
         );
-        $unionPart->setPart(\Zend_Db_Select::FROM, $fromPart);
+        $unionPart->setPart(Select::FROM, $fromPart);
 
         $select->group('rule_id');
     }
@@ -152,7 +159,7 @@ class RuleCollection
     {
         $connection = $collection->getConnection();
         $select = $collection->getSelect();
-        $wherePart = $select->getPart(\Zend_Db_Select::WHERE);
+        $wherePart = $select->getPart(Select::WHERE);
 
         $ruleIds = [];
         foreach ($this->couponListProvider->getItemsByCodes($renderedCoupons) as $couponModel) {
@@ -171,6 +178,6 @@ class RuleCollection
             }
         }
 
-        $select->setPart(\Zend_Db_Select::WHERE, $wherePart);
+        $select->setPart(Select::WHERE, $wherePart);
     }
 }

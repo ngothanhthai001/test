@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */
 
 namespace Amasty\Coupons\Helper;
 
@@ -6,7 +11,6 @@ use Magento\Backend\Model\Session\Quote;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\State;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * @deprecated 2.0.0 @see \Amasty\Coupons\Api\GetCouponsByCartIdInterface::get
@@ -32,23 +36,17 @@ class Data
      * @var \Amasty\Coupons\Api\GetCouponsByCartIdInterface
      */
     private $getCouponsByCartId;
-    /**
-     * @var ScopeConfigInterface
-     */
-    private $scopeConfig;
 
     public function __construct(
         CheckoutSession $session,
         Quote $backendSession,
         State $state,
-        \Amasty\Coupons\Api\GetCouponsByCartIdInterface $getCouponsByCartId,
-        ScopeConfigInterface $scopeConfig
+        \Amasty\Coupons\Api\GetCouponsByCartIdInterface $getCouponsByCartId
     ) {
         $this->session = $session;
         $this->backendSession = $backendSession;
         $this->state = $state;
         $this->getCouponsByCartId = $getCouponsByCartId;
-        $this->scopeConfig = $scopeConfig;
     }
 
     /**

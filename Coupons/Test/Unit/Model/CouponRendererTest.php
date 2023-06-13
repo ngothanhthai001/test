@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */
 
 namespace Amasty\Coupons\Test\Unit\Model;
 
@@ -19,9 +24,9 @@ class CouponRendererTest extends \PHPUnit\Framework\TestCase
     use Traits\ObjectManagerTrait;
     use Traits\ReflectionTrait;
 
-    const COUPON_STRING = 'test1,test2';
+    public const COUPON_STRING = 'test1,test2';
 
-    const TEST_ARRAY_KEY = 'test_key';
+    public const TEST_ARRAY_KEY = 'test_key';
 
     /**
      * @var CouponRenderer|MockObject

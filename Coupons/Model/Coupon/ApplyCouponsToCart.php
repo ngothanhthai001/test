@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */
+
 namespace Amasty\Coupons\Model\Coupon;
 
 use Amasty\Coupons\Api\Data\CouponApplyResultListInterface;
@@ -79,7 +85,7 @@ class ApplyCouponsToCart implements \Amasty\Coupons\Api\ApplyCouponsToCartInterf
         $this->config = $config;
         $this->escaper = $escaper;
         $this->objectManager = $objectManager;
-}
+    }
 
     /**
      * Try to apply list of coupons.

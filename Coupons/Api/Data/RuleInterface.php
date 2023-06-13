@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */
 
 namespace Amasty\Coupons\Api\Data;
 
@@ -12,11 +17,11 @@ interface RuleInterface extends ExtensibleDataInterface
     /**#@+
      * Constants defined for keys of data array
      */
-    const EXTENSION_CODE = 'amcoupons';
-    const ENTITY_ID = 'entity_id';
-    const KEY_SALESRULE_ID = 'rule_id';
-    const ALLOW_COUPONS_SAME_RULE = 'allow_coupons_same_rule';
-    const USE_CONFIG_VALUE = 'use_config_value';
+    public const EXTENSION_CODE = 'amcoupons';
+    public const ENTITY_ID = 'entity_id';
+    public const KEY_SALESRULE_ID = 'rule_id';
+    public const ALLOW_COUPONS_SAME_RULE = 'allow_coupons_same_rule';
+    public const USE_CONFIG_VALUE = 'use_config_value';
     /**#@-*/
 
     /**

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */
 
 namespace Amasty\Coupons\Model;
 
@@ -15,11 +20,9 @@ class Config extends ConfigProviderAbstract
      */
     protected $pathPrefix = 'amcoupons/';
 
-    const UNIQUE_COUPONS = 'general/unique_codes';
-    const ALLOW_SAME_RULE = 'general/allow_same_rule';
-
-    const ALLOW_ORDER_LIMIT = 'order_limit/enabled';
-
+    public const UNIQUE_COUPONS = 'general/unique_codes';
+    public const ALLOW_SAME_RULE = 'general/allow_same_rule';
+    public const ALLOW_ORDER_LIMIT = 'order_limit/enabled';
     /**
      * @return string
      */

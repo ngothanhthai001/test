@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */
+
 namespace Amasty\Coupons\Plugin\Cart;
 
 use Amasty\Coupons\Api\Data\DiscountBreakdownLineInterface;
@@ -11,8 +17,6 @@ use Amasty\Coupons\Model\SalesRule\CouponListProvider;
 use Magento\Quote\Api\CartTotalRepositoryInterface;
 use Magento\Quote\Api\Data\TotalsExtensionFactory;
 use Magento\Quote\Api\Data\TotalsInterface;
-use Magento\SalesRule\Model\Coupon as CouponModel;
-use Magento\SalesRule\Model\CouponFactory;
 
 /**
  * Insert coupons discount breakdown data.
@@ -35,34 +39,20 @@ class CartTotalRepositoryPlugin
     private $discountBreakdownFactory;
 
     /**
-     * @var CouponFactory
-     */
-    private $couponFactory;
-
-    /**
      * @var CouponListProvider
      */
     private $couponListProvider;
 
-    /**
-     * @param DiscountCollector $discountRegistry
-     * @param TotalsExtensionFactory $totalsExtensionFactory
-     * @param DiscountBreakdownLineInterfaceFactory $discountBreakdownFactory
-     * @param CouponListProvider $couponListProvider
-     * @param CouponFactory $couponFactory
-     */
     public function __construct(
         DiscountCollector $discountRegistry,
         TotalsExtensionFactory $totalsExtensionFactory,
         DiscountBreakdownLineInterfaceFactory $discountBreakdownFactory,
-        CouponListProvider $couponListProvider,
-        CouponFactory $couponFactory
+        CouponListProvider $couponListProvider
     ) {
         $this->totalsExtensionFactory = $totalsExtensionFactory;
         $this->discountRegistry = $discountRegistry;
         $this->discountBreakdownFactory = $discountBreakdownFactory;
         $this->couponListProvider = $couponListProvider;
-        $this->couponFactory = $couponFactory;
     }
 
     /**

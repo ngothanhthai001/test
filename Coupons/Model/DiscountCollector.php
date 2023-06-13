@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */
+
 namespace Amasty\Coupons\Model;
 
 use Magento\Framework\App\Request\DataPersistorInterface;
@@ -16,7 +22,7 @@ class DiscountCollector
     /**
      * Key for DataPersistor.
      */
-    const DISCOUNT_REGISTRY_DATA = 'amasty_coupons_discount_registry_data';
+    public const DISCOUNT_REGISTRY_DATA = 'amasty_coupons_discount_registry_data';
 
     /**
      * @var StoreManagerInterface
@@ -27,7 +33,6 @@ class DiscountCollector
      * @var array
      */
     protected $amount = [];
-    protected $reluLabel = [];
 
     /**
      * @var DataPersistorInterface
@@ -74,9 +79,9 @@ class DiscountCollector
             $totalAmount[] = [
                 'coupon_code' => (string)$ruleCode,
                 'coupon_amount' =>
-                    '-' . $this->storeManager->getStore()->getCurrentCurrency()->formatPrecision($ruleAmount, 0, [], false),
+                    '-' . $this->storeManager->getStore()->getCurrentCurrency()->format($ruleAmount, [], false),
                 'coupon_label'  => (string)$ruleCode,
-            ];
+                ];
         }
         return $totalAmount;
     }

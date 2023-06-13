@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Multiple Coupons for Magento 2
+ */
+
 namespace Amasty\Coupons\Observer;
 
 use Amasty\Coupons\Model\CouponRenderer;
@@ -39,23 +45,17 @@ class CouponObserver implements ObserverInterface
      * @var CouponListProvider
      */
     private $couponListProvider;
-    /**
-     * @var \Magento\SalesRule\Model\RulesApplier
-     */
-    private $rulesApplier;
 
     public function __construct(
         DiscountCollector $discountCollector,
         CouponRenderer $couponRenderer,
         IsAllowSameRuleCouponResolver $isAllowSameRuleCouponResolver,
-        CouponListProvider $couponListProvider,
-        \Magento\SalesRule\Model\RulesApplier $rulesApplier
+        CouponListProvider $couponListProvider
     ) {
         $this->discountCollector = $discountCollector;
         $this->couponRenderer = $couponRenderer;
         $this->isAllowSameRuleCouponResolver = $isAllowSameRuleCouponResolver;
         $this->couponListProvider = $couponListProvider;
-        $this->rulesApplier = $rulesApplier;
     }
 
     /**
@@ -78,7 +78,7 @@ class CouponObserver implements ObserverInterface
 
         /** @var DiscountData $discountData */
         $discountData = $observer->getData('result');
-            $appliedCodes = $this->couponRenderer->render($observer->getData('quote')->getCouponCode());
+        $appliedCodes = $this->couponRenderer->render($observer->getData('quote')->getCouponCode());
         $discount = $baseDiscount = 0;
         $amount = $discountData->getAmount();
         $baseAmount = $discountData->getBaseAmount();
