@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Reports for Free Gift (Add-On) for Magento 2
+ */-->
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="page.main.actions">
+            <container htmlClass="ampromo-actions-container" htmlTag="div">
+                <block class="Amasty\PromoReports\Block\Adminhtml\Reports\Filters" />
+            </container>
+        </referenceContainer>
+        <referenceContainer name="page.main.container">
+            <block name="amasty.promo.statistics" template="Amasty_PromoReports::reports/statistics.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Amasty\PromoReports\Model\ReportManagement</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
