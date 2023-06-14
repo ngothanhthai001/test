@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Model;
 
@@ -26,7 +31,7 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
  */
 class ImageMigrate
 {
-    const BASE_TMP_DIRECTORY = 'amasty_promo/tmp/banner';
+    public const BASE_TMP_DIRECTORY = 'amasty_promo/tmp/banner';
 
     /**
      * @var string

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 // phpcs:ignoreFile
 ?>
 
@@ -51,6 +56,8 @@ $_attributes = $block->decorateArray($block->getAllowAttributes());
                             'Magento_ConfigurableProduct') ?: 'replace'; ?>"
                     });
                 }
+
+                initConfigurable();
             });
     </script>
 <?php endif;?>

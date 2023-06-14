@@ -1,8 +1,15 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Block;
 
 use Magento\Bundle\Model\Product\Type as BundleType;
+use Magento\Checkout\Model\Session;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
@@ -10,9 +17,9 @@ use Magento\Framework\Exception\NoSuchEntityException;
  */
 class Items extends \Magento\Framework\View\Element\Template
 {
-    const REGULAR_PRICE = 0;
+    public const REGULAR_PRICE = 0;
 
-    const FINAL_PRICE = 1;
+    public const FINAL_PRICE = 1;
 
     /**
      * @var \Psr\Log\LoggerInterface
@@ -99,7 +106,8 @@ class Items extends \Magento\Framework\View\Element\Template
         \Amasty\Promo\Model\Config $modelConfig,
         \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         \Magento\Framework\Json\DecoderInterface $jsonDecoder,
-        array $data = []
+        array $data = [],
+        Session $checkoutSession = null // TODO move to not optional
     ) {
         parent::__construct($context, $data);
 
@@ -117,6 +125,7 @@ class Items extends \Magento\Framework\View\Element\Template
         $this->modelConfig = $modelConfig;
         $this->productMetadata = $productMetadata;
         $this->jsonDecoder = $jsonDecoder;
+        $this->checkoutSession = $checkoutSession ?? ObjectManager::getInstance()->get(Session::class);
     }
 
     /**
@@ -124,7 +133,7 @@ class Items extends \Magento\Framework\View\Element\Template
      */
     public function getItems()
     {
-        return $this->promoHelper->getNewItems();
+        return $this->promoHelper->getNewItems((int)$this->checkoutSession->getQuote()->getId());
     }
 
     /**
@@ -202,7 +211,7 @@ class Items extends \Magento\Framework\View\Element\Template
     public function getProductPrice(\Magento\Catalog\Model\Product $product)
     {
         $product = $this->productRepository->getById($product->getId());
-        $price = $product->getPrice() * $this->store->getCurrentCurrencyRate();
+        $price = $product->getFinalPrice() * $this->store->getCurrentCurrencyRate();
 
         $price = $this->catalogHelper->getTaxPrice($product, $price);
 

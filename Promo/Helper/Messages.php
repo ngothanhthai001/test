@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Helper;
 
@@ -73,14 +78,21 @@ class Messages extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         if ($isError && $this->_request->getParam('debug')) {
-            // method addErrorMessage is not applicable because of html escape
-            $this->messageManager->addError($message);
+            $this->messageManager->addComplexErrorMessage(
+                'amastyPromoMessagesInfo',
+                ['text' => is_string($message) ? $message : $message->render()]
+            );
         } elseif ($showEachTime || !$this->isMessageWasShown($message)) {
             if ($isSuccess) {
-                $this->messageManager->addSuccess($message);
+                $this->messageManager->addComplexSuccessMessage(
+                    'amastyPromoMessagesInfo',
+                    ['text' => is_string($message) ? $message : $message->render()]
+                );
             } else {
-                // method addNoticeMessage is not applicable because of html escape
-                $this->messageManager->addNotice($message);
+                $this->messageManager->addComplexNoticeMessage(
+                    'amastyPromoMessagesInfo',
+                    ['text' => is_string($message) ? $message : $message->render()]
+                );
             }
         }
     }

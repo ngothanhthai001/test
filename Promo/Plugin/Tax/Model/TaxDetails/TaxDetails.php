@@ -1,5 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
+
 namespace Amasty\Promo\Plugin\Tax\Model\TaxDetails;
 
 use Amasty\Promo\Model\Storage;
@@ -7,17 +15,6 @@ use Magento\Tax\Model\TaxDetails\TaxDetails as TaxDetailsModel;
 
 class TaxDetails
 {
-
-    public function __construct(
-        \Amasty\Promo\Helper\Item $helperItem,
-        \Amasty\Promo\Model\ResourceModel\Rule $ruleResource,
-        \Magento\Checkout\Model\Session $resourceSession
-    ) {
-        $this->checkoutSession = $resourceSession;
-        $this->helperItem = $helperItem;
-        $this->ruleResource = $ruleResource;
-    }
-
     /**
      * @param TaxDetailsModel $subject
      * @param TaxDetailsModel $result

@@ -1,8 +1,14 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Quote\Model\Quote\Item;
 
 /**
  * Mark item as deleted to prevent it's auto-addition
@@ -13,8 +19,9 @@ use Magento\Framework\Event\ObserverInterface;
 class QuoteRemoveItemObserver implements ObserverInterface
 {
 
-    const CHECKOUT_ROUTER = 'amasty_checkout';
-    const CHECKOUT_DELETE = 'remove-item';
+    public const CHECKOUT_ROUTER = 'amasty_checkout';
+    public const CHECKOUT_DELETE = 'remove-item';
+    public const GRAPHQL_QUERY = '/graphql';
 
     /**
      * @var \Amasty\Promo\Helper\Item
@@ -27,11 +34,6 @@ class QuoteRemoveItemObserver implements ObserverInterface
     private $promoRegistry;
 
     /**
-     * @var \Amasty\Promo\Model\ItemRegistry\PromoItemRegistry
-     */
-    private $promoItemRegistry;
-
-    /**
      * @var \Magento\Framework\App\RequestInterface
      */
     private $_request;
@@ -39,18 +41,16 @@ class QuoteRemoveItemObserver implements ObserverInterface
     public function __construct(
         \Amasty\Promo\Helper\Item $promoItemHelper,
         \Amasty\Promo\Model\Registry $promoRegistry,
-        \Amasty\Promo\Model\ItemRegistry\PromoItemRegistry $promoItemRegistry,
         \Magento\Framework\App\RequestInterface $request
     ) {
         $this->promoItemHelper = $promoItemHelper;
         $this->promoRegistry = $promoRegistry;
-        $this->promoItemRegistry = $promoItemRegistry;
         $this->_request = $request;
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        /** @var \Magento\Quote\Model\Quote\Item $item */
+        /** @var Item $item */
         $item = $observer->getEvent()->getQuoteItem();
 
         // Additional request checks to mark only explicitly deleted items
@@ -59,6 +59,8 @@ class QuoteRemoveItemObserver implements ObserverInterface
             || ($this->_request->getActionName() == 'removeItem'
                 && $this->_request->getParam('item_id') == $item->getId())
             || $this->isDeleteFromCheckout()
+            || $this->isDeleteFromBackend($item)
+            || $this->isDeleteFromGraphQl()
         ) {
             if (!$item->getParentId()
                 && $this->promoItemHelper->isPromoItem($item)
@@ -77,5 +79,23 @@ class QuoteRemoveItemObserver implements ObserverInterface
 
         return strpos($queryString, self::CHECKOUT_ROUTER) !== false
             && strpos($queryString, self::CHECKOUT_DELETE) !== false;
+    }
+
+    private function isDeleteFromGraphQl(): bool
+    {
+        $queryString = $this->_request->getRequestString();
+
+        return $queryString === self::GRAPHQL_QUERY;
+    }
+
+    private function isDeleteFromBackend(Item $deletedItem): bool
+    {
+        return $this->_request->getPost('update_items') &&
+            $this->isDeleteItem($this->_request->getPost('item'), $deletedItem);
+    }
+
+    private function isDeleteItem(array $items, Item $deletedItem): bool
+    {
+        return !empty($items[$deletedItem->getId()]) && ($items[$deletedItem->getId()]['action'] === 'remove');
     }
 }

@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */-->
 
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
@@ -20,7 +26,7 @@
             </block>
 
             <block class="Magento\ConfigurableProduct\Block\Product\View\Type\Configurable" name="ampromo.configurable.prototype" as="configurable_prototype" template="Amasty_Promo::product/view/type/options/configurable.phtml"/>
-            <block class="Magento\Bundle\Block\Catalog\Product\View\Type\Bundle" name="ampromo.bundle.prototype" as="bundle_prototype" template="Amasty_Promo::product/view/type/options/bundle.phtml" >
+            <block class="Amasty\Promo\Block\Catalog\Product\View\Type\Bundle" name="ampromo.bundle.prototype" as="bundle_prototype" template="Amasty_Promo::product/view/type/options/bundle.phtml" >
                 <arguments>
                     <argument name="view_model" xsi:type="object">Amasty\Promo\ViewModel\Product\View\Type\Bundle</argument>
                 </arguments>

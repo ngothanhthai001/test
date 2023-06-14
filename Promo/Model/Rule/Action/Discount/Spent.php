@@ -1,6 +1,13 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Model\Rule\Action\Discount;
+
+use Magento\Catalog\Model\Product\Type;
 
 /**
  * Action name: Auto add promo items for every $X spent
@@ -90,7 +97,11 @@ class Spent extends AbstractDiscount
         $validItems = [];
 
         foreach ($this->_getAllItems($item) as $item) {
-            if ($rule->getActions()->validate($item) && $rule->getRuleId() != $item->getAmpromoRuleId()) {
+            if ($rule->getActions()->validate($item)
+                && $rule->getRuleId() != $item->getAmpromoRuleId()
+                && !$this->_skip($rule, $item)
+                && !($item->getParentItem() && $item->getParentItem()->getProductType() == Type::TYPE_BUNDLE)
+            ) {
                 $validItems[] = $item;
             }
         }

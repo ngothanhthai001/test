@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */-->
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="template" xsi:type="string">templates/edit_form</item>
+    </argument>
+    <dataSource name="amasty_promo_items_data_source" component="Magento_Ui/js/form/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Amasty_DeliveryDateManager::channel_configurations</aclResource>
+        <dataProvider class="Amasty\Promo\Ui\Component\Sales\Order\Create\DataProvider" name="ampromo_config_data_source">
+            <settings>
+                <requestFieldName/>
+                <primaryFieldName/>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <modal name="amasty_promo_gift_selector_modal" component="Amasty_Promo/js/modal/modal">
+        <settings>
+            <options>
+                <option name="title" xsi:type="string" translate="true">Select Free Gift Products</option>
+                <option name="modalClass" xsi:type="string">ampromo-gifts-modal</option>
+                <option name="buttons" xsi:type="array">
+                    <item name="0" xsi:type="array">
+                        <item name="text" xsi:type="string" translate="true">Add Selected Free Gift(s) to Order</item>
+                        <item name="class" xsi:type="string">action-primary</item>
+                        <item name="actions" xsi:type="array">
+                            <item name="0" xsi:type="array">
+                                <item name="targetName" xsi:type="string">index = assign_promo_listing</item>
+                                <item name="actionName" xsi:type="string">save</item>
+                            </item>
+                            <item name="1" xsi:type="array">
+                                <item name="targetName" xsi:type="string">${ $.name }</item>
+                                <item name="actionName" xsi:type="string">actionDone</item>
+                            </item>
+                        </item>
+                    </item>
+                </option>
+            </options>
+        </settings>
+        <insertListing name="assign_promo_listing" component="Amasty_Promo/js/modal/product/insert-listing">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="cssclass" xsi:type="string">noclass</item>
+                    <item name="addUrl" xsi:type="url" path="amasty_promo/product/add"/>
+                </item>
+            </argument>
+            <settings>
+                <autoRender>true</autoRender>
+                <dataScope>assign_promo_listing</dataScope>
+                <ns>amasty_promo_listing</ns>
+                <externalProvider>${ $.ns }.amasty_promo_listing_data_source</externalProvider>
+                <selectionsProvider>${ $.ns }.amasty_promo_listing.promo_columns.select</selectionsProvider>
+                <externalFilterMode>false</externalFilterMode>
+                <dataLinks>
+                    <imports>false</imports>
+                    <exports>true</exports>
+                </dataLinks>
+            </settings>
+        </insertListing>
+    </modal>
+    <modal name="amasty_promo_gift_configure_product_modal" component="Amasty_Promo/js/modal/product/configure">
+        <settings>
+            <options>
+                <option name="title" xsi:type="string" translate="true">Configure Product</option>
+                <option name="buttons" xsi:type="array">
+                    <item name="0" xsi:type="array">
+                        <item name="text" xsi:type="string" translate="true">OK</item>
+                        <item name="class" xsi:type="string">action-primary</item>
+                        <item name="actions" xsi:type="array">
+                            <item name="0" xsi:type="array">
+                                <item name="targetName" xsi:type="string">${ $.name }</item>
+                                <item name="actionName" xsi:type="string">saveConfigurationAndClose</item>
+                            </item>
+                        </item>
+                    </item>
+                </option>
+            </options>
+        </settings>
+    </modal>
+</container>

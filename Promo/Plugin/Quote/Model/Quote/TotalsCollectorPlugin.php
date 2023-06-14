@@ -1,11 +1,16 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Plugin\Quote\Model\Quote;
 
 use Amasty\Promo\Helper\Cart;
 use Amasty\Promo\Helper\Item as ItemHelper;
 use Amasty\Promo\Model\Config;
-use Amasty\Promo\Model\ItemRegistry\PromoItemRegistry;
+use Amasty\Promo\Model\PromoItemRepository;
 use Amasty\Promo\Model\Registry;
 use Amasty\Promo\Model\Storage;
 use Magento\Catalog\Model\ProductRepository;
@@ -23,7 +28,7 @@ use Magento\Quote\Model\Quote\TotalsCollector;
  */
 class TotalsCollectorPlugin
 {
-    const KEY_IS_ADDRESS_PROCESSED = 'amastyFreeGiftProcessed';
+    public const KEY_IS_ADDRESS_PROCESSED = 'amastyFreeGiftProcessed';
 
     /**
      * @var Cart
@@ -51,11 +56,6 @@ class TotalsCollectorPlugin
     private $eventManager;
 
     /**
-     * @var PromoItemRegistry
-     */
-    private $promoItemRegistry;
-
-    /**
      * @var ProductRepository
      */
     private $productRepository;
@@ -72,24 +72,29 @@ class TotalsCollectorPlugin
      */
     protected $recollectTotals = false;
 
+    /**
+     * @var PromoItemRepository
+     */
+    private $promoItemRepository;
+
     public function __construct(
         Cart $promoCartHelper,
         ItemHelper $promoItemHelper,
         Registry $promoRegistry,
         Config $config,
         ManagerInterface $eventManager,
-        PromoItemRegistry $promoItemRegistry,
         ProductRepository $productRepository,
-        Storage $storage
+        Storage $storage,
+        PromoItemRepository $promoItemRepository
     ) {
         $this->promoCartHelper = $promoCartHelper;
         $this->promoItemHelper = $promoItemHelper;
         $this->promoRegistry = $promoRegistry;
         $this->config = $config;
         $this->eventManager = $eventManager;
-        $this->promoItemRegistry = $promoItemRegistry;
         $this->productRepository = $productRepository;
         $this->storage = $storage;
+        $this->promoItemRepository = $promoItemRepository;
     }
 
     /**
@@ -109,12 +114,22 @@ class TotalsCollectorPlugin
         Quote $quote,
         Address $address
     ) {
+        $promoItemsGroup = $this->promoItemRepository->getItemsByQuoteId((int)$quote->getId());
+
+        // Reset isDeleted flag when delete all products from the cart
+        // for saving the opportunity of automatic adding promo products to the cart
+        if (!$quote->getAllItems() && !$address->getData(self::KEY_IS_ADDRESS_PROCESSED)) {
+            $promoItemsGroup->resetDeletedItems();
+        }
+
         if (!$address->getAllItems() || $address->getData(self::KEY_IS_ADDRESS_PROCESSED)) {
             return $proceed($quote, $address);
         }
 
         $this->recollectTotals = false;
-        $this->promoItemRegistry->resetQtyAllowed();
+        if ($address->getAllItems()) {
+            $promoItemsGroup->resetQtyAllowed();
+        }
 
         $totals = $proceed($quote, $address);
 
@@ -122,7 +137,7 @@ class TotalsCollectorPlugin
         $this->updateQuoteItems($quote);
         if ($this->storage->isAutoAddAllowed()) {
             $this->addProductsAutomatically($quote);
-        } elseif (!$this->recollectTotals && $this->promoItemRegistry->getItemsForAutoAdd()) {
+        } elseif (!$this->recollectTotals && $promoItemsGroup->getItemsForAutoAdd()) {
             //save estimation address
             $this->storage->setIsQuoteSaveRequired(true);
         }
@@ -131,6 +146,7 @@ class TotalsCollectorPlugin
             $this->promoCartHelper->updateTotalQty($quote);
             $address->unsetData('cached_items_all');
             $address->setCollectShippingRates(true);
+            $quote->setCartFixedRules([]);
 
             //execute closure one more time for recalculate totals
             $totals = $proceed($quote, $address);
@@ -145,11 +161,12 @@ class TotalsCollectorPlugin
      *
      * @param Quote $quote
      *
-     * @sine 2.8.0 product get without force load
+     * @since 2.8.0 product get without force load
      */
     public function addProductsAutomatically($quote)
     {
-        foreach ($this->promoItemRegistry->getItemsForAutoAdd() as $promoItem) {
+        $promoItemsGroup = $this->promoItemRepository->getItemsByQuoteId((int)$quote->getId());
+        foreach ($promoItemsGroup->getItemsForAutoAdd() as $promoItem) {
             $product = $this->getProductForAutoAdd($promoItem->getSku());
 
             $isAdded = $this->promoCartHelper->addProduct(
@@ -174,7 +191,7 @@ class TotalsCollectorPlugin
      *
      * @return \Magento\Catalog\Api\Data\ProductInterface|\Magento\Catalog\Model\Product|null
      *
-     * @sine 2.8.0
+     * @since 2.8.0
      */
     public function getProductForAutoAdd($sku)
     {
@@ -192,7 +209,8 @@ class TotalsCollectorPlugin
      */
     public function updateQuoteItems($quote)
     {
-        $this->promoItemRegistry->resetQtyReserve();
+        $promoItemsGroup = $this->promoItemRepository->getItemsByQuoteId((int)$quote->getId());
+        $promoItemsGroup->resetQtyReserve();
         /** @var Item $item */
         foreach ($quote->getAllVisibleItems() as $item) {
             if (!$item->getParentItem() && $this->promoItemHelper->isPromoItem($item)) {
@@ -200,7 +218,7 @@ class TotalsCollectorPlugin
 
                 $ruleId = $this->promoItemHelper->getRuleId($item);
                 $item->setQuote($quote);
-                $promoData = $this->promoItemRegistry->getItemBySkuAndRuleId($sku, $ruleId);
+                $promoData = $promoItemsGroup->getItemBySkuAndRuleId($sku, $ruleId);
                 if (!$promoData || (float)$promoData->getQtyToProcess() <= 0.00001) {
                     $this->removeGift($item);
                     $this->recollectTotals = true;
@@ -210,10 +228,9 @@ class TotalsCollectorPlugin
                     $item->setQty($promoData->getQtyToProcess());
                     $this->recollectTotals = true;
                 }
-                $this->promoItemRegistry->assignQtyToItem(
+                $promoItemsGroup->assignQtyToItem(
                     $item->getQty(),
-                    $promoData,
-                    PromoItemRegistry::QTY_ACTION_RESERVE
+                    $promoData
                 );
             }
         }
@@ -228,16 +245,16 @@ class TotalsCollectorPlugin
         if ($item->getId()) {
             $quote->removeItem($item->getId());
         } else {
-            $item->isDeleted(true);
+            $item->isItemDeleted(true);
             if ($item->getHasChildren()) {
                 foreach ($item->getChildren() as $child) {
-                    $child->isDeleted(true);
+                    $child->isItemDeleted(true);
                 }
             }
 
             $parent = $item->getParentItem();
             if ($parent) {
-                $parent->isDeleted(true);
+                $parent->isItemDeleted(true);
             }
             $this->eventManager->dispatch('sales_quote_remove_item', ['quote_item' => $item]);
 

@@ -29,7 +29,10 @@ define([
             loading: true,
             delay: 1000
         },
-
+        selectors: {
+            leftNode: '[data-ampromo-js="qty-left-text"]',
+            qtyInputNode: '[data-am-js="ampromo-qty-input"]'
+        },
         isSliderInitialized: false,
         isMultipleMethod: 1,
         isEnableGiftsCounter: 1,
@@ -60,7 +63,6 @@ define([
         _init: function () {
             this._initElements();
             this._initHandles();
-            this._loadItems();
         },
 
         /**
@@ -496,7 +498,6 @@ define([
             });
         },
 
-
         _prepareFormData: function () {
             var formData = [],
                 re = /\[(.*?)\]/,
@@ -638,6 +639,29 @@ define([
 
         /**
          * @private
+         * @returns {Number} left value for target product
+         */
+        _getProductLeftQty: function(inputValue, item){
+            var result;
+
+            if (inputValue) {
+                result = item.available_qty - inputValue > this.options.commonQty
+                    ? this.options.commonQty
+                    : item.available_qty - inputValue;
+            } else {
+                result = item.available_qty > this.options.commonQty
+                    ? this.options.commonQty : item.available_qty;
+            }
+
+            if (Math.sign(result) === -1) {
+                result = 0;
+            }
+
+            return result;
+        },
+
+        /**
+         * @private
          * @returns {void}
          */
         _updateProductLeftQty: function () {
@@ -647,20 +671,31 @@ define([
                 var id = ruleId,
                     ruleType = rulesData['rule_type'];
 
-                $.each(rulesData.sku, function (key, value) {
+                $.each(rulesData.sku, function (key, item) {
                     var productDomBySku = self.getProductDomBySku(key),
-                        qtyInput,
-                        qtyInt = +value.qty;
+                        qtyInput = productDomBySku ? productDomBySku.find(self.selectors.qtyInputNode) : false,
+                        inputValue,
+                        leftNode,
+                        qtyInt,
+                        maxQty;
 
-                    if (productDomBySku) {
-                        productDomBySku.find('[data-ampromo-js="qty-left-text"]').html(qtyInt);
-                        qtyInput = productDomBySku.find('[data-am-js="ampromo-qty-input"]');
-
-                        if (qtyInput.length) {
-                            qtyInput.attr('data-rule', id);
-                            qtyInput.attr('data-rule-type', ruleType);
-                        }
+                    if (!qtyInput) {
+                        return false;
                     }
+
+                    leftNode = productDomBySku.find(self.selectors.leftNode);
+                    inputValue = +qtyInput.val();
+                    qtyInt = self._getProductLeftQty(inputValue, item);
+
+                    maxQty = item.available_qty > self.options.commonQty
+                        ? qtyInt + inputValue
+                        : item.available_qty;
+
+                    qtyInput.attr('data-rule', id);
+                    qtyInput.attr('data-rule-type', ruleType);
+                    qtyInput.attr('max', maxQty);
+
+                    leftNode.html(qtyInt);
                 });
             });
         },
@@ -696,14 +731,20 @@ define([
         /**
          *
          * @param {jQuery} elem
-         * @returns {void}
+         * @returns {void | Boolean}
          */
         _changeQty: function (elem) {
-            var value = elem.val(),
+            var value = +elem.val(),
+                maxValue = elem.attr('max'),
                 newQty = value === '' ? 0 : parseInt(value, 10),
                 productSku = this.getProductSku(elem),
                 ruleId = this.getRuleId(elem),
                 ruleType = this.getRuleType(elem);
+
+            if (value > +maxValue) {
+                elem.val(maxValue);
+                newQty = maxValue;
+            }
 
             this.updateValues(newQty, productSku, ruleId, ruleType, elem);
             this._setQtys();
@@ -726,28 +767,43 @@ define([
                 sumQtyByRuleId,
                 itemRuleType;
 
-            if (!this.isValidNumber(qty)) {
+            if (!this.isValidNumber(qty) || newQty > +elem.attr('max')) {
                 return;
             }
 
             $.each(this.options.products, function (itemRuleId, ruleData) {
+                var allSkuForRule = Object.keys(ruleData.sku),
+                    firstSku = self.getFirstAvailableSku(allSkuForRule, ruleData);
+
+                itemRuleType = self.options.products[itemRuleId]['rule_type'];
+
+                switch (itemRuleType) {
+                    case '1':
+                        countOfRulesFreeItem += ruleData.sku[firstSku]['initial_value'];
+                        break;
+
+                    case '0':
+                        $.each(self.options.products[itemRuleId].sku, function (itemSku, skuProps) {
+                            countOfRulesFreeItem += skuProps['initial_value'];
+                        });
+                        break;
+
+                    default:
+                        break;
+                }
+
                 $.each(ruleData.sku, function (skuId, skuProps) {
                     sumQtyByRuleId = self.getSumQtysByRuleId()[itemRuleId];
-                    countOfThisFreeItem = +self.options.promoSku[productSku].qty;
+                    countOfThisFreeItem = +self.options.promoSku[skuId].qty;
 
                     if (itemRuleId !== ruleId) {
                         return;
                     }
 
                     if (ruleType === RULE_TYPE_ONE) {
-                        if (sumQtyByRuleId > countOfThisFreeItem) {
-                            qty -= sumQtyByRuleId - countOfThisFreeItem;
-                            elem.val(qty);
-                        }
-
                         if (qty < countOfThisFreeItem - (sumQtyByRuleId - qty)) {
                             newValue = countOfThisFreeItem - sumQtyByRuleId;
-                        } else {
+                        } else if (productSku === skuId) {
                             newValue = 0;
                             qty = countOfThisFreeItem;
                         }
@@ -775,33 +831,32 @@ define([
                 });
             });
 
-            $.each(this.options.products, function (itemRuleId, ruleData) {
-                var allSkuForRule = Object.keys(ruleData.sku),
-                    firstSku = allSkuForRule[0];
-
-                itemRuleType = self.options.products[itemRuleId]['rule_type'];
-
-                switch (itemRuleType) {
-                    case '1':
-                        countOfRulesFreeItem += ruleData.sku[firstSku]['initial_value'];
-                        break;
-
-                    case '0':
-                        $.each(self.options.products[itemRuleId].sku, function (itemSku, skuProps) {
-                            countOfRulesFreeItem += skuProps['initial_value'];
-                        });
-                        break;
-
-                    default:
-                        break;
-                }
-            });
-
             if (self.getSumQtys() < countOfRulesFreeItem) {
                 this.options.commonQty = countOfRulesFreeItem - self.getSumQtys();
             } else {
                 this.options.commonQty = 0;
             }
+        },
+
+        /**
+         * @param allSkuForRule
+         * @param ruleData
+         * @returns {String}
+         */
+        getFirstAvailableSku: function (allSkuForRule, ruleData) {
+            let maxQty = 0;
+            let maxIndex = 0;
+
+            for (let index = 0; index < allSkuForRule.length; index++) {
+                if (ruleData.sku[allSkuForRule[index]].qty > maxQty
+                    && ruleData.sku[allSkuForRule[index]].available_qty != 0
+                ) {
+                    maxQty = ruleData.sku[allSkuForRule[index]].qty;
+                    maxIndex = index;
+                }
+            }
+
+            return allSkuForRule[maxIndex];
         },
 
         /**
@@ -939,7 +994,7 @@ define([
             var product = this.getProductDomByElem(elem),
                 selectInput = product
                     .find('[data-am-js="ampromo-qty-input"]'),
-                isChecked = $(elem).attr('checked'),
+                isChecked = $(elem).prop('checked'),
                 value = isChecked ? 1 : 0;
 
             selectInput.val(value);

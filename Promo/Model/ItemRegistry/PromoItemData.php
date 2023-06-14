@@ -1,55 +1,23 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Model\ItemRegistry;
+
+use Amasty\Promo\Model\ResourceModel\PromoItem;
+use Magento\Framework\Model\AbstractModel;
 
 /**
  * Promotion Item Data - record of item added by Sales Rule
  */
-class PromoItemData implements PromoItemInterface
+class PromoItemData extends AbstractModel implements PromoItemInterface
 {
-    private $sku;
-    private $allowedQty;
-    private $reservedQty = 0;
-    private $minimalPrice;
-    private $discountItem;
-    private $discountAmount;
-    private $ruleId;
-    private $ruleType;
-    private $isDeleted;
-    private $autoAdd = false;
-
-    /**
-     * PromoItemData constructor.
-     * IMPORTANT: Objects is not allowed here!
-     *
-     * @param string $sku
-     * @param int $qty
-     * @param int $ruleId
-     * @param int $ruleType
-     * @param float|null $minimalPrice
-     * @param string|null $discountItem
-     * @param float|null $discountAmount
-
-     * @param bool $autoAdd
-     */
-    public function __construct(
-        $sku,
-        $qty,
-        $ruleId,
-        $ruleType,
-        $minimalPrice,
-        $discountItem,
-        $discountAmount,
-        $autoAdd
-    ) {
-        $this->sku = $sku;
-        $this->allowedQty = $qty;
-        $this->minimalPrice = $minimalPrice;
-        $this->discountItem = $discountItem;
-        $this->discountAmount = $discountAmount;
-        $this->ruleId = $ruleId;
-        $this->ruleType = $ruleType;
-        $this->autoAdd = $autoAdd;
+    protected function _construct()
+    {
+        $this->_init(PromoItem::class);
     }
 
     /**
@@ -58,8 +26,8 @@ class PromoItemData implements PromoItemInterface
     public function getDiscountArray()
     {
         return [
-            'minimal_price' => $this->getMinimalPrice(),
-            'discount_item' => $this->getDiscountItem()
+            self::MINIMAL_PRICE => $this->getMinimalPrice(),
+            self::DISCOUNT_ITEM => $this->getDiscountItem()
         ];
     }
 
@@ -68,7 +36,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function getSku()
     {
-        return $this->sku;
+        return $this->_getData(self::SKU);
     }
 
     /**
@@ -78,7 +46,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function setSku($sku)
     {
-        $this->sku = $sku;
+        $this->setData(self::SKU, $sku);
 
         return $this;
     }
@@ -90,7 +58,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function getAllowedQty()
     {
-        return $this->allowedQty;
+        return $this->_getData(self::ALLOWED_QTY);
     }
 
     /**
@@ -100,7 +68,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function setAllowedQty($allowedQty)
     {
-        $this->allowedQty = $allowedQty;
+        $this->setData(self::ALLOWED_QTY, $allowedQty);
 
         return $this;
     }
@@ -122,7 +90,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function getReservedQty()
     {
-        return $this->reservedQty;
+        return $this->_getData(self::RESERVED_QTY);
     }
 
     /**
@@ -132,7 +100,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function setReservedQty($reservedQty)
     {
-        $this->reservedQty = $reservedQty;
+        $this->setData(self::RESERVED_QTY, $reservedQty);
 
         return $this;
     }
@@ -142,7 +110,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function getMinimalPrice()
     {
-        return $this->minimalPrice;
+        return $this->_getData(self::MINIMAL_PRICE);
     }
 
     /**
@@ -152,7 +120,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function setMinimalPrice($minimalPrice)
     {
-        $this->minimalPrice = $minimalPrice;
+        $this->setData(self::MINIMAL_PRICE, $minimalPrice);
 
         return $this;
     }
@@ -165,13 +133,13 @@ class PromoItemData implements PromoItemInterface
      *
      * @return bool
      */
-    public function isDeleted($flag = null)
+    public function isItemDeleted($flag = null)
     {
         if ($flag !== null) {
-            $this->isDeleted = $flag;
+            $this->setData(self::IS_ITEM_DELETED, $flag);
         }
 
-        return (bool)$this->isDeleted;
+        return (bool)$this->_getData(self::IS_ITEM_DELETED);
     }
 
     /**
@@ -179,7 +147,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function getDiscountItem()
     {
-        return $this->discountItem;
+        return $this->_getData(self::DISCOUNT_ITEM);
     }
 
     /**
@@ -189,7 +157,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function setDiscountItem($discountItem)
     {
-        $this->discountItem = $discountItem;
+        $this->setData(self::DISCOUNT_ITEM, $discountItem);
 
         return $this;
     }
@@ -199,7 +167,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function getDiscountAmount()
     {
-        return $this->discountAmount;
+        return $this->_getData(self::DISCOUNT_AMOUNT);
     }
 
     /**
@@ -209,7 +177,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function setDiscountAmount($discountAmount)
     {
-        $this->discountAmount = $discountAmount;
+        $this->setData(self::DISCOUNT_AMOUNT, $discountAmount);
 
         return $this;
     }
@@ -219,7 +187,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function getRuleId()
     {
-        return $this->ruleId;
+        return $this->_getData(self::RULE_ID);
     }
 
     /**
@@ -229,7 +197,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function setRuleId($ruleId)
     {
-        $this->ruleId = $ruleId;
+        $this->setData(self::RULE_ID, $ruleId);
 
         return $this;
     }
@@ -239,7 +207,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function getRuleType()
     {
-        return $this->ruleType;
+        return $this->_getData(self::RULE_TYPE);
     }
 
     /**
@@ -249,7 +217,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function setRuleType($ruleType)
     {
-        $this->ruleType = $ruleType;
+        $this->setData(self::RULE_TYPE, $ruleType);
 
         return $this;
     }
@@ -259,7 +227,7 @@ class PromoItemData implements PromoItemInterface
      */
     public function isAutoAdd()
     {
-        return (bool)$this->autoAdd;
+        return (bool)$this->_getData(self::AUTO_ADD);
     }
 
     /**
@@ -269,8 +237,18 @@ class PromoItemData implements PromoItemInterface
      */
     public function setAutoAdd($autoAdd)
     {
-        $this->autoAdd = $autoAdd;
+        $this->setData(self::AUTO_ADD, $autoAdd);
 
         return $this;
+    }
+
+    public function getQuoteId(): int
+    {
+        return (int)$this->_getData(self::QUOTE_ID);
+    }
+
+    public function setQuoteId(int $quoteId): void
+    {
+        $this->setData(self::QUOTE_ID, $quoteId);
     }
 }

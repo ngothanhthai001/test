@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */-->
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Magento\Quote\Model\Cart\Totals\Item">
@@ -7,5 +13,10 @@
     </type>
     <type name="Magento\Quote\Model\Quote\TotalsCollector">
         <plugin name="AmastyPromo::AutoAdd" type="Amasty\Promo\Plugin\Quote\Model\Quote\TotalsCollectorPlugin"/>
+    </type>
+    <type name="Amasty\Promo\Model\Registry">
+        <arguments>
+            <argument name="resourceSession" xsi:type="object">Magento\Checkout\Model\Session</argument>
+        </arguments>
     </type>
 </config>

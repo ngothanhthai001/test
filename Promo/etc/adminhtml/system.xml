@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */-->
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
@@ -30,26 +36,26 @@
                 </field>
             </group>
             <group id="messages" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Messages And Notifications Settings</label>
+                <label>Messages and Notifications Settings</label>
                 <field id="gift_selection_method" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Gifts Selection Method</label>
                     <source_model>Amasty\Promo\Model\Config\Source\Selection\Mode</source_model>
                 </field>
                 <field id="popup_title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Popup header text</label>
+                    <label>Popup Header Text</label>
                 </field>
                 <field id="add_button_title" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>"Add to Cart" button text</label>
+                    <label>"Add to Cart" Button Text</label>
                 </field>
                 <field id="cart_message" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Message For The Free Item In The Cart</label>
+                    <label>Message for the Free Item in the Cart</label>
                 </field>
                 <field id="gift_representation_mode" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Represent Free Gift As</label>
+                    <label>Represent Free Gift as</label>
                     <source_model>Amasty\Promo\Model\Config\Source\GiftRepresentationMode</source_model>
                 </field>
                 <field id="prefix" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Prefix For The Free Item Name In The Order</label>
+                    <label>Prefix for the Free Item Name in The Order</label>
                 </field>
                 <field id="add_message" translate="label comment" type="textarea" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Add Free Gift Message</label>

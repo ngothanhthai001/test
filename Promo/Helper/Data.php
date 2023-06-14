@@ -1,6 +1,16 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Helper;
+
+use Amasty\Promo\Model\PromoItemRepository;
+use Magento\CatalogInventory\Model\Stock\Status as StockStatus;
+use Magento\Framework\DB\Sql\Expression;
+use Magento\Quote\Model\Quote;
 
 /**
  * Helper probably will be moved/separated
@@ -10,7 +20,7 @@ class Data
     /**
      * Allowed product types for precess as Free Gift (Promo Item)
      */
-    const ALLOWED_PRODUCT_TYPES = [
+    public const ALLOWED_PRODUCT_TYPES = [
         \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
         \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE,
         \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL,
@@ -50,22 +60,22 @@ class Data
     private $collectionFactory;
 
     /**
-     * @var \Amasty\Promo\Model\ItemRegistry\PromoItemRegistry
+     * @var PromoItemRepository
      */
-    private $promoItemRegistry;
+    private $promoItemRepository;
 
     public function __construct(
         \Amasty\Promo\Model\Registry $promoRegistry,
         \Amasty\Promo\Helper\Messages $promoMessagesHelper,
         \Amasty\Promo\Model\Product $product,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory,
-        \Amasty\Promo\Model\ItemRegistry\PromoItemRegistry $promoItemRegistry
+        PromoItemRepository $promoItemRepository
     ) {
         $this->promoRegistry = $promoRegistry;
         $this->promoMessagesHelper = $promoMessagesHelper;
         $this->product = $product;
         $this->collectionFactory = $collectionFactory;
-        $this->promoItemRegistry = $promoItemRegistry;
+        $this->promoItemRepository = $promoItemRepository;
     }
 
     /**
@@ -77,21 +87,37 @@ class Data
     }
 
     /**
-     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|false
+     * @return array
      */
-    public function getNewItems()
+    public function getNewItems(int $quoteId)
     {
         if ($this->productsCache === null) {
-            $this->productsCache = false;
+            $this->productsCache = [];
             $this->promoRegistry->updatePromoItemsReservedQty();
-            if (!$allowedSku = $this->promoItemRegistry->getAllowedSkus()) {
-                return false;
+            $promoItemsGroup = $this->promoItemRepository->getItemsByQuoteId($quoteId);
+            if (!$allowedSku = $promoItemsGroup->getAllowedSkus()) {
+                return [];
             }
             /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $products */
             $products = $this->collectionFactory->create()
+                ->joinField(
+                    'stock_status',
+                    'cataloginventory_stock_status',
+                    'stock_status',
+                    'product_id=entity_id',
+                    '{{table}}.stock_id=1',
+                    'left'
+                )
                 ->addAttributeToSelect(['name', 'small_image', 'status', 'visibility'])
                 ->addFieldToFilter('sku', ['in' => $allowedSku])
-                ->setFlag('has_stock_status_filter', false);
+                ->addFieldToFilter(
+                    'stock_status',
+                    ['eq' => StockStatus::STATUS_IN_STOCK]
+                );
+
+            // Sort items by promo rule SKUs in the order, same as saved by admin.
+            $products->getSelect()
+                ->order(new Expression("FIELD(e.sku," . $products->getConnection()->quote($allowedSku) . ")"));
 
             /** @var \Magento\Catalog\Model\Product $product */
             foreach ($products as $key => $product) {
@@ -119,7 +145,7 @@ class Data
             }
 
             if ($products->getItems()) {
-                $this->productsCache = $products;
+                $this->productsCache = $products->getItems();
             }
         }
 
@@ -127,30 +153,22 @@ class Data
     }
 
     /**
-     * @return array
-     * @deprecated
-     */
-    public function getAllowedProductQty()
-    {
-        return $this->getPromoItemsDataArray();
-    }
-
-    /**
      * Gat data for popup
      *
      * @return array
      */
-    public function getPromoItemsDataArray()
+    public function getPromoItemsDataArray(Quote $quote)
     {
         if ($this->itemsPopupDataCache !== null) {
             return $this->itemsPopupDataCache;
         }
 
         $promoSkus = $discountData = [];
-        $this->promoRegistry->updatePromoItemsReservedQty();
+        $this->promoRegistry->updatePromoItemsReservedQty($quote);
         $qtyByRule = [0 => 0];
+        $promoItemsGroup = $this->promoItemRepository->getItemsByQuoteId((int)$quote->getId());
 
-        foreach ($this->promoItemRegistry->getAllowedItems() as $promoItemData) {
+        foreach ($promoItemsGroup->getAllowedItems() as $promoItemData) {
             $sku = $promoItemData->getSku();
             $ruleId = $promoItemData->getRuleId();
             $itemQty = $promoItemData->getQtyToProcess();
@@ -170,7 +188,8 @@ class Data
 
             $itemData = [
                 'discount' => $promoItemData->getDiscountArray(),
-                'qty' => $itemQty
+                'qty' => $itemQty,
+                'available_qty' => $this->product->checkAvailableQty($sku, $itemQty)
             ];
             $discountData[$ruleId]['rule_type'] = $promoItemData->getRuleType();
             $discountData[$ruleId]['discount_amount'] = $promoItemData->getDiscountAmount();

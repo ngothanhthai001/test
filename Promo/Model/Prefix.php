@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Model;
 
@@ -30,17 +35,25 @@ class Prefix
     }
 
     /**
-     * @param AbstractItem $item
+     * @param AbstractItem|OrderItem $item
      * @return bool
      */
-    public function isNeedPrefix(AbstractItem $item)
+    public function isNeedPrefix($item)
     {
-        if (!in_array($item->getItemId(), $this->itemIds) && $this->promoItemHelper->isPromoItem($item)) {
+        if (!in_array($this->getQuoteItemId($item), $this->itemIds) && $this->promoItemHelper->isPromoItem($item)) {
             $this->itemIds[] = $item->getItemId();
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @param AbstractItem|OrderItem $item
+     */
+    private function getQuoteItemId($item): ?int
+    {
+        return $item->getItemId() ?? $item->getQuoteItemId();
     }
 
     /**

@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */-->
 
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <update handle="ampromo_popup" />
@@ -7,6 +13,7 @@
     </head>
     <body>
         <move element="ampromo.add" destination="content" before="-" />
+        <referenceContainer name="page.messages" remove="false"/>
         <referenceContainer name="content">
             <block name="ampromo_messenger" template="Amasty_Promo::ampromo_messenger.phtml">
                 <arguments>

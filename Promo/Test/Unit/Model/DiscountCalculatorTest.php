@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Test\Unit\Model;
 
@@ -22,8 +27,8 @@ class DiscountCalculatorTest extends \PHPUnit\Framework\TestCase
     use Traits\ObjectManagerTrait;
     use Traits\ReflectionTrait;
 
-    const ITEM_PRICE = 99.99;
-    const ITEM_QTY = 1;
+    public const ITEM_PRICE = 99.99;
+    public const ITEM_QTY = 1;
 
     /**
      * @covers       DiscountCalculator::getBaseDiscountAmount

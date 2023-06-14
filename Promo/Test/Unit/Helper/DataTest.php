@@ -1,9 +1,15 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Test\Unit\Helper;
 
 use Amasty\Promo\Helper\Data;
 use Amasty\Promo\Test\Unit\Traits;
+use Magento\Quote\Model\Quote;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**
@@ -52,12 +58,13 @@ class DataTest extends \PHPUnit\Framework\TestCase
             Data::class,
             [
                 'promoRegistry' => $promoRegistry,
-                'promoItemRegistry' => $this->initPromoItemRegistry($items),
+                'promoItemRepository' => $this->initPromoItemRepository($items),
                 'product' => $product
             ]
         );
+        $quoteMock = $this->createMock(Quote::class);
 
-        $result = $model->getPromoItemsDataArray();
+        $result = $model->getPromoItemsDataArray($quoteMock);
 
         $this->assertArrayHasKey('common_qty', $result);
         $this->assertArrayHasKey('triggered_products', $result);
@@ -221,21 +228,26 @@ class DataTest extends \PHPUnit\Framework\TestCase
     /**
      * @param \Amasty\Promo\Model\ItemRegistry\PromoItemData[] $items
      *
-     * @return \Amasty\Promo\Model\ItemRegistry\PromoItemRegistry|MockObject
+     * @return \Amasty\Promo\Model\PromoItemRepository|MockObject
      * @throws \ReflectionException
      */
-    private function initPromoItemRegistry($items)
+    private function initPromoItemRepository($items)
     {
-        /** @var \Amasty\Promo\Model\ItemRegistry\PromoItemRegistry|MockObject $promoItemRegistry */
-        $promoItemRegistry = $this->createPartialMock(\Amasty\Promo\Model\ItemRegistry\PromoItemRegistry::class, []);
+        /** @var \Amasty\Promo\Model\ItemRegistry\PromoItemsGroup|MockObject $promoItemGroup */
+        $promoItemGroup = $this->createPartialMock(\Amasty\Promo\Model\ItemRegistry\PromoItemsGroup::class, []);
         $this->setProperty(
-            $promoItemRegistry,
+            $promoItemGroup,
             'storage',
             $items,
-            \Amasty\Promo\Model\ItemRegistry\PromoItemRegistry::class
+            \Amasty\Promo\Model\ItemRegistry\PromoItemsGroup::class
         );
 
-        return $promoItemRegistry;
+        $promoItemRepositoryMock = $this->createConfiguredMock(
+            \Amasty\Promo\Model\PromoItemRepository::class,
+            ['getItemsByQuoteId' => $promoItemGroup]
+        );
+
+        return $promoItemRepositoryMock;
     }
 
     /**

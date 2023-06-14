@@ -1,6 +1,13 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Plugin\Model\GiftCard\Validator;
+
+use Magento\GiftCard\Model\Validator\Discount as ValidatorDiscount;
 
 class Discount
 {
@@ -37,7 +44,7 @@ class Discount
      *
      * @return bool
      */
-    public function afterIsValid($result)
+    public function afterIsValid(ValidatorDiscount $subject, bool $result)
     {
         if ('giftcard' === $this->item->getProductType() && $this->promoHelper->isPromoItem($this->item)) {
             return true;

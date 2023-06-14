@@ -1,10 +1,15 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Controller\Cart;
 
 use Amasty\Promo\Helper\Cart;
 use Amasty\Promo\Helper\Messages;
-use Amasty\Promo\Model\ItemRegistry\PromoItemRegistry;
+use Amasty\Promo\Model\PromoItemRepository;
 use Amasty\Promo\Model\Registry;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Checkout\Model\Session;
@@ -17,8 +22,8 @@ use Magento\Quote\Model\QuoteRepository;
  */
 class Add extends \Magento\Framework\App\Action\Action
 {
-    const MESSAGE_GROUP = 'ammessenger';
-    const KEY_QTY_ITEM_PREFIX = 'ampromo_qty_select_';
+    public const MESSAGE_GROUP = 'ammessenger';
+    public const KEY_QTY_ITEM_PREFIX = 'ampromo_qty_select_';
 
     /**
      * @var Registry
@@ -34,11 +39,6 @@ class Add extends \Magento\Framework\App\Action\Action
      * @var ProductRepositoryInterface
      */
     private $productRepository;
-
-    /**
-     * @var PromoItemRegistry
-     */
-    private $promoItemRegistry;
 
     /**
      * @var Session
@@ -70,23 +70,28 @@ class Add extends \Magento\Framework\App\Action\Action
         'bundle_option_qty',
     ];
 
+    /**
+     * @var PromoItemRepository
+     */
+    private $promoItemRepository;
+
     public function __construct(
         Context $context,
         Registry $promoRegistry,
         Cart $promoCartHelper,
         ProductRepositoryInterface $productRepository,
-        PromoItemRegistry $promoItemRegistry,
         Session $checkoutSession,
         QuoteRepository $quoteRepository,
-        Messages $promoMessagesHelper
+        Messages $promoMessagesHelper,
+        PromoItemRepository $promoItemRepository
     ) {
         parent::__construct($context);
         $this->promoRegistry = $promoRegistry;
         $this->promoCartHelper = $promoCartHelper;
         $this->productRepository = $productRepository;
-        $this->promoItemRegistry = $promoItemRegistry;
         $this->checkoutSession = $checkoutSession;
         $this->quoteRepository = $quoteRepository;
+        $this->promoItemRepository = $promoItemRepository;
     }
 
     /**
@@ -118,7 +123,7 @@ class Add extends \Magento\Framework\App\Action\Action
                 $product = $this->productRepository->getById($productId);
                 $sku = $product->getSku();
                 /** @var \Amasty\Promo\Model\ItemRegistry\PromoItemData $promoDataItem */
-                $promoDataItem = $this->getPromoDataItem($sku, $params);
+                $promoDataItem = $this->getPromoDataItem($sku, $params, (int)$quote->getId());
                 if ($promoDataItem) {
                     $qty = $this->getQtyToAdd($promoDataItem, $params, $productId);
                     $updateTotalQty = true;
@@ -141,7 +146,7 @@ class Add extends \Magento\Framework\App\Action\Action
             $this->messageManager->addErrorMessage($e->getMessage(), self::MESSAGE_GROUP);
         }
 
-        if (!$this->isPromoItemsAddedInQuote($quote->getAllVisibleItems(), $itemsForAdd)) {
+        if (!$this->isPromoItemsAddedInQuote($quote->getAllItems(), $itemsForAdd)) {
             $this->messageManager->addErrorMessage(
                 __(
                     'Free gift couldn\'t be added to the cart.' .
@@ -163,7 +168,7 @@ class Add extends \Magento\Framework\App\Action\Action
     {
         $addedItems = 0;
         foreach ($items as $item) {
-            if (in_array($item->getSku(), $itemsForAdd, true)) {
+            if (in_array($item->getProduct()->getData('sku'), $itemsForAdd, true)) {
                 $addedItems++;
             }
         }
@@ -176,11 +181,7 @@ class Add extends \Magento\Framework\App\Action\Action
      */
     protected function getItemsRequest()
     {
-        if (!($data = $this->getRequest()->getParam('data', false))) {
-            $data[] = $this->getRequest()->getParams();
-        }
-
-        return $data;
+        return $this->getRequest()->getParam('data') ?? [$this->getRequest()->getParams()];
     }
 
     /**
@@ -189,16 +190,18 @@ class Add extends \Magento\Framework\App\Action\Action
      *
      * @return \Amasty\Promo\Model\ItemRegistry\PromoItemData|null
      * @since 2.5.0 promo item data is filtering by rule_id and sku instead only by sku
+     * @since 2.14.0 promo item data can be obtained by quoteId
      */
-    protected function getPromoDataItem($sku, $params)
+    protected function getPromoDataItem($sku, $params, int $quoteId)
     {
+        $promoItemsGroup = $this->promoItemRepository->getItemsByQuoteId($quoteId);
         if (isset($params['rule_id']) && $ruleId = (int)$params['rule_id']) {
-            $promoItemData = $this->promoItemRegistry->getItemBySkuAndRuleId($sku, $ruleId);
+            $promoItemData = $promoItemsGroup->getItemBySkuAndRuleId($sku, $ruleId);
             if ($promoItemData && $promoItemData->getQtyToProcess() > 0) {
                 return $promoItemData;
             }
         } else {
-            $promoItemsData = $this->promoItemRegistry->getItemsBySku($sku);
+            $promoItemsData = $promoItemsGroup->getItemsBySku($sku);
             foreach ($promoItemsData as $promoItemData) {
                 if ($promoItemData->getQtyToProcess() > 0) {
                     return $promoItemData;

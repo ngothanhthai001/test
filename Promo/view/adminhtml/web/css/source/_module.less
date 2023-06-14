@@ -3,6 +3,12 @@
 //  ____________________________________________
 
 //
+//  Imports
+//  --------------------------------------------
+
+@import 'module/_create-order';
+
+//
 //  Variables
 //  --------------------------------------------
 
@@ -20,29 +26,31 @@
 
 & when (@media-common = true) {
     .ampromo-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 10000;
-        display: none;
-        width: 100%;
-        height: 100%;
         .lib-css(background-color, @ampromo-overlay__background-color);
+
+        display: none;
+        height: 100%;
+        left: 0;
+        position: fixed;
         text-align: center;
+        top: 0;
+        width: 100%;
+        z-index: 10000;
     }
 
-    .ampromo-items-content {
+    .ampromo-popup-wrapper {
         & {
-            position: relative;
-            display: inline-block;
+            .lib-css(border, @ampromo-item__border);
+            .lib-css(background-color, @ampromo-items__background-color);
+
             box-sizing: border-box;
+            display: inline-block;
+            margin: 30px auto;
             max-height: 95vh;
             overflow: auto;
-            margin: 30px auto;
             padding: 24px;
-            .lib-css(border, @ampromo-item__border);
+            position: relative;
             text-align: left;
-            .lib-css(background-color, @ampromo-items__background-color);
         }
 
         .ampromo-popup-title,
@@ -52,17 +60,18 @@
         }
 
         .ampromo-popup-title .ampromo-counter {
-            font-weight: bold;
+            font-weight: @font-weight__bold;
         }
 
         .ampromo-item {
             & {
-                position: relative;
-                box-sizing: border-box;
-                padding: 20px;
-                margin: 0 8px 7px;
                 .lib-css(border, @ampromo-item__border);
                 .lib-css(transition, .6s, 1);
+
+                box-sizing: border-box;
+                margin: 0 8px 7px;
+                padding: 20px;
+                position: relative;
             }
 
             &:hover {
@@ -84,31 +93,33 @@
 
         .ampromo-close {
             & {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                z-index: 1;
+                .lib-css(background, @ampromo-overlay-close__background-image no-repeat);
+
+                background-size: contain;
+                cursor: pointer;
                 display: block;
-                width: 16px;
+                font-size: 0;
                 height: 16px;
                 margin: 0;
-                padding: 0;
-                .lib-css(background, @ampromo-overlay-close__background-image no-repeat);
-                background-size: contain;
-                font-size: 0;
-                cursor: pointer;
                 opacity: .8;
+                padding: 0;
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                width: 16px;
+                z-index: 1;
             }
 
             &:hover {
-                opacity: 1;
                 .lib-css(transition, opacity .2s ease, 1);
+
+                opacity: 1;
             }
         }
 
         .ampromo-button {
-            box-shadow: none;
             border: none;
+            box-shadow: none;
         }
 
         .ampromo-item.-selected {
@@ -132,15 +143,16 @@
         .slick-prev,
         .slick-next {
             & {
-                padding-top: 3px;
                 .lib-css(width, @slick-button__size);
                 .lib-css(height, @slick-button__size);
+
+                padding-top: 3px;
             }
 
             &:before {
-                padding-top: 3px;
-                color: black;
                 font-size: 42px;
+                padding-top: 3px;
+                color: rgba(0, 0, 0, 1);
             }
         }
 
@@ -158,24 +170,25 @@
     }
 
     .ampromo-item .ampromo-options {
-        max-height: 0;
-        margin-bottom: 20px;
-        padding: 0 5px;
-        overflow: hidden;
         .lib-css(transition, max-height .2s ease, 1);
+
+        margin-bottom: 20px;
+        max-height: 0;
+        overflow: hidden;
+        padding: 0 5px;
     }
 
     .ampromo-gallery {
         & {
-            width: 850px;
             margin: 0 30px;
+            width: 850px;
         }
 
-        &[data-count="1"] {
+        &[data-count='1'] {
             width: 280px;
         }
 
-        &[data-count="2"] {
+        &[data-count='2'] {
             width: 570px;
         }
 
@@ -186,28 +199,30 @@
 
     .ampromo-items-add {
         & {
+            .lib-css(border, @ampromo-item__border);
+
             display: none;
             margin-bottom: 12px;
             padding: 7px;
-            .lib-css(border, @ampromo-item__border);
             text-align: center;
         }
 
         > a {
-            text-decoration: none;
             border-bottom: 1px dashed;
+            text-decoration: none;
         }
     }
 
     .checkout-index-index .ampromo-items-add:before {
+        .lib-css(background, @ampromo-gift__background-image no-repeat);
+
+        background-size: contain;
         content: '';
         display: inline-block;
-        width: 32px;
         height: 32px;
         margin-right: 12px;
-        .lib-css(background, @ampromo-gift__background-image no-repeat);
-        background-size: contain;
         vertical-align: middle;
+        width: 32px;
     }
 
     .ampromo-items-form {
@@ -217,9 +232,9 @@
         }
 
         .ampromo-qty {
-            width: 30%;
             margin-left: 35%;
             margin-top: 10%;
+            width: 30%;
         }
 
         .product-info-price {
@@ -229,15 +244,15 @@
         }
 
         .price-base-price .price {
-            margin-left: 15px;
             font-size: 25px;
+            margin-left: 15px;
             text-decoration: line-through;
         }
 
         .price-new-price .price-wrapper {
             font-size: 36px;
+            font-weight: @font-weight__bold;
             line-height: 36px;
-            font-weight: bold;
         }
 
         .ampromo-item-qty-input > .mage-error {
@@ -260,7 +275,7 @@
 
 @media only screen and (max-width: 400px) {
     .ampromo-overlay .ampromo-gallery {
-        margin: 0 0 30px 0;
+        margin: 0 0 30px;
     }
 
     // rewrite slick styles
@@ -270,7 +285,7 @@
         display: none !important;
     }
 
-    .ampromo-items-content {
+    .ampromo-popup-wrapper {
         padding: 15px;
     }
 }

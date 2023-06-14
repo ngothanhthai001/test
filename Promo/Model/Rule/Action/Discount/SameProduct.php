@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 namespace Amasty\Promo\Model\Rule\Action\Discount;
 
 use Magento\Catalog\Model\Product\Type;
@@ -47,10 +52,11 @@ class SameProduct extends AbstractDiscount
         $this->promoRegistry->addPromoItem(
             $sku,
             $qty,
-            $rule->getId(),
+            $this->ruleResolver->getLinkId($rule),
             $discountData,
             $ampromoRule->getType(),
-            $rule->getDiscountAmount()
+            $rule->getDiscountAmount(),
+            (int)$item->getQuoteId()
         );
     }
 

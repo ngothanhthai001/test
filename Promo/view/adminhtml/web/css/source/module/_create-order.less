@@ -1,0 +1,66 @@
+//
+//  Promo Create Admin Order
+//  ____________________________________________
+
+//
+//  Variables
+//  --------------------------------------------
+
+@ampromo-gifts-counter__in-stock__color: #e8f5ff;
+@ampromo-gifts-counter__out-of-stock__color: #fffddd;
+
+//
+//  Common
+//  --------------------------------------------
+
+& when (@media-common = true) {
+    .ampromo-grid-product.data-grid-cell-content {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .ampromo-gift-cell {
+        & {
+            cursor: pointer;
+        }
+
+        &.-select .data-grid-checkbox-cell-inner {
+            text-align: center;
+        }
+    }
+
+    .ampromo-gifts-modal {
+        .page-main-actions:not(._hidden) {
+            align-items: center;
+            background: none;
+            border: none;
+            display: flex;
+        }
+
+        .page-actions {
+            order: 1;
+        }
+
+        .ampromo-counter-wrapper {
+            margin-right: auto;
+            order: 0;
+        }
+    }
+
+    .ampromo-gifts-counter {
+        & {
+            border-radius: 4px;
+            display: block;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        &.-available {
+            .lib-css(background, @ampromo-gifts-counter__in-stock__color);
+        }
+
+        &.-not-available {
+            .lib-css(background, @ampromo-gifts-counter__out-of-stock__color);
+        }
+    }
+}

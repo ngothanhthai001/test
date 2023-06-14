@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Observer\Salesrule;
 
@@ -23,7 +28,7 @@ use Psr\Log\LoggerInterface;
  */
 class Discount implements ObserverInterface
 {
-    const PROMO_RULES = [
+    public const PROMO_RULES = [
         Rule::PER_PRODUCT,
         Rule::SAME_PRODUCT,
         Rule::SPENT,
@@ -100,7 +105,7 @@ class Discount implements ObserverInterface
             if ($this->checkItemForPromo($rule, $item)) {
                 /** @var Data $result */
                 $result = $observer->getResult();
-                if (!$item->getAmDiscountAmount()) {
+                if (!$item->getAmDiscountAmount() || ($this->state->getAreaCode() === Area::AREA_ADMINHTML)) {
                     $baseDiscount = $this->discountCalculator->getBaseDiscountAmount($observer->getRule(), $item);
                     $discount = $this->discountCalculator->getDiscountAmount($observer->getRule(), $item);
 
@@ -108,7 +113,7 @@ class Discount implements ObserverInterface
                     $result->setAmount($discount);
                     $item->setAmBaseDiscountAmount($baseDiscount);
                     $item->setAmDiscountAmount($discount);
-                } elseif ($this->state->getAreaCode() === Area::AREA_WEBAPI_REST) {
+                } else {
                     $result->setAmount($item->getAmDiscountAmount());
                     $result->setBaseAmount($item->getAmBaseDiscountAmount());
                 }
@@ -129,9 +134,10 @@ class Discount implements ObserverInterface
      */
     public function checkItemForPromo($rule, $item)
     {
+        $ruleId = (int)$this->ruleResolver->getLinkId($rule);
         if (!in_array($rule->getSimpleAction(), self::PROMO_RULES)
             || !$this->promoItemHelper->isPromoItem($item)
-            || (int)$rule->getId() !== (int)$item->getAmpromoRuleId()
+            || (int)$ruleId !== (int)$item->getAmpromoRuleId()
             || ($item->getParentItem() && $item->getParentItem()->getProductType() == Type::TYPE_BUNDLE)
         ) {
             return false;

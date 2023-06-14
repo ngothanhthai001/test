@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Plugin\SalesRule\Conditions;
 
@@ -13,7 +18,7 @@ class Product
     /**
      * Name For Condition Attribute
      */
-    const CONDITION_ATTRIBUTE_NAME = 'quote_item_is_promo_item';
+    public const CONDITION_ATTRIBUTE_NAME = 'quote_item_is_promo_item';
 
     /**
      * @var PromoItemHelper

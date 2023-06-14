@@ -1,10 +1,28 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */-->
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Magento\Customer\CustomerData\SectionPoolInterface">
         <arguments>
             <argument name="sectionSourceMap" xsi:type="array">
                 <item name="ammessages" xsi:type="string">Amasty\Promo\CustomerData\Messages</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Element\Message\MessageConfigurationsPool">
+        <arguments>
+            <argument name="configurationsMap" xsi:type="array">
+                <item name="amastyPromoMessagesInfo" xsi:type="array">
+                    <item name="renderer" xsi:type="const">Magento\Framework\View\Element\Message\Renderer\BlockRenderer::CODE</item>
+                    <item name="data" xsi:type="array">
+                        <item name="template" xsi:type="string">Amasty_Promo::messages/amastyPromoMessagesInfo.phtml</item>
+                    </item>
+                </item>
             </argument>
         </arguments>
     </type>
@@ -16,5 +34,10 @@
     </type>
     <type name="Magento\Bundle\Block\Catalog\Product\View\Type\Bundle">
         <plugin name="Amasty_Promo::bundle_view" type="Amasty\Promo\Plugin\Bundle\Block\Catalog\Product\View\Type\Bundle\ForceLoadOptions"/>
+    </type>
+    <type name="Amasty\Promo\Model\Registry">
+        <arguments>
+            <argument name="resourceSession" xsi:type="object">Magento\Checkout\Model\Session</argument>
+        </arguments>
     </type>
 </config>

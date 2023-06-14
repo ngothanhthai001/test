@@ -1,5 +1,12 @@
 <?php
+
 declare(strict_types=1);
+
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Plugin\Bundle\Block\Catalog\Product\View\Type\Bundle;
 
@@ -8,7 +15,7 @@ use Magento\Bundle\Block\Catalog\Product\View\Type\Bundle;
 
 class ForceLoadOptions
 {
-    const TRIGGER_BLOCK_NAME = 'ampromo.bundle.prototype';
+    public const TRIGGER_BLOCK_NAME = 'ampromo.bundle.prototype';
 
     /**
      * @var BundleViewModel

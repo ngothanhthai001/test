@@ -1,0 +1,15 @@
+<div class="data-grid-cell-content ampromo-grid-product">
+    <div class="ampromo-name" html="$col.getLabel($row())"></div>
+    <div class="ampromo-action" if="$col.isConfigurableType($row())">
+        <a href="#"
+           data-bind="
+                click: $col.openConfigureModal.bind($col, $row()['entity_id']),
+                attr: {
+                    id: 'ampromo-configure-product-' + $row()['entity_id']
+                },
+                i18n: 'Configure'
+           "
+           data-ampromo-js="configure"
+           class="action-configure"></a>
+    </div>
+</div>

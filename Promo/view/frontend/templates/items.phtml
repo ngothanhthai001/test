@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 // phpcs:ignoreFile
 
 /** @var \Amasty\Promo\Block\Items $block */
@@ -94,6 +99,13 @@ $isShowPrice = $block->getShowPriceInPopup();
                                             <span class="price"></span>
                                         </span>
                                     </span>
+                                    <span id="product-price-<?= (int)$product->getId() ?>"
+                                          data-price-amount="<?= $block->escapeHtml(
+                                              $block->getProductPrice($product)
+                                          ) ?>"
+                                          data-price-type="finalPrice"
+                                          hidden >
+                                    </span>
                             </div>
                             <div class="price-new-price price-box-<?= (int)$product->getId() ?>"
                                  data-product-id="<?= (int)$product->getId() ?>"
@@ -107,6 +119,13 @@ $isShowPrice = $block->getShowPriceInPopup();
                                               class="price-wrapper">
                                             <span class="price"></span>
                                         </span>
+                                    </span>
+                                    <span id="product-price-<?= (int)$product->getId() ?>"
+                                         data-price-amount="<?= $block->escapeHtml(
+                                             $block->getProductPrice($product)
+                                         ) ?>"
+                                         data-price-type="finalPrice"
+                                         hidden >
                                     </span>
                             </div>
                         </div>
@@ -151,7 +170,7 @@ $isShowPrice = $block->getShowPriceInPopup();
                                 'Amasty_Promo/js/price-updater'
                             ], function ($) {
                                 $('[data-role=ampromo-overlay]').on('init.ampopup', function () {
-                                    $('.ampromo-items-content').ampromoPriceUpdater({
+                                    $('.ampromo-popup-wrapper').ampromoPriceUpdater({
                                         productId: <?= (int)$product->getId() ?>,
                                         priceConfig: <?= $block->getJsonConfig($product) ?>
                                     });

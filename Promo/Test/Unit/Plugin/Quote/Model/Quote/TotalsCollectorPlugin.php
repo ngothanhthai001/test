@@ -1,7 +1,14 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Test\Unit\Plugin\Quote\Model\Quote;
 
+use Amasty\Promo\Model\ItemRegistry\PromoItemsGroup;
+use Amasty\Promo\Model\PromoItemRepository;
 use Amasty\Promo\Test\Unit\Traits;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -16,11 +23,11 @@ class TotalsCollectorPlugin extends \PHPUnit\Framework\TestCase
     use Traits\ObjectManagerTrait;
     use Traits\ReflectionTrait;
 
-    const PROMO_ITEM_SKU = 'test_sku';
+    public const PROMO_ITEM_SKU = 'test_sku';
 
-    const RULE_ID = 1;
+    public const RULE_ID = 1;
 
-    const QTY_TO_PROCESS = 5;
+    public const QTY_TO_PROCESS = 5;
 
     /**
      * @var \Amasty\Promo\Plugin\Quote\Model\Quote\TotalsCollectorPlugin|MockObject
@@ -28,9 +35,9 @@ class TotalsCollectorPlugin extends \PHPUnit\Framework\TestCase
     private $collectTotalsObserver;
 
     /**
-     * @var \Amasty\Promo\Model\ItemRegistry\PromoItemRegistry|MockObject
+     * @var PromoItemRepository|MockObject
      */
-    private $promoItemRegistry;
+    private $promoItemRepository;
 
     /**
      * @var \Magento\Catalog\Model\ProductRepository|MockObject
@@ -57,6 +64,11 @@ class TotalsCollectorPlugin extends \PHPUnit\Framework\TestCase
      */
     private $promoItemHelper;
 
+    /**
+     * @var PromoItemsGroup
+     */
+    private $promoItemGroup;
+
     public function setUp(): void
     {
         $this->collectTotalsObserver = $this->createPartialMock(\Amasty\Promo\Plugin\Quote\Model\Quote\TotalsCollectorPlugin::class, []);
@@ -66,13 +78,17 @@ class TotalsCollectorPlugin extends \PHPUnit\Framework\TestCase
             []
         );
         $this->promoItem->setSku(self::PROMO_ITEM_SKU)->setAllowedQty(6)->setReservedQty(1);
-        $this->promoItemRegistry = $this->createPartialMock(
-            \Amasty\Promo\Model\ItemRegistry\PromoItemRegistry::class,
+        $this->promoItemGroup = $this->createPartialMock(
+            PromoItemsGroup::class,
             ['getItemsForAutoAdd', 'getItemBySkuAndRuleId']
         );
-        $this->promoItemRegistry->expects($this->any())->method('getItemsForAutoAdd')
+        $this->promoItemGroup->expects($this->any())->method('getItemsForAutoAdd')
             ->willReturn([$this->promoItem]);
 
+        $this->promoItemRepository = $this->createConfiguredMock(
+            \Amasty\Promo\Model\PromoItemRepository::class,
+            ['getItemsByQuoteId' => $this->promoItemGroup]
+        );
         $this->product = $this->createMock(\Magento\Catalog\Model\Product::class);
         $this->productRepository = $this->createMock(\Magento\Catalog\Model\ProductRepository::class);
         $this->productRepository->expects($this->any())->method('get')
@@ -84,8 +100,8 @@ class TotalsCollectorPlugin extends \PHPUnit\Framework\TestCase
 
         $this->setProperty(
             $this->collectTotalsObserver,
-            'promoItemRegistry',
-            $this->promoItemRegistry,
+            'promoItemRepository',
+            $this->promoItemRepository,
             \Amasty\Promo\Plugin\Quote\Model\Quote\TotalsCollectorPlugin::class
         );
         $this->setProperty(
@@ -130,7 +146,7 @@ class TotalsCollectorPlugin extends \PHPUnit\Framework\TestCase
     public function testUpdateQuoteItems()
     {
         $quote = $this->initQuote();
-        $this->promoItemRegistry->expects($this->once())->method('getItemBySkuAndRuleId')
+        $this->promoItemGroup->expects($this->once())->method('getItemBySkuAndRuleId')
             ->with(self::PROMO_ITEM_SKU, self::RULE_ID)
             ->willReturn($this->promoItem);
 

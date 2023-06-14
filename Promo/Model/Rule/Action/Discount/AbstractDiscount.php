@@ -1,5 +1,12 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 namespace Amasty\Promo\Model\Rule\Action\Discount;
+
+use Amasty\Promo\Model\Rule\ItemsStorage;
 
 /**
  * Validate and register Promo Items
@@ -31,7 +38,15 @@ abstract class AbstractDiscount extends \Magento\SalesRule\Model\Rule\Action\Dis
      */
     protected $ruleResolver;
 
-    protected $_itemsWithDiscount;
+    /**
+     * @var array
+     */
+    protected $_itemsWithDiscount = [];
+
+    /**
+     * @var ItemsStorage
+     */
+    protected $itemsStorage;
 
     public function __construct(
         \Magento\SalesRule\Model\Validator $validator,
@@ -41,7 +56,8 @@ abstract class AbstractDiscount extends \Magento\SalesRule\Model\Rule\Action\Dis
         \Amasty\Promo\Model\Registry $promoRegistry,
         \Amasty\Promo\Model\Config $config,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
-        \Amasty\Promo\Model\RuleResolver $ruleResolver
+        \Amasty\Promo\Model\RuleResolver $ruleResolver,
+        ItemsStorage $itemsStorage
     ) {
         parent::__construct($validator, $discountDataFactory, $priceCurrency);
         $this->promoItemHelper          = $promoItemHelper;
@@ -49,6 +65,7 @@ abstract class AbstractDiscount extends \Magento\SalesRule\Model\Rule\Action\Dis
         $this->promoRegistry            = $promoRegistry;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->ruleResolver = $ruleResolver;
+        $this->itemsStorage = $itemsStorage;
     }
 
     /**
@@ -93,14 +110,17 @@ abstract class AbstractDiscount extends \Magento\SalesRule\Model\Rule\Action\Dis
             'minimal_price' => $ampromoRule->getMinimalItemsPrice(),
         ];
 
+        $ruleId = $this->ruleResolver->getLinkId($rule);
+
         if ($ampromoRule->getType() == \Amasty\Promo\Model\Rule::RULE_TYPE_ONE) {
             $this->promoRegistry->addPromoItem(
                 preg_split('/\s*,\s*/', $promoSku, -1, PREG_SPLIT_NO_EMPTY),
                 $qty,
-                $rule->getId(),
+                $ruleId,
                 $discountData,
                 $ampromoRule->getType(),
-                $rule->getDiscountAmount()
+                $rule->getDiscountAmount(),
+                (int)$item->getQuoteId()
             );
         } else {
             $promoSku = explode(',', $promoSku);
@@ -112,10 +132,11 @@ abstract class AbstractDiscount extends \Magento\SalesRule\Model\Rule\Action\Dis
                 $this->promoRegistry->addPromoItem(
                     $sku,
                     $qty,
-                    $rule->getId(),
+                    $ruleId,
                     $discountData,
                     $ampromoRule->getType(),
-                    $rule->getDiscountAmount()
+                    $rule->getDiscountAmount(),
+                    (int)$item->getQuoteId()
                 );
             }
         }
@@ -204,37 +225,26 @@ abstract class AbstractDiscount extends \Magento\SalesRule\Model\Rule\Action\Dis
     }
 
     /**
-     * @param \Magento\SalesRule\Model\Rule $rule
-     * @param \Magento\Quote\Model\Quote\Item\AbstractItem $item
+     * Return qty of promo item (Free Gifts).
      *
-     * @return float|int|mixed
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * Note: Item may not have ID on quote creation, so don't use item IDs.
+     *
+     * @return float|int
      */
     protected function getPromoQtyByStep(
         \Magento\SalesRule\Model\Rule $rule,
-        \Magento\Quote\Model\Quote\Item\AbstractItem $item
+        \Magento\Quote\Model\Quote\Item\AbstractItem $quoteItem
     ) {
         $qty    = 0;
         $amount = max(1, $rule->getDiscountAmount());
         $step   = max(1, $rule->getDiscountStep());
-        foreach ($item->getQuote()->getAllVisibleItems() as $item) {
-            if (!$item || $this->promoItemHelper->isPromoItem($item) || $item->getProduct()->getParentProductId()) {
-                continue;
-            }
+        $items = $this->itemsStorage->getItems($quoteItem, (int)$rule->getRuleId());
 
-            if (!$rule->getActions()->validate($item)) {
-                // if condition not valid for Parent, but valid for child then collect qty of child
-                foreach ($item->getChildren() as $child) {
-                    if ($rule->getActions()->validate($child)) {
-                        $qty += $child->getTotalQty();
-                    }
-                }
-                continue;
-            }
-
+        foreach ($this->itemsStorage->getValidItemsForRule($rule, $items) as $item) {
             $qty += $item->getQty();
         }
-        $item->getAddress()->setDiscountDescription($rule->getName());
+
+        $quoteItem->getAddress()->setDiscountDescription($rule->getName());
 
         $qty = floor($qty / $step) * $amount;
         $max = $rule->getDiscountQty();

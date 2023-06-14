@@ -1,4 +1,9 @@
-<?php // phpcs:ignoreFile ?>
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */ // phpcs:ignoreFile ?>
 <?php /** @var \Magento\GiftCard\Pricing\Render\FinalPriceBox $block */ ?>
 <?php $productId = $block->getSaleableItem()->getId(); ?>
 
@@ -45,7 +50,7 @@
                                 <option value="<?= $block->escapeHtml($value) ?>">
                                     <?= /* @escapeNotVerified */ $block->convertAndFormatCurrency(
                                         $value,
-                                        ['display'=>Zend_Currency::NO_SYMBOL]
+                                        ['display'=> \Magento\Framework\Currency::NO_SYMBOL]
                                     ) ?>
                                 </option>
                             <?php endforeach; ?>

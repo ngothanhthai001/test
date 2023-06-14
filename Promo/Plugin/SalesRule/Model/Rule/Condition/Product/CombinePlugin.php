@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Plugin\SalesRule\Model\Rule\Condition\Product;
 
@@ -58,13 +63,13 @@ class CombinePlugin
      */
     private function checkActionItem($rule, $item)
     {
-        $action = $rule->getSimpleAction();
+        $action = (string)$rule->getSimpleAction();
 
         if (strpos($action, "ampromo_") !== false) {
             $ampromoRule = $this->ruleResolver->getFreeGiftRule($rule);
             $isPromoItem = $this->amHelper->isPromoItem($item);
 
-            $promoSku = $ampromoRule->getSku();
+            $promoSku = (string)$ampromoRule->getSku();
             $itemSku = $item->getProduct()->getData('sku');
 
             if ($isPromoItem && strpos($promoSku, $itemSku) !== false) {

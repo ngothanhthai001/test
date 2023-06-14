@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Plugin\Quote\Model;
 
@@ -43,6 +48,7 @@ class QuotePlugin
         if (!$subject->getTriggerRecollect()
             && $this->storage->isQuoteSaveAllowed()
             && $this->storage->isQuoteSaveRequired()
+            && $subject->getId()
         ) {
             $this->storage->setIsQuoteSaveRequired(false);
             $this->quoteRepository->save($subject);

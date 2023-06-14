@@ -1,10 +1,15 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Plugin\CheckoutStaging\Model\ResourceModel;
 
 class PreviewQuotaPlugin
 {
-    const PREVIEW_QUOTA_TABLE = 'quote_preview';
+    public const PREVIEW_QUOTA_TABLE = 'quote_preview';
 
     /**
      * Fix Magento issue with table prefix on preview

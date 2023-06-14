@@ -1,6 +1,11 @@
 <?php
 /**
- * @var $block Magento\Bundle\Block\Catalog\Product\View\Type\Bundle
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
+/**
+ * @var $block Amasty\Promo\Block\Catalog\Product\View\Type\Bundle
  * @var $viewModel Amasty\Promo\ViewModel\Product\View\Type\Bundle
  * @var $escaper Magento\Framework\Escaper
  */
@@ -48,7 +53,13 @@ $options = $viewModel ? $block->decorateArray($viewModel->getOptions($product, $
             var popupOverlay = $('[data-role=ampromo-overlay]');
 
             popupOverlay.on('init.ampopup', function () {
-                $('.fieldset-bundle-options').ampromoBundle({});
+                initBundle();
             });
+
+            function initBundle() {
+                $('.fieldset-bundle-options').ampromoBundle({});
+            }
+
+            initBundle();
         });
 </script>

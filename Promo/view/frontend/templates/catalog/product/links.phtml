@@ -1,4 +1,9 @@
-<?php /** @var $block \Magento\Downloadable\Block\Catalog\Product\Links */ ?>
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */ /** @var $block \Magento\Downloadable\Block\Catalog\Product\Links */ ?>
 
 <?php $_linksPurchasedSeparately = $block->getLinksPurchasedSeparately(); ?>
 <?php if ($block->getProduct()->isSaleable() && $block->hasLinks()): ?>
@@ -79,6 +84,8 @@
                         config: <?= /* @noEscape */$block->getJsonConfig() ?>
                     });
                 }
+
+                initDownloadable();
             });
     </script>
 <?php endif; ?>

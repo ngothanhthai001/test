@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Model;
 
@@ -7,15 +12,15 @@ namespace Amasty\Promo\Model;
  */
 class Config
 {
-    const PROMO_SECTION = 'ampromo/';
+    public const PROMO_SECTION = 'ampromo/';
 
-    const GROUP_PROMO_MESSAGES = 'messages/';
+    public const GROUP_PROMO_MESSAGES = 'messages/';
 
-    const GENERAL_GROUP = 'general/';
+    public const GENERAL_GROUP = 'general/';
 
-    const GIFT_IMAGES_GROUP = 'gift_images/';
+    public const GIFT_IMAGES_GROUP = 'gift_images/';
 
-    const PREFIX_FIELD = 'prefix';
+    public const PREFIX_FIELD = 'prefix';
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Test\Unit\Model;
 
@@ -17,12 +22,12 @@ class ProductTest extends \PHPUnit\Framework\TestCase
     use Traits\ObjectManagerTrait;
     use Traits\ReflectionTrait;
 
-    const STORE_ID = 1;
-    const WEBSITE_ID = 2;
+    public const STORE_ID = 1;
+    public const WEBSITE_ID = 2;
 
-    const STOCK_QTY = 10000;
-    const MAX_QTY = 999;
-    const PRODUCT_SKU = 'SKU';
+    public const STOCK_QTY = 10000;
+    public const MAX_QTY = 999;
+    public const PRODUCT_SKU = 'SKU';
 
     /**
      * @covers Product::getProductQty
@@ -55,7 +60,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         );
 
         $stockStatus = $this->createMock(\Magento\CatalogInventory\Model\Stock\Status::class);
-        $stockStatus->expects($this->once())->method('getStockStatus')->willReturn(false);
+        $stockStatus->expects($this->once())->method('getStockStatus')->willReturn(0);
 
         $stockRegistry = $this->createMock(\Magento\CatalogInventory\Api\StockRegistryInterface::class);
         $stockRegistry->expects($this->once())->method('getStockItemBySku')->willReturn($stockStatus);
@@ -98,7 +103,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         );
 
         $stockStatus = $this->createMock(\Magento\CatalogInventory\Model\Stock\Status::class);
-        $stockStatus->expects($this->any())->method('getStockStatus')->willReturn(true);
+        $stockStatus->expects($this->any())->method('getStockStatus')->willReturn(1);
         $stockStatus->expects($this->any())->method('getQty')->willReturn($stockStatusQty);
 
         $stockItem = $this->createMock(\Magento\CatalogInventory\Api\Data\StockItemInterface::class);

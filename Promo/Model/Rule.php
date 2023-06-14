@@ -1,21 +1,26 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 namespace Amasty\Promo\Model;
 
 use Amasty\Promo\Api\Data\GiftRuleInterface;
 
 class Rule extends \Magento\Framework\Model\AbstractModel implements GiftRuleInterface
 {
-    const RULE_TYPE_ALL = 0;
-    const RULE_TYPE_ONE = 1;
+    public const RULE_TYPE_ALL = 0;
+    public const RULE_TYPE_ONE = 1;
 
-    const NOT_AUTO_FREE_ITEMS = 0;
-    const AUTO_FREE_ITEMS = 1;
-    const AUTO_FREE_DISCOUNTED_ITEMS = 2;
+    public const NOT_AUTO_FREE_ITEMS = 0;
+    public const AUTO_FREE_ITEMS = 1;
+    public const AUTO_FREE_DISCOUNTED_ITEMS = 2;
 
-    const AFTER_DISCOUNTS = 1;
-    const BEFORE_DISCOUNTS = 0;
+    public const AFTER_DISCOUNTS = 1;
+    public const BEFORE_DISCOUNTS = 0;
 
-    const OPTION_ID = 'ampromo_rule_id';
+    public const OPTION_ID = 'ampromo_rule_id';
 
     /**
      * Set resource model and Id field name

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Observer;
 
@@ -33,7 +38,9 @@ class OrderPlaceAfterObserver implements ObserverInterface
         $order = $observer->getOrder();
         /** @var Item $item */
         foreach ($order->getAllItems() as $item) {
-            $this->prefix->addPrefixToName($item);
+            if ($this->prefix->isNeedPrefix($item)) {
+                $this->prefix->addPrefixToName($item);
+            }
         }
     }
 }

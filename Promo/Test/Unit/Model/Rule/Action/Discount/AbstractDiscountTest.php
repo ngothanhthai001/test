@@ -1,10 +1,18 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Test\Unit\Model\Rule\Action\Discount;
 
 use Amasty\Promo\Model\Rule\Action\Discount\AbstractDiscount;
+use Amasty\Promo\Model\Rule\ItemsStorage;
 use Amasty\Promo\Test\Unit\Traits;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use Magento\Quote\Model\Quote\Address;
+use Magento\Quote\Model\Quote\Item\AbstractItem;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Class AbstractDiscountTest
@@ -39,21 +47,27 @@ class AbstractDiscountTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPromoQtyByStep($discountAmount, $discountStep, $discountQty, $itemQty, $expectedResult = 0.0)
     {
-        $this->model = $this->getMockBuilder(AbstractDiscount::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->model = $this->createMock(AbstractDiscount::class);
 
-        $helper = $this->createMock(\Amasty\Promo\Helper\Item::class);
-        $helper->expects($this->any())->method('isPromoItem')->willReturn(false);
+        $itemMock = $this->initItem($itemQty);
+        $itemsStorageMock = $this->createMock(ItemsStorage::class);
+        $itemsStorageMock->expects($this->once())
+            ->method('getItems')
+            ->willReturn([$itemMock]);
+        $itemsStorageMock->expects($this->once())
+            ->method('getValidItemsForRule')
+            ->willReturn([$itemMock]);
 
-        $this->setProperty($this->model, 'promoItemHelper', $helper, AbstractDiscount::class);
+        $this->setProperty(
+            $this->model,
+            'itemsStorage',
+            $itemsStorageMock,
+            AbstractDiscount::class
+        );
 
-        $quote = $this->initQuote($itemQty);
-        $rule = $this->initRule($discountAmount, $discountStep, $discountQty);
-        $item = $this->initItem($quote);
+        $ruleMock = $this->initRule($discountAmount, $discountStep, $discountQty);
 
-        $result = $this->invokeMethod($this->model, 'getPromoQtyByStep', [$rule, $item]);
-
+        $result = $this->invokeMethod($this->model, 'getPromoQtyByStep', [$ruleMock, $itemMock]);
         $this->assertEquals($expectedResult, $result);
     }
 
@@ -67,8 +81,7 @@ class AbstractDiscountTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getDiscountAmount', 'getDiscountStep', 'getName', 'getDiscountQty', 'getActions'])
             ->getMock();
-        $actions = $this->createPartialMock(\Magento\Rule\Model\Action\Collection::class, ['validate']);
-        $actions->expects($this->any())->method('validate')->willReturn(true);
+        $actions = $this->createMock(\Magento\Rule\Model\Action\Collection::class);
 
         $rule->expects($this->any())->method('getDiscountAmount')->willReturn($discountAmount);
         $rule->expects($this->any())->method('getDiscountStep')->willReturn($discountStep);
@@ -80,55 +93,22 @@ class AbstractDiscountTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Init quote for test
-     *
-     * @param int $itemQty
-     *
-     * @return \Magento\Quote\Model\Quote|MockObject
+     * @param $itemQty
+     * @return AbstractItem|\PHPUnit\Framework\MockObject\MockObject
      */
-    private function initQuote($itemQty)
+    private function initItem($itemQty)
     {
-        $address = $this->createMock(\Magento\Quote\Model\Quote\Address::class);
-        /** @var \Magento\Catalog\Model\Product|MockObject $product */
-        $product = $this->createPartialMock(\Magento\Catalog\Model\Product::class, ['getParentProductId']);
-        $product->expects($this->any())->method('getParentProductId')
-            ->willReturn(null);
-        /** @var \Magento\Quote\Model\Quote\Item|MockObject $quoteItem */
-        $quoteItem = $this->createPartialMock(
-            \Magento\Quote\Model\Quote\Item::class,
-            ['getProduct', 'getAddress', 'getQty']
-        );
-        $quoteItem->expects($this->any())->method('getProduct')
-            ->willReturn($product);
-        $quoteItem->expects($this->any())->method('getAddress')
-            ->willReturn($address);
-        $quoteItem->expects($this->any())->method('getQty')
+        $itemMock = $this->createMock(AbstractItem::class);
+        $addressMock = $this->createMock(Address::class);
+
+        $itemMock->expects($this->once())
+            ->method('getQty')
             ->willReturn($itemQty);
+        $itemMock->expects($this->once())
+            ->method('getAddress')
+            ->willReturn($addressMock);
 
-        /** @var \Magento\Quote\Model\Quote|MockObject $quote */
-        $quote = $this->createPartialMock(
-            \Magento\Quote\Model\Quote::class,
-            ['getAllVisibleItems']
-        );
-        $quote->expects($this->any())->method('getAllVisibleItems')
-            ->willReturn([$quoteItem]);
-
-        return $quote;
-    }
-
-    /**
-     * Init item for test
-     * @return \Magento\Quote\Model\Quote\Item\AbstractItem|MockObject
-     */
-    private function initItem($quote)
-    {
-        $item = $this->getMockBuilder(\Magento\Quote\Model\Quote\Item\AbstractItem::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getQuote'])
-            ->getMockForAbstractClass();
-        $item->expects($this->any())->method('getQuote')->willReturn($quote);
-
-        return $item;
+        return $itemMock;
     }
 
     /**

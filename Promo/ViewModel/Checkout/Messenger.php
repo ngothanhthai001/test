@@ -1,5 +1,12 @@
 <?php
+
 declare(strict_types=1);
+
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\ViewModel\Checkout;
 
@@ -9,7 +16,7 @@ use Magento\Framework\Serialize\Serializer\Json;
 
 class Messenger implements ArgumentInterface
 {
-    const MESSAGE_GROUP = 'ammessenger';
+    public const MESSAGE_GROUP = 'ammessenger';
 
     /**
      * @var ManagerInterface

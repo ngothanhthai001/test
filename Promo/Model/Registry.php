@@ -1,19 +1,24 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Model;
 
-/**
- * Promo Items Registry
- */
+use Amasty\Promo\Model\ItemRegistry\PromoItemsGroup;
+use Magento\Framework\Exception\NoSuchEntityException;
+
 class Registry
 {
     /**
      * Product types available for auto add to cart
      */
-    const AUTO_ADD_PRODUCT_TYPES = ['simple', 'virtual', 'downloadable', 'bundle'];
+    public const AUTO_ADD_PRODUCT_TYPES = ['simple', 'virtual', 'downloadable', 'bundle'];
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var \Magento\Framework\Session\SessionManager
      */
     private $checkoutSession;
 
@@ -23,8 +28,6 @@ class Registry
     private $productRepository;
 
     /**
-     * Store manager
-     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
@@ -50,22 +53,17 @@ class Registry
     private $fullDiscountItems;
 
     /**
-     * @var \Amasty\Promo\Model\Product
-     */
-    private $product;
-
-    /**
      * @var \Amasty\Promo\Model\DiscountCalculator
      */
     private $discountCalculator;
 
     /**
-     * @var ItemRegistry\PromoItemRegistry
+     * @var PromoItemRepository
      */
-    private $promoItemRegistry;
+    private $promoItemRepository;
 
     public function __construct(
-        \Magento\Checkout\Model\Session $resourceSession,
+        \Magento\Framework\Session\SessionManager $resourceSession,
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Amasty\Promo\Helper\Item $promoItemHelper,
@@ -73,7 +71,7 @@ class Registry
         \Magento\Store\Model\Store $store,
         \Amasty\Promo\Model\Product $product,
         \Amasty\Promo\Model\DiscountCalculator $discountCalculator,
-        ItemRegistry\PromoItemRegistry $promoItemRegistry
+        \Amasty\Promo\Model\PromoItemRepository $promoItemRepository
     ) {
         $this->checkoutSession = $resourceSession;
         $this->productRepository = $productRepository;
@@ -82,9 +80,8 @@ class Registry
         $this->promoMessagesHelper = $promoMessagesHelper;
         $this->store = $store;
         $this->fullDiscountItems = [];
-        $this->product = $product;
         $this->discountCalculator = $discountCalculator;
-        $this->promoItemRegistry = $promoItemRegistry;
+        $this->promoItemRepository = $promoItemRepository;
     }
 
     /**
@@ -97,9 +94,10 @@ class Registry
      * @param int $type
      * @param string $discountAmount
      *
-     * @sine 2.8.0 qty check removed; item check only if no checked before (performance)
+     * @since 2.8.0 qty check removed; item check only if no checked before (performance)
+     * @since 2.14.0 promo item data can be obtained by quoteId
      */
-    public function addPromoItem($sku, $qty, $ruleId, $discountData, $type, $discountAmount)
+    public function addPromoItem($sku, $qty, $ruleId, $discountData, $type, $discountAmount, int $quoteId = null)
     {
         $discountData = $this->getCurrencyDiscount($discountData);
 
@@ -111,8 +109,13 @@ class Registry
             $sku = $sku[0];
         }
 
+        if (!$quoteId) {
+            $quoteId = $this->checkoutSession->getQuote()->getId();
+        }
+        $promoItemsGroup = $this->promoItemRepository->getItemsByQuoteId((int)$quoteId);
+
         if (!is_array($sku)) {
-            $item = $this->promoItemRegistry->getItemBySkuAndRuleId($sku, $ruleId);
+            $item = $promoItemsGroup->getItemBySkuAndRuleId($sku, $ruleId);
 
             if ($item === null && $this->discountCalculator->isEnableAutoAdd($discountData)) {
                 if (!$this->isProductValid($sku)) {
@@ -121,7 +124,7 @@ class Registry
                 $autoAdd = $this->isProductCanBeAutoAdded($sku);
             }
 
-            $item = $this->promoItemRegistry->registerItem(
+            $item = $promoItemsGroup->registerItem(
                 $sku,
                 $qty,
                 $ruleId,
@@ -136,7 +139,7 @@ class Registry
             }
         } else {
             foreach ($sku as $skuValue) {
-                $this->promoItemRegistry->registerItem(
+                $promoItemsGroup->registerItem(
                     $skuValue,
                     $qty,
                     $ruleId,
@@ -169,7 +172,11 @@ class Registry
     private function isProductValid(string $sku): bool
     {
         /** @var \Magento\Catalog\Model\Product $product */
-        $product = $this->productRepository->get($sku);
+        try {
+            $product = $this->productRepository->get($sku);
+        } catch (NoSuchEntityException $e) {
+            return false;
+        }
 
         $currentWebsiteId = $this->storeManager->getWebsite()->getId();
         if (!is_array($product->getWebsiteIds())
@@ -199,7 +206,7 @@ class Registry
         $product = $this->productRepository->get($sku);
 
         if ((in_array($product->getTypeId(), static::AUTO_ADD_PRODUCT_TYPES)
-            && !$product->getTypeInstance(true)->hasRequiredOptions($product))
+                && !$product->getTypeInstance(true)->hasRequiredOptions($product))
             || $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE
         ) {
             return true;
@@ -214,7 +221,7 @@ class Registry
      */
     private function getCurrencyDiscount($discountData)
     {
-        preg_match('/^-*\d+.*\d*$/', $discountData['discount_item'], $discount);
+        preg_match('/^-*\d+.*\d*$/', $discountData['discount_item'] ?? 0, $discount);
         if (isset($discount[0]) && is_numeric($discount[0])) {
             $discountData['discount_item'] = $discount[0] * $this->store->getCurrentCurrencyRate();
         }
@@ -230,22 +237,24 @@ class Registry
         if (!$quote) {
             $quote = $this->checkoutSession->getQuote();
         }
-        $this->promoItemRegistry->resetQtyReserve();
+
+        $promoItemsGroup = $this->promoItemRepository->getItemsByQuoteId((int)$quote->getId());
+        $promoItemsGroup->resetQtyReserve();
 
         /** @var \Magento\Quote\Model\Quote\Item $item */
         foreach ($quote->getAllVisibleItems() as $item) {
             if ($this->promoItemHelper->isPromoItem($item)) {
                 $sku = $item->getProduct()->getData('sku');
                 $ruleId = $this->promoItemHelper->getRuleId($item);
-                $promoItem = $this->promoItemRegistry->getItemBySkuAndRuleId($sku, $ruleId);
+                $promoItem = $promoItemsGroup->getItemBySkuAndRuleId($sku, $ruleId);
                 if (!$promoItem) {
                     continue;
                 }
 
-                $this->promoItemRegistry->assignQtyToItem(
+                $promoItemsGroup->assignQtyToItem(
                     $item->getQty(),
                     $promoItem,
-                    ItemRegistry\PromoItemRegistry::QTY_ACTION_RESERVE
+                    PromoItemsGroup::QTY_ACTION_RESERVE
                 );
             }
         }
@@ -260,9 +269,11 @@ class Registry
         $sku = $item->getProduct()->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE
             ? $item->getProduct()->getData('sku') : $item->getProduct()->getSku();
 
-        $item = $this->promoItemRegistry->getItemBySkuAndRuleId($sku, $this->promoItemHelper->getRuleId($item));
+        $promoItemsGroup = $this->promoItemRepository->getItemsByQuoteId((int)$item->getQuoteId());
+
+        $item = $promoItemsGroup->getItemBySkuAndRuleId($sku, $this->promoItemHelper->getRuleId($item));
         if ($item) {
-            $item->isDeleted(true);
+            $item->isItemDeleted(true);
             $item->setReservedQty(0);
         }
 

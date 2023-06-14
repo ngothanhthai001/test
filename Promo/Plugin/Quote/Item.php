@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Plugin\Quote;
 
@@ -7,12 +12,15 @@ use Amasty\Promo\Model\Config;
 use Amasty\Promo\Model\Config\Source\GiftRepresentationMode;
 use Amasty\Promo\Model\DiscountCalculator;
 use Amasty\Promo\Model\Prefix;
+use Amasty\Promo\Model\RuleData;
 use Amasty\Promo\Model\Storage;
+use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\State;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\Quote\Item\AbstractItem;
-use Magento\SalesRule\Api\RuleRepositoryInterface;
 use Magento\SalesRule\Model\Data\Rule;
 
 /**
@@ -36,11 +44,6 @@ class Item
     private $discountCalculator;
 
     /**
-     * @var RuleRepositoryInterface
-     */
-    private $ruleRepository;
-
-    /**
      * @var State
      */
     private $state;
@@ -55,11 +58,16 @@ class Item
      */
     private $config;
 
+    /**
+     * @var RuleData
+     */
+    private $ruleData;
+
     public function __construct(
         HelperItem $promoItemHelper,
         ScopeConfigInterface $scopeConfig,
         DiscountCalculator $discountCalculator,
-        RuleRepositoryInterface $ruleRepository,
+        RuleData $ruleData,
         State $state,
         Prefix $prefix,
         Config $config
@@ -67,7 +75,7 @@ class Item
         $this->promoItemHelper = $promoItemHelper;
         $this->scopeConfig = $scopeConfig;
         $this->discountCalculator = $discountCalculator;
-        $this->ruleRepository = $ruleRepository;
+        $this->ruleData = $ruleData;
         $this->state = $state;
         $this->prefix = $prefix;
         $this->config = $config;
@@ -169,17 +177,28 @@ class Item
     }
 
     /**
-     * @param \Magento\Quote\Model\Quote\Item\AbstractItem $subject
-     * @param string"array $result
-     *
-     * @return array|mixed|string
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @param AbstractItem $subject
+     * @param string|string[] $result
+     * @return string|string[]
+     * @throws LocalizedException
      */
     public function afterGetMessage(AbstractItem $subject, $result)
     {
         if ($this->promoItemHelper->isPromoItem($subject)) {
             if ($this->state->getAreaCode() === Area::AREA_ADMINHTML) {
-                $this->prefix->addPrefixToName($subject);
+                $initialMessage = __('The requested qty is not available')->render();
+                if (is_array($result)
+                    && in_array($initialMessage, $result, true)
+                    && ($subject->getProductType() === Type::TYPE_BUNDLE)
+                ) {
+
+                    $key = array_search($initialMessage, $result, true);
+                    $result[$key] = __('The product is not available in this configuration, 
+                    please choose another product option.');
+                }
+                if ($this->prefix->isNeedPrefix($subject)) {
+                    $this->prefix->addPrefixToName($subject);
+                }
             }
 
             $customMessage = $this->getCustomMessage($subject);
@@ -208,8 +227,13 @@ class Item
         );
 
         if (!$customMessage) {
-            /** @var \Magento\SalesRule\Api\Data\RuleSearchResultInterface $rules */
-            $rule = $this->ruleRepository->getById($item->getAmpromoRuleId());
+            try {
+                /** @var \Magento\SalesRule\Api\Data\RuleSearchResultInterface $rules */
+                $rule = $this->ruleData->getRuleByLinkId($item->getAmpromoRuleId());
+            } catch (NoSuchEntityException|LocalizedException $e) {
+                return '';
+            }
+
             $ruleLabel = $this->getStoreLabel($rule, $item->getStoreId());
             if ($ruleLabel) {
                 $customMessage = $ruleLabel->getStoreLabel();

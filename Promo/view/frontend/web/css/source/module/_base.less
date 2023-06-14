@@ -1,0 +1,205 @@
+//
+//  Promo Base
+//  ____________________________________________
+
+//
+//  Variables
+//  --------------------------------------------
+
+@slick-button__size: 42px;
+@slick-button__distance: -(@slick-button__size + 3);
+@slick-dot__height: 20px;
+@slick-dot__width: @slick-dot__height;
+@ampromo-item__border: 1px solid #ededed;
+@ampromo-gift__background-image: url(data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNTEyIDI1NmMwIDE0MS4zODctMTE0LjYxMyAyNTYtMjU2IDI1NlMwIDM5Ny4zODcgMCAyNTYgMTE0LjYxMyAwIDI1NiAwczI1NiAxMTQuNjEzIDI1NiAyNTZ6bTAgMCIgZmlsbD0iIzYwYjJmYyIvPjxwYXRoIGQ9Ik01MTIgMjU2YzAtMS4xNTItLjAyNy0yLjI5Ny0uMDQzLTMuNDQ1TDM2OS4wNTEgMTA5LjY0OGwtODUuMzU2IDIzLjA2My03LjU4Ni03LjU4Ni00Ni4wNjIgOC44OTgtMjQuNTg2LTI0LjU5Ny02OC4wMDQgNTMuOTU3LTI1LjUzMSA3NC44NDQgNTguMDI3IDU3LjMyLTM5LjMxNiAxMjAuMTIxIDk0LjQ3MiA5NC40NzNBMjU5LjI2IDI1OS4yNiAwIDAgMCAyNTYgNTEyYzE0MS4zODcgMCAyNTYtMTE0LjYxMyAyNTYtMjU2em0wIDAiIGZpbGw9IiMzOTY1Y2MiLz48cGF0aCBkPSJNMjMzLjE4OCAxMzcuNjg4bC0yNy43MjctMjguMjYyYy04LjI4MS04LjQ0Mi0xOS4zNTItMTMuMDk0LTMxLjE2NC0xMy4wOTQtMjQuMDc0IDAtNDMuNjYgMTkuNTg2LTQzLjY2IDQzLjY2IDAgMjQuMDc0IDE5LjU4NiA0My42NiA0My42NiA0My42NkgyNTZ2LTQ1Ljk2NHptMCAwIiBmaWxsPSIjZjY0MjEzIi8+PHBhdGggZD0iTTMzNy43MDMgOTYuMzMyYy0xMS44MTYgMC0yMi44ODMgNC42NTItMzEuMTY0IDEzLjA5NGwtMjcuNzI2IDI4LjI2MUgyNTZ2NDUuOTY1aDgxLjcwM2MyNC4wNzQgMCA0My42Ni0xOS41ODYgNDMuNjYtNDMuNjYgMC0yNC4wNzQtMTkuNTg2LTQzLjY2LTQzLjY2LTQzLjY2em0wIDAiIGZpbGw9IiNlZDI0MDAiLz48cGF0aCBkPSJNMTMwLjYzNyAyMTkuNTE2SDI1NnYxOTYuMTUySDEzMC42Mzd6bTAgMCIgZmlsbD0iI2ZmNiIvPjxwYXRoIGQ9Ik0yNTYgMjE5LjUxNmgxMjUuMzYzdjE5Ni4xNTJIMjU2em0wIDAiIGZpbGw9IiNmZmQxNWUiLz48cGF0aCBkPSJNMTExLjkyNiAxNjMuMzgzSDI1NnY3NC44NDRIMTExLjkyNnptMCAwIiBmaWxsPSIjZmZmZmMyIi8+PHBhdGggZD0iTTI1NiAxNjMuMzgzaDE0NC4wNzR2NzQuODQ0SDI1NnptMCAwIiBmaWxsPSIjZmZlYTdjIi8+PHBhdGggZD0iTTI4NC4wNjYgMTQ0LjY3MmMwLTE1LjUwNC0xMi41NjYtMjguMDY3LTI4LjA2Ni0yOC4wNjdsLTEyLjQ3MyA2NS40ODkgNDAuNTQtMTguNzExem0wIDAiIGZpbGw9IiNmNjQyMTMiLz48cGF0aCBkPSJNMjI3LjkzNCAxNDQuNjcydjE4LjcxTDI1NiAxODIuMDk1di02NS40ODljLTE1LjUgMC0yOC4wNjYgMTIuNTYzLTI4LjA2NiAyOC4wNjd6bTAgMCIgZmlsbD0iI2ZmNjEyNiIvPjxwYXRoIGQ9Ik0yNTYgMTYzLjM4M2wtMTIuNDczIDczLjU5NEwyNTYgMzA4LjcwM2wyOC4wNjYgMTguNzExVjE2My4zODN6bTAgMCIgZmlsbD0iI2VkMjQwMCIvPjxwYXRoIGQ9Ik0yMjcuOTM0IDE2My4zODN2MTY0LjAzMUwyNTYgMzA4LjcwNFYxNjMuMzgyem0wIDAiIGZpbGw9IiNmNjQyMTMiLz48L3N2Zz4=);
+
+//
+//  Common
+//  ----------------------------------------------
+
+& when (@media-common = true) {
+    .ampromo-item .ampromo-options {
+        margin-bottom: 20px;
+        padding: 0 5px;
+        overflow: hidden;
+        transition: max-height .2s ease;
+    }
+
+    .ampromo-gallery {
+        & {
+            width: 850px;
+            margin: 0 30px;
+        }
+
+        &[data-count="1"] {
+            width: 280px;
+        }
+
+        &[data-count="2"] {
+            width: 570px;
+        }
+    }
+
+    .ampromo-slick {
+        // Override slick styles
+        .slick-prev,
+        .slick-next {
+            width: @slick-button__size !important;
+            height: @slick-button__size !important;
+        }
+
+        .slick-prev {
+            left: @slick-button__distance !important;
+        }
+
+        .slick-next {
+            right: @slick-button__distance !important;
+        }
+
+        .slick-dots {
+            padding: 0!important;
+        }
+
+        .slick-dots button {
+            &,
+            &:hover {
+                height: @slick-dot__height;
+                width: @slick-dot__width;
+                padding: @indent__xs !important;
+                background: transparent !important;
+                border: none !important;
+                text-indent: 0 !important;
+            }
+        }
+
+        .slick-slide {
+            vertical-align: top;
+        }
+    }
+
+    .ampromo-items-add {
+        & {
+            display: none;
+            margin-bottom: 12px;
+            padding: 7px;
+            border: @ampromo-item__border;
+            text-align: center;
+        }
+
+        > a {
+            text-decoration: none;
+            border-bottom: 1px dashed;
+        }
+    }
+
+    .checkout-index-index .ampromo-items-add:before {
+        content: '';
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        margin-right: 12px;
+        background: @ampromo-gift__background-image no-repeat;
+        background-size: contain;
+        vertical-align: middle;
+    }
+
+    .ampromo-items-form {
+        & {
+            background: #fff;
+            padding: 5px;
+        }
+
+        .ampromo-qty {
+            width: 30%;
+            margin-left: 35%;
+            margin-top: 10%;
+        }
+
+        .product-info-price {
+            padding-bottom: 10px;
+            text-align: center;
+            word-break: break-all;
+        }
+
+        .price-base-price .price {
+            font-size: 25px;
+            text-decoration: line-through;
+        }
+
+        .price-new-price .price-wrapper {
+            font-size: 36px;
+            line-height: 36px;
+            font-weight: bold;
+        }
+
+        .ampromo-item-qty-input > .mage-error {
+            float: left;
+        }
+    }
+
+    .ampromo-loading {
+        & {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            width: 80px;
+            height: 80px;
+        }
+
+        &.-show {
+            display: inline-block;
+        }
+
+        &:after {
+            display: block;
+            width: 64px;
+            height: 64px;
+            margin: 8px;
+            content: ' ';
+            border-radius: 50%;
+            border: 6px solid #ccc;
+            border-color: #ccc transparent #ccc transparent;
+            animation: load 1.2s linear infinite;
+        }
+    }
+
+    .ampromo-carousel-product {
+        &.-loading {
+            -webkit-filter: blur(10px);
+            filter: blur(10px);
+            opacity: 0.3;
+
+            pointer-events: none;
+        }
+    }
+
+    @keyframes load {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    .ampromo-items-form .product-info-price {
+        > *:first-child,
+        > *:last-child {
+            padding: 0;
+        }
+    }
+}
+
+.media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__m) {
+    .checkout-container .opc-estimated-wrapper {
+        margin-top: 10px;
+    }
+
+    .checkout-container .authentication-wrapper {
+        margin-top: -12px;
+    }
+}

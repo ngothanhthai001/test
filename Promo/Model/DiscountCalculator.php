@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Model;
 
@@ -19,12 +24,19 @@ class DiscountCalculator
      */
     private $config;
 
+    /**
+     * @var \Magento\Tax\Model\Config
+     */
+    private $taxConfig;
+
     public function __construct(
         \Magento\Store\Model\Store $store,
-        \Amasty\Promo\Model\Config $config
+        \Amasty\Promo\Model\Config $config,
+        \Magento\Tax\Model\Config $taxConfig
     ) {
         $this->store = $store;
         $this->config = $config;
+        $this->taxConfig = $taxConfig;
     }
 
     /**
@@ -38,14 +50,31 @@ class DiscountCalculator
     {
         /** @var Rule $promoRule */
         $promoRule = $rule->getAmpromoRule();
-        $promoDiscount = trim($promoRule->getItemsDiscount());
+        $promoDiscount = trim($promoRule->getItemsDiscount() ?? 0);
 
-        if ($item->getTaxAmount()) {
+        /** Apply Discount On Prices Including Tax */
+        if ($item->getTaxAmount() && $this->taxConfig->discountTax()) {
             $itemPrice = $item->getBasePriceInclTax();
         } else {
             $itemPrice = $item->getBasePrice();
         }
 
+        // Take into account discount from other rules with higher priority.
+        // It's important when use 'Promo Items Discount' setting.
+        $itemPrice -= $item->getBaseDiscountAmount();
+
+        $baseDiscount = $this->getBaseDiscount($promoDiscount, $itemPrice);
+
+        return $this->getDiscountAfterMinimalPrice($promoRule, $itemPrice, $baseDiscount) * $item->getQty();
+    }
+
+    /**
+     * @param string $promoDiscount
+     * @param float $itemPrice
+     * @return float|int
+     */
+    public function getBaseDiscount(string $promoDiscount, float $itemPrice)
+    {
         switch (true) {
             case $promoDiscount === "100%":
             case $promoDiscount == "":
@@ -64,8 +93,6 @@ class DiscountCalculator
                 $baseDiscount = $this->getFixedPrice($itemPrice, $promoDiscount);
                 break;
         }
-
-        $baseDiscount = $this->getDiscountAfterMinimalPrice($promoRule, $itemPrice, $baseDiscount) * $item->getQty();
 
         return $baseDiscount;
     }

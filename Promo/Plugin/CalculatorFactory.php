@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Plugin;
 
@@ -9,6 +14,9 @@ class CalculatorFactory
      */
     protected $objectManager;
 
+    /**
+     * @var string[]
+     */
     protected $classByType = [
         \Amasty\Promo\Model\Rule::SAME_PRODUCT => \Amasty\Promo\Model\Rule\Action\Discount\SameProduct::class,
         \Amasty\Promo\Model\Rule::PER_PRODUCT => \Amasty\Promo\Model\Rule\Action\Discount\Product::class,

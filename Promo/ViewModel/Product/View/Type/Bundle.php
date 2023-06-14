@@ -1,9 +1,16 @@
 <?php
+
 declare(strict_types=1);
+
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\ViewModel\Product\View\Type;
 
-use Magento\Bundle\Block\Catalog\Product\View\Type\Bundle as BundleBlock;
+use Amasty\Promo\Block\Catalog\Product\View\Type\Bundle as BundleBlock;
 use Magento\Bundle\Model\Option;
 use Magento\Bundle\Model\Product\Type;
 use Magento\Catalog\Helper\Output;

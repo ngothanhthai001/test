@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Observer\Admin;
 
@@ -7,7 +12,7 @@ namespace Amasty\Promo\Observer\Admin;
  */
 class DeleteConditionHandle implements \Magento\Framework\Event\ObserverInterface
 {
-    const NOT_SUPPORTED_CONDITIONS = [
+    public const NOT_SUPPORTED_CONDITIONS = [
         'Amasty\Conditions\Model\Rule\Condition\Address|billing_address_country',
         'Amasty\Conditions\Model\Rule\Condition\Address|payment_method',
         'Amasty\Conditions\Model\Rule\Condition\Address|shipping_address_line'
@@ -32,7 +37,7 @@ class DeleteConditionHandle implements \Magento\Framework\Event\ObserverInterfac
     {
         $moduleName = $this->request->getModuleName();
         if ($moduleName === 'sales_rule') {
-            $conditions = $observer->getAdditional()->getConditions();
+            $conditions = $observer->getAdditional()->getConditions() ?? [];
             $promoConditions = [];
 
             foreach ($conditions as $condition) {

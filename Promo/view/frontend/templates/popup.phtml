@@ -1,13 +1,19 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 /** @var \Amasty\Promo\Block\Popup $block */
 $countersMode = $block->getCountersMode();
 $promoAddBlock = $block->getPromoAddBlock();
+$quote = $block->getQuote();
 ?>
 
 <?php if ($block->hasQuoteItems()): ?>
     <?= $block->getChildHtml('html_calendar') ?>
     <div class="ampromo-overlay" data-role="ampromo-overlay">
-        <div class="ampromo-items-content" data-ampromo-js="items-content">
+        <div class="ampromo-popup-wrapper" data-ampromo-js="items-content">
             <div class="ampromo-close" data-role="ampromo-popup-hide"></div>
             <?php if ($countersMode): ?>
                 <h2 class="ampromo-popup-title" data-ampromo-js="popup-title">
@@ -56,12 +62,12 @@ $promoAddBlock = $block->getPromoAddBlock();
                         }
                     ]
                 },
-                "commonQty": "<?= (int)$promoAddBlock->getAvailableProductQty()['common_qty'] ?>",
-                "products": <?= \Zend_Json::encode($promoAddBlock->getAvailableProductQty()) ?>,
+                "commonQty": "<?= (int)$promoAddBlock->getAvailableProductQty($quote)['common_qty'] ?>",
+                "products": <?= /* @noEscape */ $block->jsonSerialize($promoAddBlock->getAvailableProductQty($quote)) ?>,
                 "formUrl": "<?= $promoAddBlock->escapeUrl($promoAddBlock->getFormActionUrl()) ?>",
                 "selectionMethod": <?= (int)$promoAddBlock->getSelectionMethod() ?>,
                 "giftsCounter": <?= (int)$promoAddBlock->getGiftsCounter() ?>,
-                "autoOpenPopup": <?= $promoAddBlock->isOpenAutomatically() ? "true" : "false" ?>
+                "autoOpenPopup": <?= $promoAddBlock->isOpenAutomatically((int)$quote->getId()) ? "true" : "false" ?>
             }
         }
     }

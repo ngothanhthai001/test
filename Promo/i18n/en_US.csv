@@ -1,9 +1,17 @@
-"Please update Amasty Base module. Re-upload it and replace all the files.","Please update Amasty Base module. Re-upload it and replace all the files."
-"There is no defined renderer for ""%1"" option type.","There is no defined renderer for ""%1"" option type."
-"Add to cart","Add to cart"
 "Free Items","Free Items"
+Left,Left
+"No free gift(s) are available","No free gift(s) are available"
+"Free gift(s) are available. Added %1 out of %2 items","Free gift(s) are available. Added %1 out of %2 items"
+"Please update Amasty Base module. Re-upload it and replace all the files.","Please update Amasty Base module. Re-upload it and replace all the files."
+"Add to cart","Add to cart"
+"Free gift couldn't be added to the cart.","Free gift couldn't be added to the cart."
+"Something went wrong.","Something went wrong."
 "Free gift couldn't be added to the cart.Please try again or contact the administrator for more information.","Free gift couldn't be added to the cart.Please try again or contact the administrator for more information."
 "Free gift <strong>%1</strong> was added to your shopping cart","Free gift <strong>%1</strong> was added to your shopping cart"
+"The requested qty is not available","The requested qty is not available"
+"The product <strong>%1</strong> is not available in this configuration, 
+                           please choose another product option.","The product <strong>%1</strong> is not available in this configuration, 
+                           please choose another product option."
 "We apologize, but requested quantity of free gift <strong>%1</strong> is not available at the moment","We apologize, but requested quantity of free gift <strong>%1</strong> is not available at the moment"
 "We apologize, but products of type <strong>%1</strong> are not supported","We apologize, but products of type <strong>%1</strong> are not supported"
 "We apologize, but your free gift <strong>%1</strong> is not available at the moment","We apologize, but your free gift <strong>%1</strong> is not available at the moment"
@@ -17,6 +25,10 @@ No,No
 "One By One","One By One"
 Multiple,Multiple
 "Could not migrate banners data. Exception message: %1. For details see exception log.","Could not migrate banners data. Exception message: %1. For details see exception log."
+"Rule with specified ID ""%1"" not found.","Rule with specified ID ""%1"" not found."
+"The product is not available in this configuration, 
+                    please choose another product option.","The product is not available in this configuration, 
+                    please choose another product option."
 """\n"" .","""\n"" ."
 "Item added by Free Gift Module","Item added by Free Gift Module"
 "Auto add promo items with products","Auto add promo items with products"
@@ -25,6 +37,9 @@ Multiple,Multiple
 "Auto add promo items for every $X spent","Auto add promo items for every $X spent"
 "Add gift with each N-th product in the cart","Add gift with each N-th product in the cart"
 "Automatically add products to cart","Automatically add products to cart"
+"Please click 'Update Items and Quantities' to refresh the cart","Please click 'Update Items and Quantities' to refresh the cart"
+"Free Gift","Free Gift"
+"Open gifts grid","Open gifts grid"
 sample,sample
 "Select all","Select all"
 "Unselect all","Unselect all"
@@ -42,11 +57,12 @@ None,None
 "Customize %1","Customize %1"
 "No options of this product are available.","No options of this product are available."
 "Choose an Option...","Choose an Option..."
+Configure,Configure
+Select,Select
 "Each N-th","Each N-th"
 "Number Of Gift Items","Number Of Gift Items"
 "Discount Amount","Discount Amount"
 "Discount Qty Step (Buy X)","Discount Qty Step (Buy X)"
-"Free Gift","Free Gift"
 Information,Information
 General,General
 "Add Simple/Virtual/Downloadable/Bundle Products Automatically, Without Confirmation","Add Simple/Virtual/Downloadable/Bundle Products Automatically, Without Confirmation"
@@ -54,13 +70,13 @@ General,General
 "Auto Add Free Items Based on Cart Amount","Auto Add Free Items Based on Cart Amount"
 "Applicable only for Every X Spent Free Gift Rules","Applicable only for Every X Spent Free Gift Rules"
 "Include Tax in Subtotal","Include Tax in Subtotal"
-"Messages And Notifications Settings","Messages And Notifications Settings"
+"Messages and Notifications Settings","Messages and Notifications Settings"
 "Gifts Selection Method","Gifts Selection Method"
-"Popup header text","Popup header text"
-"""Add to Cart"" button text","""Add to Cart"" button text"
-"Message For The Free Item In The Cart","Message For The Free Item In The Cart"
-"Represent Free Gift As","Represent Free Gift As"
-"Prefix For The Free Item Name In The Order","Prefix For The Free Item Name In The Order"
+"Popup Header Text","Popup Header Text"
+"""Add to Cart"" Button Text","""Add to Cart"" Button Text"
+"Message for the Free Item in the Cart","Message for the Free Item in the Cart"
+"Represent Free Gift as","Represent Free Gift as"
+"Prefix for the Free Item Name in The Order","Prefix for the Free Item Name in The Order"
 "Add Free Gift Message","Add Free Gift Message"
 "Open Popup Automatically","Open Popup Automatically"
 "Always open free gift popup on cart page if any free gift is available","Always open free gift popup on cart page if any free gift is available"
@@ -78,6 +94,27 @@ Limitations,Limitations
 "Gift Image Height (px)","Gift Image Height (px)"
 "Product Attribute for Header","Product Attribute for Header"
 "Product Attribute for Description","Product Attribute for Description"
+"Select Free Gift Products","Select Free Gift Products"
+"Add Selected Free Gift(s) to Order","Add Selected Free Gift(s) to Order"
+"Configure Product","Configure Product"
+OK,OK
+"Add New Gift","Add New Gift"
+"All Store Views","All Store Views"
+"Store View","Store View"
+ID,ID
+Product,Product
+SKU,SKU
+"Original Price","Original Price"
+"Promo Price","Promo Price"
+Quantity,Quantity
+"Items Left","Items Left"
+"The setting regulates the collection of tax when
+                        Free Gifts are being represented as a product with $0 price.
+                        Other settings for tax calculated on Free Gifts are ignored.
+                    ","The setting regulates the collection of tax when
+                        Free Gifts are being represented as a product with $0 price.
+                        Other settings for tax calculated on Free Gifts are ignored.
+                    "
 "Apply tax on original price of promo items added for free","Apply tax on original price of promo items added for free"
 "Apply shipping on promo items added for free","Apply shipping on promo items added for free"
 "Promo Items","Promo Items"

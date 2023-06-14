@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Model;
 
@@ -40,6 +45,9 @@ class Product
      */
     private $getProductTypesBySkus;
 
+    /**
+     * @var array
+     */
     private $productQty = [];
 
     public function __construct(
@@ -73,9 +81,11 @@ class Product
     {
         if (!isset($this->productQty[$sku])) {
 
-            $productType = $this->getProductTypesBySkus->execute([$sku])[$sku];
+            $skuTypesArray = $this->getProductTypesBySkus->execute([$sku]);
+            $productType = $skuTypesArray[$sku] ?? null;
 
-            if ($productType === \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE
+            if (!$productType
+                || $productType === \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE
                 || $productType === \Magento\Downloadable\Model\Product\Type::TYPE_DOWNLOADABLE
                 || $productType === \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL
                 || $productType === \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE

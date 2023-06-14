@@ -32,7 +32,8 @@ define(
             messagesMerger: function () {
                 var messagesArr = this.messagesObserver(),
                     staticMessages = this.staticMessages(),
-                    isAdded = false;
+                    isAdded = false,
+                    cartFromCustomerData = customerData.get('cart')();
 
                 if (_.isUndefined(messagesArr.messages)) {
                     messagesArr.messages = [];
@@ -41,6 +42,10 @@ define(
                     return messagesArr;
                 }
                 if (_.isUndefined(window.checkout)){
+                    return messagesArr;
+                }
+
+                if (_.isUndefined(cartFromCustomerData.items) || cartFromCustomerData.items.length === 0){
                     return messagesArr;
                 }
 
@@ -69,22 +74,6 @@ define(
              * @return {boolean}
              */
             isSectionInvalid: function (staticMessages) {
-                var cartFromCustomerData = customerData.get('cart')();
-
-                if (_.isUndefined(cartFromCustomerData.items)) {
-                    return true;
-                }
-
-                var isSetItemsInCart = !!cartFromCustomerData.items.length;
-
-                if (_.isUndefined(window.checkout) === false && isSetItemsInCart === false) {
-                    return false;
-                }
-
-                if (!isSetItemsInCart) {
-                    return true;
-                }
-
                 return !_.isUndefined(window.checkout.websiteId)
                     && !_.isUndefined(staticMessages.website_id)
                     && staticMessages.website_id !== window.checkout.websiteId

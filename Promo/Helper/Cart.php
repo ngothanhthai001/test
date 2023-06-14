@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Free Gift Base for Magento 2
+ */
 
 namespace Amasty\Promo\Helper;
 
@@ -76,7 +81,7 @@ class Cart
             }
 
             //qty for promoItemData will be reserved later
-            $promoItemData->isDeleted(false);
+            $promoItemData->isItemDeleted(false);
             if (!$quote->hasData('is_copy')) {
                 $this->promoMessagesHelper->showMessage(
                     __(
@@ -91,8 +96,17 @@ class Cart
 
             return true;
         } catch (\Exception $e) {
+            $messageNotice = $e->getMessage();
+            $notAvailableQtyNotice = __('The requested qty is not available')->render();
+            if (strpos($messageNotice, $notAvailableQtyNotice) !== false) {
+                $messageNotice = __(
+                    'The product <strong>%1</strong> is not available in this configuration, 
+                           please choose another product option.',
+                    $product->getName()
+                );
+            }
             $this->promoMessagesHelper->showMessage(
-                $e->getMessage(),
+                $messageNotice,
                 true,
                 true
             );
@@ -104,7 +118,7 @@ class Cart
     /**
      * Get all the default selection products used in bundle product
      * @param Product $product
-     * @return array
+     * @return array$product
      */
     private function getBundleOptions(Product $product)
     {
