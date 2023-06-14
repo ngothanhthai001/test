@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @package Promotions Manager for Magento 2
+ */
 
 namespace Amasty\Rgrid\Model\ResourceModel\Rule;
 
@@ -7,7 +12,7 @@ use Magento\SalesRule\Model\Data\Rule;
 
 class Collection extends RuleCollection
 {
-    const PAGE_SIZE = 1;
+    public const PAGE_SIZE = 1;
 
     /**
      * @param string $direction
