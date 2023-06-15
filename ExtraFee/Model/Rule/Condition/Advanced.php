@@ -21,18 +21,25 @@
 
 namespace Mageplaza\ExtraFee\Model\Rule\Condition;
 
+use Exception;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
-use Magento\CatalogInventory\Api\StockStateInterface;
+use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use Magento\Config\Model\Config\Source\Locale\Currency;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Customer\Model\SessionFactory;
 use Magento\Directory\Model\Config\Source\Country;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Model\AbstractModel;
+use Magento\InventorySales\Model\ResourceModel\GetAssignedStockIdForWebsite;
+use Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Rule\Model\Condition\AbstractCondition;
 use Magento\Rule\Model\Condition\Context;
 use Magento\Store\Model\StoreManagerInterface;
+use Mageplaza\ExtraFee\Helper\Data;
 
 /**
  * Class Advanced
@@ -66,14 +73,19 @@ class Advanced extends AbstractCondition
     protected $storeManager;
 
     /**
-     * @var StockStateInterface
-     */
-    protected $stockState;
-
-    /**
      * @var SessionFactory
      */
     protected $customerSession;
+
+    /**
+     * @var StockItemRepository
+     */
+    protected $stockItemRepository;
+
+    /**
+     * @var Data
+     */
+    protected $helperData;
 
     /**
      * Advanced constructor.
@@ -85,7 +97,8 @@ class Advanced extends AbstractCondition
      * @param SessionFactory $customerSession
      * @param StoreManagerInterface $storeManager
      * @param Currency $currency
-     * @param StockStateInterface $stockState
+     * @param StockItemRepository $stockItemRepository
+     * @param Data $helperData
      * @param array $data
      */
     public function __construct(
@@ -96,16 +109,18 @@ class Advanced extends AbstractCondition
         SessionFactory $customerSession,
         StoreManagerInterface $storeManager,
         Currency $currency,
-        StockStateInterface $stockState,
+        StockItemRepository $stockItemRepository,
+        Data $helperData,
         array $data = []
     ) {
-        $this->country           = $country;
-        $this->currency          = $currency;
-        $this->productRepository = $productRepository;
-        $this->quoteFactory      = $quoteFactory;
-        $this->storeManager      = $storeManager;
-        $this->stockState        = $stockState;
-        $this->customerSession   = $customerSession;
+        $this->country             = $country;
+        $this->currency            = $currency;
+        $this->productRepository   = $productRepository;
+        $this->quoteFactory        = $quoteFactory;
+        $this->storeManager        = $storeManager;
+        $this->customerSession     = $customerSession;
+        $this->stockItemRepository = $stockItemRepository;
+        $this->helperData          = $helperData;
 
         parent::__construct($context, $data);
     }
@@ -248,7 +263,7 @@ class Advanced extends AbstractCondition
 
             foreach ($allItems as $item) {
                 $product    = $this->productRepository->getById($item->getProductId(), false, $storeId);
-                $qtyInStock += $this->stockState->getStockQty($product->getId(), $websiteId);
+                $qtyInStock += $this->getQtySale($product);
             }
             $model->setQtyInStock($qtyInStock);
         }
@@ -284,5 +299,56 @@ class Advanced extends AbstractCondition
         }
 
         return parent::validate($model);
+    }
+
+    /**
+     * @param Product|ProductInterface $product
+     *
+     * @return float|int
+     */
+    public function getQtySale($product)
+    {
+        try {
+            $stock = $this->stockItemRepository->get($product->getId());
+            if ($this->helperData->versionCompare('2.3.0') && $this->helperData->moduleIsEnable('Magento_Inventory')) {
+                $totalQty = 0;
+
+                $getSalableQuantityDataBySku = $this->helperData->createObject(
+                    GetSalableQuantityDataBySku::class
+                );
+                $getAssignedStock            = $this->helperData->createObject(
+                    GetAssignedStockIdForWebsite::class
+                );
+
+                $websiteCode     = $this->storeManager->getWebsite()->getCode();
+                $assignedStockId = $getAssignedStock->execute($websiteCode);
+
+                if ($product->getTypeId() === Configurable::TYPE_CODE) {
+                    $typeInstance           = $product->getTypeInstance();
+                    $childProductCollection = $typeInstance->getUsedProducts($product);
+                    foreach ($childProductCollection as $childProduct) {
+                        $qty = $getSalableQuantityDataBySku->execute($childProduct->getSku());
+                        foreach ($qty as $value) {
+                            if ($value['stock_id'] == $assignedStockId) {
+                                $totalQty += isset($value['qty']) ? $value['qty'] : 0;
+                            }
+                        }
+                    }
+                } else {
+                    $qty = $getSalableQuantityDataBySku->execute($product->getSku());
+                    foreach ($qty as $value) {
+                        if ($value['stock_id'] == $assignedStockId) {
+                            $totalQty += isset($value['qty']) ? $value['qty'] : 0;
+                        }
+                    }
+                }
+
+                return $totalQty;
+            }
+
+            return $stock->getIsInStock() ? $stock->getQty() : 0;
+        } catch (Exception $e) {
+            return 0;
+        }
     }
 }

@@ -39,6 +39,19 @@ $extraFee         = $block->getExtraFeeInfo(DisplayArea::CART_SUMMARY);
                 </div>
             <?php endforeach; ?>
         </div>
+        <?php
+            $notes = $block->getExtraFeeNote(DisplayArea::PAYMENT_METHOD);
+            if (count($notes)) :
+        ?>
+        <div class="admin__page-section-item-note-message" style="margin-top: 10px">
+            <p><strong><?= $block->escapeHtml(__('Customer Note Message: ')) ?> </strong></p>
+            <?php
+                foreach ($notes as $key => $note) :
+            ?>
+                <p><strong><?= $block->escapeHtml($key . ': ')?></strong><?= $block->escapeHtml($note) ?></p>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
     </div>
 <?php endif; ?>
 <?php if (count($shipmentExtraFee)) : ?>
@@ -53,6 +66,19 @@ $extraFee         = $block->getExtraFeeInfo(DisplayArea::CART_SUMMARY);
                 </div>
             <?php endforeach; ?>
         </div>
+        <?php
+            $notes = $block->getExtraFeeNote(DisplayArea::SHIPPING_METHOD);
+            if (count($notes)) :
+        ?>
+        <div class="admin__page-section-item-note-message" style="margin-top: 10px">
+            <p><strong><?= $block->escapeHtml(__('Customer Note Message: ')) ?> </strong></p>
+            <?php
+                foreach ($notes as $key => $note) :
+            ?>
+                <p><strong><?= $block->escapeHtml($key . ': ')?></strong><?= $block->escapeHtml($note) ?></p>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
     </div>
 <?php endif; ?>
 <?php if (count($extraFee)) : ?>
@@ -70,6 +96,19 @@ $extraFee         = $block->getExtraFeeInfo(DisplayArea::CART_SUMMARY);
                     <?php endforeach; ?>
                 </div>
             </div>
+            <?php
+                    $notes = $block->getExtraFeeNote(DisplayArea::CART_SUMMARY);
+                    if (count($notes)) :
+            ?>
+            <div class="admin__page-section-item-note-message" style="display: grid">
+                <p><strong><?= $block->escapeHtml(__('Customer Note Message: ')) ?> </strong></p>
+                <?php
+                    foreach ($notes as $key => $note) :
+                ?>
+                    <p><strong><?= $block->escapeHtml($key . ': ')?></strong><?= $block->escapeHtml($note) ?></p>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
         </div>
     </section>
 <?php endif; ?>

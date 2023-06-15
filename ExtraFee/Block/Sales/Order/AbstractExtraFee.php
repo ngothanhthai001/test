@@ -201,4 +201,99 @@ abstract class AbstractExtraFee extends Template
     {
         return $this->getOrder();
     }
+
+    /**
+     * @param $area
+     *
+     * @return array
+     */
+    public function getExtraFeeNoteInfo($area)
+    {
+        $extraFeeData = $this->getExtraFeeInfo($area);
+        $ids          = [];
+        $title        = [];
+
+        foreach ($extraFeeData as $data) {
+            $id         = array_filter(preg_split("/\D+/", $data['code']));
+            $id         = reset($id);
+            $title[$id] = $data['rule_label'];
+            $ids[]      = $id;
+        }
+
+        return [array_unique($ids), $title];
+    }
+
+    /**
+     * @param $area
+     *
+     * @return array
+     */
+    public function getExtraFeeNote($area)
+    {
+        [$ids, $title] = $this->getExtraFeeNoteInfo($area);
+
+        $extraFee = $this->helper->unserialize($this->getOrder()->getMpExtraFee());
+
+        $note = [];
+
+        if (isset($extraFee['note'])) {
+            foreach ($ids as $id) {
+                $key = 'mp-extrafee-note-' . $id;
+                foreach ($extraFee['note'] as $index => $value) {
+                    if (str_contains($index, $key)) {
+                        $note[$title[$id]] = $value;
+                    }
+                }
+            }
+
+            return $note;
+        }
+
+        switch ($area) {
+            case DisplayArea::CART_SUMMARY:
+                if ($extraFee && isset($extraFee['summary'])) {
+                    $summaryArray = explode('&', $extraFee['summary']);
+                    foreach ($ids as $id) {
+                        $key = 'mp-extrafee-note-' . $id;
+                        foreach ($summaryArray as $value) {
+                            $content = substr($value, strpos($value, '=') + 1);
+                            if (str_contains($value, $key) && $content != '') {
+                                $note[$title[$id]] = substr($value, strpos($value, '=') + 1);
+                            }
+                        }
+                    }
+                }
+                break;
+            case DisplayArea::SHIPPING_METHOD:
+                if ($extraFee && isset($extraFee['shipping'])) {
+                    $array = explode('&', $extraFee['shipping']);
+                    foreach ($ids as $id) {
+                        $key = 'mp-extrafee-note-' . $id;
+                        foreach ($array as $value) {
+                            $content = substr($value, strpos($value, '=') + 1);
+                            if (str_contains($value, $key) && $content != '') {
+                                $note[$title[$id]] = substr($value, strpos($value, '=') + 1);
+                            }
+                        }
+                    }
+                }
+                break;
+            case DisplayArea::PAYMENT_METHOD:
+                if ($extraFee && isset($extraFee['payment'])) {
+                    $array = explode('&', $extraFee['payment']);
+                    foreach ($ids as $id) {
+                        $key = 'mp-extrafee-note-' . $id;
+                        foreach ($array as $value) {
+                            $content = substr($value, strpos($value, '=') + 1);
+                            if (str_contains($value, $key) && $content != '') {
+                                $note[$title[$id]] = substr($value, strpos($value, '=') + 1);
+                            }
+                        }
+                    }
+                }
+                break;
+        }
+
+        return $note;
+    }
 }

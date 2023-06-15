@@ -21,6 +21,7 @@
 
 namespace Mageplaza\ExtraFee\Controller\Product;
 
+use DateTime;
 use Exception;
 use Magento\Bundle\Model\ResourceModel\Selection\Collection;
 use Magento\Catalog\Model\ProductRepository;
@@ -29,9 +30,11 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
+use Magento\Quote\Model\QuoteFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Mageplaza\ExtraFee\Helper\Data;
 use Mageplaza\ExtraFee\Model\ResourceModel\Rule\CollectionFactory;
@@ -80,6 +83,11 @@ class InitFee extends Action
     protected $helperData;
 
     /**
+     * @var QuoteFactory
+     */
+    protected $quoteFactory;
+
+    /**
      * InitFee constructor.
      *
      * @param Context $context
@@ -88,6 +96,7 @@ class InitFee extends Action
      * @param CollectionFactory $ruleCollection
      * @param PricingHelper $pricingHelper
      * @param CalculateExtraFee $extraFeeCalculate
+     * @param QuoteFactory $quoteFactory
      * @param Data $helperData
      * @param Cart $cart
      */
@@ -98,6 +107,7 @@ class InitFee extends Action
         CollectionFactory $ruleCollection,
         PricingHelper $pricingHelper,
         CalculateExtraFee $extraFeeCalculate,
+        QuoteFactory $quoteFactory,
         Data $helperData,
         Cart $cart
     ) {
@@ -110,6 +120,7 @@ class InitFee extends Action
         $this->pricingHelper     = $pricingHelper;
         $this->extraFeeCalculate = $extraFeeCalculate;
         $this->helperData        = $helperData;
+        $this->quoteFactory      = $quoteFactory;
     }
 
     /**
@@ -227,25 +238,43 @@ class InitFee extends Action
      */
     protected function addProduct($product, $params, $extraFeeData)
     {
-        $this->helperData->resetQuote();
+        $currentTime    = new DateTime();
         $storeId        = $this->storeManager->getStore()->getId();
         $ruleCollection = $this->ruleCollection->create()
             ->addFieldToFilter('status', 1)
+            ->addFieldToFilter('from_date', [
+                ['lteq' => $currentTime->format('Y-m-d H:i:s')],
+                ['null' => true]
+            ])
+            ->addFieldToFilter('to_date', [
+                ['gteq' => $currentTime->format('Y-m-d H:i:s')],
+                ['null' => true]
+            ])
             ->setOrder('priority', 'asc');
-        try {
 
-            $this->cart->addProduct($product, $params);
-            $quoteCart = $this->cart->getQuote();
+        $quoteId = $this->cart->getQuote()->getId();
+
+        try {
+            $request   = new DataObject($params);
+            $quoteCart = $this->quoteFactory->create()->load($quoteId);
+            $totalQty  = $quoteCart->getItemsQty() ?: 0;
+            $quoteCart->addProduct($product, $request);
 
             $baseSubTotal = $quoteCart->getBaseSubtotal();
-            $quoteCart->collectTotals();
+            $quoteCart->setItemsQty($totalQty + $params['qty']);
+
             if (!$quoteCart->getBaseSubtotal() && !$quoteCart->getId()) {
                 $quoteCart->setBaseSubtotal($params['price']);
+                $quoteCart->setBaseSubtotalWithDiscount($params['price']);
             } elseif ($quoteCart->getId()) {
                 $quoteCart->setBaseSubtotal($baseSubTotal + $params['price']);
+                $quoteCart->setBaseSubtotalWithDiscount($quoteCart->getBaseSubtotalWithDiscount() + $params['price']);
             }
 
             foreach ($ruleCollection as $rule) {
+                if (!$this->helperData->checkCustomerGroup($rule) || !$this->helperData->checkStoreIds($rule)) {
+                    continue;
+                }
                 if ($rule->validate($quoteCart)) {
                     $ruleData  = $this->getRuleData($rule, $quoteCart);
                     $labels    = $rule->getlabels() ? Data::jsonDecode($rule->getlabels()) : [];
@@ -274,9 +303,6 @@ class InitFee extends Action
         } catch (Exception $e) {
             return $extraFeeData;
         }
-        if ($quoteCart->getBaseSubtotal() && $quoteCart->getId()) {
-            $quoteCart->setBaseSubtotal($quoteCart->getBaseSubtotal() - $params['price']);
-        }
 
         return $extraFeeData;
     }
@@ -299,7 +325,7 @@ class InitFee extends Action
             $labels        = $rule->getlabels() ? Data::jsonDecode($rule->getlabels()) : [];
             $ruleLabel     = isset($labels[$storeId]) ? ($labels[$storeId] ?: $rule->getName()) : '';
             $calculatedFee = $this->extraFeeCalculate->calculateExtraFeeAmount($quote, $rule, $taxClass);
-            $ruleFeeAmount = $this->pricingHelper->currencyByStore($calculatedFee[1], $storeId, true, false);
+            $ruleFeeAmount = $this->pricingHelper->currencyByStore($calculatedFee[0], $storeId, true, false);
 
             $data[$ruleLabel] = $rule->getFeeType() . ',' . $ruleFeeAmount;
         } else {
@@ -307,7 +333,7 @@ class InitFee extends Action
             foreach ($options as $option) {
                 $ruleLabel        = isset($option[$storeId]) ? ($option[$storeId] ?: $option[0]) : '';
                 $calculatedFee    = $this->extraFeeCalculate->calculateExtraFeeAmount($quote, $option, $taxClass);
-                $ruleFeeAmount    = $this->pricingHelper->currencyByStore($calculatedFee[1], $storeId, true, false);
+                $ruleFeeAmount    = $this->pricingHelper->currencyByStore($calculatedFee[0], $storeId, true, false);
                 $data[$ruleLabel] = $option['type'] . ',' . $ruleFeeAmount;
             }
         }

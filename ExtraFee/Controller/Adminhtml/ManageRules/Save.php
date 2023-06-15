@@ -27,6 +27,7 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Registry;
+use Magento\Framework\Stdlib\DateTime\DateTime as MagentoDatetime;
 use Mageplaza\ExtraFee\Controller\Adminhtml\AbstractManageRules;
 use Mageplaza\ExtraFee\Helper\Data;
 use Mageplaza\ExtraFee\Model\RuleFactory;
@@ -44,26 +45,36 @@ class Save extends AbstractManageRules
     protected $helperData;
 
     /**
+     * @var MagentoDatetime
+     */
+    protected $dateTime;
+
+    /**
      * Save constructor.
      *
      * @param RuleFactory $ruleFactory
      * @param Registry $coreRegistry
      * @param Context $context
      * @param Data $helperData
+     * @param MagentoDatetime $dateTime
      */
     public function __construct(
         RuleFactory $ruleFactory,
         Registry $coreRegistry,
         Context $context,
-        Data $helperData
+        Data $helperData,
+        MagentoDatetime $dateTime
     ) {
         $this->helperData = $helperData;
+        $this->dateTime   = $dateTime;
 
         parent::__construct($ruleFactory, $coreRegistry, $context);
+
     }
 
     /**
      * @return ResponseInterface|Redirect|ResultInterface
+     * @throws Exception
      */
     public function execute()
     {
@@ -104,6 +115,7 @@ class Save extends AbstractManageRules
         }
         $conditionData = $this->getRequest()->getPost('rule');
         $rule          = $this->initRule();
+
         $rule->addData($data);
 
         $rule->loadPost($conditionData);
@@ -116,6 +128,20 @@ class Save extends AbstractManageRules
 
         if ($rule->getData('amount')) {
             $rule->setData('amount', round($rule->getData('amount'), 2));
+        }
+
+        if ($rule->getData('allow_note_message') && !$rule->getData('message_title')) {
+            $rule->setData('message_title', __('Leave a message with the extra fee.'));
+        }
+
+        if (!$rule->getFromDate()) {
+            $rule->setData('from_date', $this->dateTime->gmtDate());
+        }
+
+        if ($rule->getToDate()) {
+            $toDate = $rule->getToDate();
+            $toDate->setTime(23, 59, 59);
+            $rule->setToDate($toDate);
         }
 
         try {

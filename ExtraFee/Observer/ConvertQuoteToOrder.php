@@ -56,6 +56,7 @@ class ConvertQuoteToOrder implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
         $quote = $observer->getEvent()->getQuote();
         $this->helperData->setExtraFeeForItems($order, $quote);
+        $this->helperData->getCheckoutSession()->unsExtraFeeNote();
 
         return $this;
     }

@@ -144,6 +144,18 @@ class Update extends Action
             }
         }
 
+        $checkoutSession = $this->helperData->getCheckoutSession();
+        $extraFeeNote    = $checkoutSession->getExtraFeeMultiNote() ?: [];
+
+        foreach ($params as $key => $value) {
+            if (str_contains($key, 'mp-extrafee-note')) {
+                $addressId = array_last(explode('-', $key));
+                $extraFeeNote[$addressId][$key] = $value;
+            }
+        }
+
+        $checkoutSession->setExtraFeeMultiNote($extraFeeNote);
+
         return $this->getResponse()->representJson($this->jsonHelper->jsonEncode($result));
     }
 }

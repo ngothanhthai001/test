@@ -78,7 +78,7 @@ class ExtraFee extends AbstractCreate
      */
     public function getAppliedRule($area)
     {
-        $quote = $this->_getSession()->getQuote();
+        $quote = $this->getQuote();
         $this->helper->getCheckoutSession()->setMpArea($area);
         $quote->setTotalsCollectedFlag(false)->collectTotals();
 

@@ -29,6 +29,7 @@ use Magento\Quote\Setup\QuoteSetup;
 use Magento\Quote\Setup\QuoteSetupFactory;
 use Magento\Sales\Setup\SalesSetup;
 use Magento\Sales\Setup\SalesSetupFactory;
+use Mageplaza\ExtraFee\Model\ResourceModel\Rule\CollectionFactory as RuleCollection;
 
 /**
  * Class UpgradeData
@@ -47,17 +48,25 @@ class UpgradeData implements UpgradeDataInterface
     protected $quoteSetupFactory;
 
     /**
+     * @var RuleCollection
+     */
+    protected $ruleCollection;
+
+    /**
      * UpgradeData constructor.
      *
      * @param SalesSetupFactory $salesSetupFactory
      * @param QuoteSetupFactory $quoteSetupFactory
+     * @param RuleCollection $ruleCollection
      */
     public function __construct(
         SalesSetupFactory $salesSetupFactory,
-        QuoteSetupFactory $quoteSetupFactory
+        QuoteSetupFactory $quoteSetupFactory,
+        RuleCollection $ruleCollection
     ) {
         $this->salesSetupFactory = $salesSetupFactory;
         $this->quoteSetupFactory = $quoteSetupFactory;
+        $this->ruleCollection    = $ruleCollection;
     }
 
     /**
@@ -66,6 +75,8 @@ class UpgradeData implements UpgradeDataInterface
      */
     public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
+        $setup->startSetup();
+
         /** @var SalesSetup $salesInstaller */
         $salesInstaller = $this->salesSetupFactory->create(['resourceName' => 'sales_setup', 'setup' => $setup]);
 
@@ -94,5 +105,25 @@ class UpgradeData implements UpgradeDataInterface
                 ['type' => Table::TYPE_TEXT, 'visible' => false]
             );
         }
+
+        if (version_compare($context->getVersion(), '1.0.3', '<')) {
+            $updateData = [];
+            $ruleCollection = $this->ruleCollection->create();
+
+            foreach ($ruleCollection as $rule) {
+                $ruleData = $rule->getData();
+                $ruleData['from_date'] = $ruleData['created_at'];
+                $updateData[] = $ruleData;
+            }
+
+            if (!empty($updateData)) {
+                $setup->getConnection()->insertOnDuplicate(
+                    $setup->getTable('mageplaza_extrafee_rule'),
+                    $updateData
+                );
+            }
+        }
+
+        $setup->endSetup();
     }
 }

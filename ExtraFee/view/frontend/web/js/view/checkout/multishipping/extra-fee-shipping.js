@@ -182,7 +182,35 @@ define([
             });
 
             return this;
-        }
+        },
 
+        changeOption: function (option, event) {
+            if (event.type !== 'change') {
+                return;
+            }
+
+            var target  = event.currentTarget,
+                note    = $(target).val(),
+                url     = BASE_URL + 'mpextrafee/update/note',
+                payload = {
+                    note: note,
+                    key: $(target).attr('id'),
+                    address_id: option.address_id
+                };
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: payload
+            });
+        },
+
+        getNoteMessage: function (addressId, key) {
+            var ele = '#' + key;
+            if (typeof(extraFee.selectedOptionsMultiShipping()[addressId]['note']) !== "undefined") {
+                $(ele).val(extraFee.selectedOptionsMultiShipping()[addressId]['note'][key]);
+            }
+        }
     });
 });

@@ -53,6 +53,35 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         }
 
+        if (version_compare($context->getVersion(), '1.0.3', '<')) {
+            $extraFeeTableName = $setup->getTable('mageplaza_extrafee_rule');
+            $connection->addColumn($extraFeeTableName, 'allow_note_message', [
+                'type'     => Table::TYPE_INTEGER,
+                'nullable' => false,
+                'comment'  => 'Allow Note Message',
+                'after'    => 'customer_groups'
+            ]);
+            $connection->addColumn($extraFeeTableName, 'message_title', [
+                'type'     => Table::TYPE_TEXT,
+                'length'   => '64K',
+                'nullable' => true,
+                'comment'  => 'Message Title',
+                'after'    => 'allow_note_message'
+            ]);
+            $connection->addColumn($extraFeeTableName, 'from_date', [
+                'type'     => Table::TYPE_DATETIME,
+                'nullable' => true,
+                'comment'  => 'From Date',
+                'after'    => 'message_title'
+            ]);
+            $connection->addColumn($extraFeeTableName, 'to_date', [
+                'type'     => Table::TYPE_DATETIME,
+                'nullable' => true,
+                'comment'  => 'To Date',
+                'after'    => 'from_date'
+            ]);
+        }
+
         $setup->endSetup();
     }
 }

@@ -48,7 +48,7 @@ define([
             }
 
             if (!self.ruleVirtualMultiShipping().length) {
-                self.setRuleMultiShipping(config.ruleVirtualMultiShipping);
+                self.setRuleVirtualMultiShipping(config.ruleVirtualMultiShipping);
             }
 
             if (!self.selectedOptionsVirtualMultiShipping().length) {
@@ -113,6 +113,8 @@ define([
                     }
                 });
             }
+
+
         },
 
         afterRenderOptionsVirtual: function (option, optionVal) {
@@ -139,6 +141,53 @@ define([
                         }
                     }
                 });
+            }
+        },
+
+        changeOption: function (option, event) {
+            if (event.type !== 'change') {
+                return;
+            }
+
+            var target  = event.currentTarget,
+                note    = $(target).val(),
+                url     = BASE_URL + 'mpextrafee/update/note',
+                payload = {
+                    note: note,
+                    key: $(target).attr('id'),
+                    address_id: option.address_id
+                };
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: payload
+            });
+        },
+
+        getNoteMessage: function (addressId, ruleId, key) {
+            var ele = '#' + key;
+            if (typeof(this.ruleMultiShipping[addressId][ruleId]) === "undefined") {
+                return;
+            }
+
+            var ruleData = this.ruleMultiShipping[addressId][ruleId];
+            if (typeof(ruleData['note']) !== "undefined") {
+                $(ele).val(ruleData['note'][key]);
+            }
+        },
+
+        getVirtualNoteMessage: function(addressId, key) {
+            var ele = '#' + key;
+
+            if (typeof(this.ruleVirtualMultiShipping[addressId][0]) === 'undefined') {
+                return;
+            }
+
+            var virtualRuleData = this.ruleVirtualMultiShipping[addressId][0];
+            if (typeof(virtualRuleData['note']) !== 'undefined') {
+                $(ele).val(virtualRuleData['note'][key]);
             }
         }
     });

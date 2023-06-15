@@ -21,6 +21,7 @@
 
 namespace Mageplaza\ExtraFee\Controller\Product;
 
+use DateTime;
 use Exception;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Checkout\Model\Cart;
@@ -28,9 +29,11 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
+use Magento\Quote\Model\QuoteFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Mageplaza\ExtraFee\Helper\Data;
 use Mageplaza\ExtraFee\Model\ResourceModel\Rule\CollectionFactory;
@@ -79,6 +82,11 @@ class ExtraFee extends Action
     protected $helperData;
 
     /**
+     * @var QuoteFactory
+     */
+    protected $quoteFactory;
+
+    /**
      * ExtraFee constructor.
      *
      * @param Context $context
@@ -88,6 +96,7 @@ class ExtraFee extends Action
      * @param CollectionFactory $ruleCollection
      * @param PricingHelper $pricingHelper
      * @param Data $helperData
+     * @param QuoteFactory $quoteFactory
      * @param ExtraFeeCalculate $extraFeeCalculate
      */
     public function __construct(
@@ -98,6 +107,7 @@ class ExtraFee extends Action
         CollectionFactory $ruleCollection,
         PricingHelper $pricingHelper,
         Data $helperData,
+        QuoteFactory $quoteFactory,
         ExtraFeeCalculate $extraFeeCalculate
     ) {
         $this->storeManager      = $storeManager;
@@ -109,6 +119,7 @@ class ExtraFee extends Action
         $this->helperData        = $helperData;
 
         parent::__construct($context);
+        $this->quoteFactory = $quoteFactory;
     }
 
     /**
@@ -118,7 +129,6 @@ class ExtraFee extends Action
      */
     public function execute()
     {
-        $this->helperData->resetQuote();
         $result       = $this->resultFactory->create('json');
         $productId    = $this->_request->getParam('product');
         $extraFeeData = [];
@@ -173,13 +183,25 @@ class ExtraFee extends Action
     {
         $price          = 0;
         $groupIds       = [];
+        $currentTime    = new DateTime();
         $storeId        = $this->storeManager->getStore()->getId();
         $ruleCollection = $this->ruleCollection->create()
             ->addFieldToFilter('status', 1)
+            ->addFieldToFilter('from_date', [
+                ['lteq' => $currentTime->format('Y-m-d H:i:s')],
+                ['null' => true]
+            ])
+            ->addFieldToFilter('to_date', [
+                ['gteq' => $currentTime->format('Y-m-d H:i:s')],
+                ['null' => true]
+            ])
             ->setOrder('priority', 'asc');
-        $this->cart->addProduct($product, $params);
 
-        $quoteCart = $this->cart->getQuote()->collectTotals();
+        $request     = new DataObject($params);
+        $quoteCartId = $this->cart->getQuote()->getId();
+        $quoteCart   = $this->quoteFactory->create()->load($quoteCartId);
+        $totalQty    = $quoteCart->getItemsQty() ?: 0;
+        $quoteCart->addProduct($product, $request);
 
         if (array_key_exists('super_group', $params)) {
             foreach ($params['super_group'] as $id => $qty) {
@@ -188,22 +210,29 @@ class ExtraFee extends Action
                 }
             }
         }
+
         foreach ($quoteCart->getAllItems() as $item) {
             if (count($groupIds) && in_array($item->getProductId(), $groupIds)) {
-                $price += $item->getPrice() * $item->getQty();
+                $price    += $item->getPrice() * $item->getQty();
+                $totalQty += $item->getQty();
             } else {
                 if ($item->getProductId() == $product->getId()) {
-                    $price = $item->getPrice();
+                    $price    = $item->getPrice() * $item->getQty();
+                    $totalQty = $item->getQty();
                     break;
                 }
             }
         }
-        if (!$quoteCart->getBaseSubtotal() && !$quoteCart->getId()) {
-            $quoteCart->setBaseSubtotal($price);
-        }
-        foreach ($ruleCollection as $rule) {
-            if ($rule->validate($quoteCart)) {
 
+        $quoteCart->setItemsQty($totalQty);
+        $quoteCart->setBaseSubtotal($price);
+        $quoteCart->setBaseSubtotalWithDiscount($price);
+
+        foreach ($ruleCollection as $rule) {
+            if (!$this->helperData->checkCustomerGroup($rule) || !$this->helperData->checkStoreIds($rule)) {
+                continue;
+            }
+            if ($rule->validate($quoteCart)) {
                 $ruleData  = $this->getRuleData($rule, $quoteCart);
                 $labels    = $rule->getlabels() ? Data::jsonDecode($rule->getlabels()) : [];
                 $ruleLabel = isset($labels[$storeId]) ? ($labels[$storeId] ?: $rule->getName()) : '';
@@ -245,14 +274,14 @@ class ExtraFee extends Action
             $labels          = $rule->getlabels() ? Data::jsonDecode($rule->getlabels()) : [];
             $ruleLabel       = isset($labels[$storeId]) ? ($labels[$storeId] ?: $rule->getName()) : '';
             $calculatedFee   = $this->extraFeeCalculate->calculateExtraFeeAmount($quote, $rule, $taxClass);
-            $ruleFeeAmount   = $this->pricingHelper->currencyByStore($calculatedFee[1], $storeId, true, false);
+            $ruleFeeAmount   = $this->pricingHelper->currencyByStore($calculatedFee[0], $storeId, true, false);
             $data[$ruleName] = $ruleLabel . ': ' . $ruleFeeAmount;
         } else {
             $options = $rule->getOptions() ? Data::jsonDecode($rule->getOptions())['option']['value'] : [];
             foreach ($options as $option) {
                 $ruleLabel         = isset($option[$storeId]) ? ($option[$storeId] ?: $option[0]) : '';
                 $calculatedFee     = $this->extraFeeCalculate->calculateExtraFeeAmount($quote, $option, $taxClass);
-                $ruleFeeAmount     = $this->pricingHelper->currencyByStore($calculatedFee[1], $storeId, true, false);
+                $ruleFeeAmount     = $this->pricingHelper->currencyByStore($calculatedFee[0], $storeId, true, false);
                 $data[$ruleName][] = $ruleLabel . ': ' . $ruleFeeAmount;
             }
         }

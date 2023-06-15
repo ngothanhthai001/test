@@ -55,6 +55,8 @@ class MultiShippingConvertQuoteToOrder implements ObserverInterface
         /** @var Order $order */
         $order   = $observer->getEvent()->getOrder();
         $address = $observer->getEvent()->getAddress();
+
+        $this->helperData->setExtraFeeNote($address);
         $this->helperData->setExtraFeeForItems($order, $address);
 
         return $this;

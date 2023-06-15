@@ -33,9 +33,6 @@ var config = {
             'Magento_Checkout/js/action/select-payment-method': {
                 'Mageplaza_ExtraFee/js/action/select-payment-method-mixin': true
             },
-            'Magento_Checkout/js/model/checkout-data-resolver': {
-                'Mageplaza_ExtraFee/js/model/checkout-data-resolver': true
-            },
         }
     }
 };

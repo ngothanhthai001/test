@@ -86,7 +86,16 @@
                 "><!-- ko text: title --><!-- /ko --></option>
             </select>
             <!-- /ko -->
-
+            <!-- ko if: $parent.isAllowNote($data) -->
+            <label data-bind="text: $parent.getNoteTitle($data), attr: {for: 'mp-extrafee-note-' + rule_id}"></label>
+            <textarea cols="30" rows="2"
+                      data-bind=" attr: {
+                        id: 'mp-extrafee-note-' + rule_id,
+                        name: 'mp-extrafee-note-' + rule_id
+                      },
+                      event: {change: $parent.changeOption},
+                      afterRender: $parent.getNoteMessage('mp-extrafee-note-' + rule_id)"></textarea>
+            <!-- /ko -->
         </div>
     </dl>
     <!-- ko if: errorValidationMessage().length > 0 -->

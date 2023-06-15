@@ -159,7 +159,7 @@ class RuleManagement implements RuleInterface
             $quote->setBillingAddress($addressInformation->getBillingAddress());
         }
 
-        if ($addressInformation->getBillingAddress()) {
+        if ($addressInformation->getShippingAddress()) {
             $quote->setShippingAddress($addressInformation->getShippingAddress());
         }
 

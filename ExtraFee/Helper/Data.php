@@ -21,9 +21,11 @@
 
 namespace Mageplaza\ExtraFee\Helper;
 
+use DateTime;
 use Magento\Backend\Model\Session\Quote;
 use Magento\Checkout\Model\Cart as CheckoutCart;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Customer\Model\SessionFactory as CustomerSession;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -36,11 +38,11 @@ use Magento\Sales\Model\Order;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Tax\Model\Config;
-use Magento\Customer\Model\Session;
 use Mageplaza\Core\Helper\AbstractData as CoreHelper;
 use Mageplaza\ExtraFee\Model\Config\Source\DisplayArea;
 use Mageplaza\ExtraFee\Model\ResourceModel\Rule\CollectionFactory;
 use Mageplaza\ExtraFee\Model\Rule;
+use Mageplaza\ExtraFee\Model\RuleFactory;
 
 /**
  * Class Data
@@ -76,6 +78,16 @@ class Data extends CoreHelper
     protected $quoteFactory;
 
     /**
+     * @var CustomerSession
+     */
+    protected $customerSession;
+
+    /**
+     * @var RuleFactory
+     */
+    protected $ruleFactory;
+
+    /**
      * Data constructor.
      *
      * @param Context $context
@@ -85,7 +97,9 @@ class Data extends CoreHelper
      * @param CartRepositoryInterface $quoteRepository
      * @param CollectionFactory $ruleCollectionFactory
      * @param CheckoutCart $cart
+     * @param CustomerSession $customerSession
      * @param QuoteFactory $quoteFactory
+     * @param RuleFactory $ruleFactory
      */
     public function __construct(
         Context $context,
@@ -95,13 +109,17 @@ class Data extends CoreHelper
         CartRepositoryInterface $quoteRepository,
         CollectionFactory $ruleCollectionFactory,
         CheckoutCart $cart,
-        QuoteFactory $quoteFactory
+        CustomerSession $customerSession,
+        QuoteFactory $quoteFactory,
+        RuleFactory $ruleFactory
     ) {
         $this->checkoutSession       = $checkoutSession;
         $this->quoteRepository       = $quoteRepository;
         $this->ruleCollectionFactory = $ruleCollectionFactory;
         $this->cart                  = $cart;
         $this->quoteFactory          = $quoteFactory;
+        $this->customerSession       = $customerSession;
+        $this->ruleFactory           = $ruleFactory;
 
         parent::__construct($context, $objectManager, $storeManager);
     }
@@ -166,6 +184,11 @@ class Data extends CoreHelper
     public function setMpExtraFee($quote, $value, $area)
     {
         $extraFee = $quote->getMpExtraFee() ? $this::jsonDecode($quote->getMpExtraFee()) : [];
+        if (is_string($value)) {
+            $this->setNoteToSession($value);
+        }
+
+        $checkoutSession = $this->getCheckoutSession();
 
         if (!isset($extraFee['summary'])) {
             $ruleCollection = $this->ruleCollectionFactory->create()->addFieldToFilter('area', '3');
@@ -177,6 +200,12 @@ class Data extends CoreHelper
                 }
             }
             $extraFee['summary'] = http_build_query(['rule' => $defaults]);
+        }
+
+        $extraFeeNote = $checkoutSession->getExtraFeeNote() ?: [];
+
+        if (count($extraFeeNote) && is_string($value)) {
+            $value = $this->setNoteToParams($extraFeeNote, $value);
         }
 
         switch ((int) $area) {
@@ -324,8 +353,11 @@ class Data extends CoreHelper
         $extraFeeTotals = [];
         $extraFeeItems  = [];
         foreach ($order->getItems() as $orderItems) {
+            if ($orderItems->getProductType() == 'configurable') {
+                continue;
+            }
             foreach ($object->getItems() as $item) {
-                if (($orderItems->getItemId() === $item->getOrderItemId()) && $orderItems->getProductType() != 'configurable') {
+                if ($orderItems->getItemId() === $item->getOrderItemId()) {
                     $mpExtraFees = Data::jsonDecode($orderItems->getMpExtraFee());
                     $item->setMpExtraFee($orderItems->getMpExtraFee());
                     foreach ($mpExtraFees as $mpExtraFee) {
@@ -395,6 +427,7 @@ class Data extends CoreHelper
         $extraFeeAmount     = 0;
         $baseExtraFeeAmount = 0;
         $extraFeeTotals     = $this->getMpExtraFee($order, DisplayArea::TOTAL);
+        $extraFee           = $this->getMpExtraFee($quote);
         foreach ($extraFeeTotals as $extraFeeTotal) {
             $extraFeeAmount           += $extraFeeTotal['value'];
             $baseExtraFeeAmount       += $extraFeeTotal['base_value'];
@@ -404,7 +437,27 @@ class Data extends CoreHelper
             $valueExclTaxEachItem     = $extraFeeTotal['value_excl_tax'] / $order->getTotalQtyOrdered();
             $valueInclTaxEachItem     = $extraFeeTotal['value_incl_tax'] / $order->getTotalQtyOrdered();
 
+            $ruleId = explode('_', $extraFeeTotal['code'])[4];
             foreach ($order->getItems() as $item) {
+                foreach ($extraFee as $Id => $option) {
+                    if ($ruleId != $Id) {
+                        continue;
+                    }
+                    if (is_array($option)) {
+                        foreach ($option as $op) {
+                            /** @var Rule $rule */
+                            $rule     = $this->ruleFactory->create()->load($ruleId);
+                            $options  = $rule->getOptions() ? Data::jsonDecode($rule->getOptions())['option']['value'] : [];
+                            if ((int)$options[$op]['type'] === 3) {
+                                $valueEachItem            = $item->getOriginalPrice() * $options[$op]['amount'] / 100;
+                                $baseValueEachItem        = $item->getBaseOriginalPrice() * $options[$op]['amount'] / 100;
+                                $baseValueInclTaxEachItem = $item->getBasePriceInclTax() * $options[$op]['amount'] / 100;
+                                $valueExclTaxEachItem     = $item->getOriginalPrice() * $options[$op]['amount'] / 100;
+                                $valueInclTaxEachItem     = $item->getPriceInclTax() * $options[$op]['amount'] / 100;
+                            }
+                        }
+                    }
+                }
                 $totalsFees[$item->getProductId()][] = [
                     'code'                => $extraFeeTotal['code'],
                     'title'               => $extraFeeTotal['title'],
@@ -425,8 +478,6 @@ class Data extends CoreHelper
         if ($quote instanceof Address) {
             $order->setGrandTotal($order->getGrandTotal() + $extraFeeAmount);
             $order->setBaseGrandTotal($order->getBaseGrandTotal() + $baseExtraFeeAmount);
-            $order->setOdGrandTotal($order->getOdGrandTotal() + $extraFeeAmount);
-            $order->setOdBaseGrandTotal($order->getOdBaseGrandTotal() + $baseExtraFeeAmount);
         }
 
         if (!empty($totalsFees)) {
@@ -435,6 +486,84 @@ class Data extends CoreHelper
                     $item->setMpExtraFee(Data::jsonEncode($totalsFees[$item->getProductId()]));
                 }
             }
+        }
+    }
+
+    /**
+     * @return \Mageplaza\ExtraFee\Model\ResourceModel\Rule\Collection
+     */
+    public function getRuleCollection()
+    {
+        $currentTime = new DateTime();
+
+        return $this->ruleCollectionFactory->create()
+            ->addFieldToFilter('from_date', [
+                ['lteq' => $currentTime->format('Y-m-d H:i:s')],
+                ['null' => true]
+            ])
+            ->addFieldToFilter('to_date', [
+                ['gteq' => $currentTime->format('Y-m-d H:i:s')],
+                ['null' => true]
+            ])
+            ->setOrder('priority', 'ASC');
+    }
+
+    /**
+     * @param $collection
+     * @param $ruleId
+     * @param $type
+     *
+     * @return int|mixed
+     */
+    public function getReportTotal($collection, $ruleId, $type)
+    {
+        $totals = 0;
+        foreach ($collection as $element) {
+            foreach ($element->getItems() as $item) {
+                if ($item->getMpExtraFee()) {
+                    $extraFee = $this->unserialize($item->getMpExtraFee());
+                    if (count($extraFee) == 0) {
+                        continue;
+                    }
+                    foreach ($extraFee as $total) {
+                        $id = array_filter(preg_split("/\D+/", $total['code']));
+                        $id = reset($id);
+                        if ($id == $ruleId) {
+                            if ($type == 'invoice') {
+                                $totals += $total['base_value'] * $item->getQty();
+                            }
+                            if ($type == 'creditmemo' && $total['rf'] == 1) {
+                                $totals += $total['base_value'] * $item->getQty();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $totals;
+    }
+
+    /**
+     * @param $quote
+     */
+    public function setExtraFeeNote($quote)
+    {
+        $extraFee     = $this::jsonDecode($quote->getMpExtraFee());
+        $extraFeeNote = $this->checkoutSession->getExtraFeeMultiNote() ?: [];
+
+        if (count($extraFeeNote) && $quote->getAddressId()) {
+            $addressId = $quote->getAddressId();
+            if (isset($extraFeeNote[$addressId])) {
+                $extraFee['note'] = $extraFeeNote[$addressId];
+                $quote->setMpExtraFee($this::jsonEncode($extraFee));
+                $quote->save();
+                unset($extraFeeNote[$addressId]);
+            }
+        }
+
+        if (!count($extraFeeNote)) {
+            $this->checkoutSession->unsExtraFeeMultiNote();
         }
     }
 
@@ -482,7 +611,7 @@ class Data extends CoreHelper
             default:
                 $result = [];
                 foreach ($extraFee as $index => $item) {
-                    if (in_array($index, ['totals', 'is_invoiced', 'is_refunded'])) {
+                    if (in_array($index, ['totals', 'is_invoiced', 'is_refunded', 'note'])) {
                         continue;
                     }
                     parse_str($item, $rule);
@@ -498,66 +627,98 @@ class Data extends CoreHelper
     }
 
     /**
-     * Reset cart quote
+     * @param Rule $rule
      *
+     * @return false|int
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
-    public function resetQuote()
+    public function checkCustomerGroup($rule)
     {
-        $currentQuote = $this->checkoutSession->getQuote();
-        if (!$currentQuote->getId()) {
-            $currentQuote = $this->quoteFactory->create();
-            $customer     = $this->objectManager->create(Session::class)->getCustomer();
-            if ($customer->getId()) {
-                $currentQuote->setCustomerId($customer->getId());
-            }
-        }
-        $this->cart->setQuote($currentQuote);
-    }
+        $customerGroups  = explode(',', $rule->getCustomerGroups());
+        $customerSession = $this->customerSession->create();
+        $customerGroupId = $customerSession->isLoggedIn() ? $customerSession->getCustomerGroupId() : 0;
 
-    public function checkProductSpecial($quote)
-    {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $categoryFactory = $objectManager->create('Magento\Catalog\Model\ResourceModel\Category\CollectionFactory');
-
-        /** compare  cart or payment page: route api */
-        $request = $objectManager->create('Magento\Framework\App\Request\Http');
-        if ($request->getRequestUri() == "/checkout/cart/") {
-            return false;
-        } else {
-
-            /** remove with payment rule */
-            $mpExtraFee = json_decode($quote->getMpExtraFee(), true);
-            if (count($mpExtraFee['totals']) == 0) {
-                return false;
-            }
-
-            $listPaymentReturn = ['ondemand_qrcodepayment', 'ondemand_billpayment'];
-            if (!empty($quote->getPayment()->getMethod()) && in_array($quote->getPayment()->getMethod(), $listPaymentReturn)) {
-                return false;
-            }
-
-            if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-                return false;
-            }
-            $routeReferer = $_SERVER['HTTP_REFERER'];
-            $routeCheckoutCart =  $_SERVER['HTTP_ORIGIN'] . '/checkout/cart/';
-            if ($routeReferer == $routeCheckoutCart) {
-                return false;
-            }
-        }
-
-        $listCategory = $quote->getItems()[0]->getProduct()->getCategoryIds();
-        $categoryByUrlKey = $categoryFactory->create()
-            ->addAttributeToFilter('url_key', 'idbook')
-            ->addAttributeToSelect('*');
-        $isInCategory = in_array($categoryByUrlKey->getFirstItem()->getId(), $listCategory);
-
-        if (!empty($categoryByUrlKey->getFirstItem()->getId()) && $isInCategory) {
+        if (in_array($customerGroupId, $customerGroups)) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @param Rule $rule
+     *
+     * @return bool
+     * @throws NoSuchEntityException
+     */
+    public function checkStoreIds($rule)
+    {
+        $storeIds     = explode(',', $rule->getStoreIds());
+        $currentStore = $this->storeManager->getStore()->getId();
+        if (in_array(0, $storeIds)) {
+            return true;
+        } else {
+            if (in_array($currentStore, $storeIds)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $moduleName
+     *
+     * @return bool
+     */
+    public function moduleIsEnable($moduleName)
+    {
+        if ($this->_moduleManager->isEnabled($moduleName)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $data
+     */
+    protected function setNoteToSession($data)
+    {
+        $checkoutSession = $this->getCheckoutSession();
+        $extraFeeNote    = $checkoutSession->getExtraFeeNote() ?: [];
+        $params          = [];
+        parse_str($data, $params);
+
+        foreach ($params as $key => $value) {
+            if (str_contains($key, 'mp-extrafee-note') && !empty($value)) {
+                $extraFeeNote[$key] = $value;
+            }
+        }
+
+        $checkoutSession->setExtraFeeNote($extraFeeNote);
+    }
+
+    /**
+     * @param $extraFeeNote
+     * @param $data
+     *
+     * @return string
+     */
+    protected function setNoteToParams($extraFeeNote, $data)
+    {
+        $data = explode('&', $data);
+
+        foreach ($extraFeeNote as $key => $value) {
+            foreach ($data as $index => $param) {
+                if (str_contains($param, $key)) {
+                    $data[$index] = $key . '=' . $value;
+                }
+            }
+        }
+        $data = implode('&', $data);
+
+        return $data;
     }
 }

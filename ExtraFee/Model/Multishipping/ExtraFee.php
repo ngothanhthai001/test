@@ -250,6 +250,13 @@ class ExtraFee
                 $rule->setOptions(Data::jsonEncode($options));
                 $rule->setAddressId($address->getId());
 
+                $checkoutSession = $this->helperData->getCheckoutSession();
+                $extraFeeNote    = $checkoutSession->getExtraFeeMultiNote() ?: [];
+
+                if (count($extraFeeNote) && isset($extraFeeNote[$address->getId()])) {
+                    $rule->setNote($extraFeeNote[$address->getId()]);
+                }
+
                 $applyRule[$rule->getId()] = $rule->getData();
                 if ($rule->getStopFurtherProcessing()) {
                     break;

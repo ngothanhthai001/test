@@ -28,7 +28,7 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template\Context;
-use Zend_Json;
+use Mageplaza\ExtraFee\Helper\Data;
 
 /**
  * Class ExtraFee
@@ -66,9 +66,9 @@ class ExtraFee extends AbstractCart
         array $layoutProcessors = [],
         array $data = []
     ) {
-        $this->configProvider = $configProvider;
+        $this->configProvider   = $configProvider;
         $this->layoutProcessors = $layoutProcessors;
-        $this->_isScopePrivate = true;
+        $this->_isScopePrivate  = true;
 
         parent::__construct($context, $customerSession, $checkoutSession, $data);
     }
@@ -95,7 +95,7 @@ class ExtraFee extends AbstractCart
             $this->jsLayout = $processor->process($this->jsLayout);
         }
 
-        return Zend_Json::encode($this->jsLayout);
+        return Data::jsonEncode($this->jsLayout);
     }
 
     /**

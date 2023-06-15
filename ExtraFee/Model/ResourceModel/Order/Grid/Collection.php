@@ -71,8 +71,7 @@ class Collection extends OriginalCollection
             $fetchStrategy,
             $eventManager,
             $mainTable,
-            $resourceModel,
-            $timeZone
+            $resourceModel
         );
     }
 

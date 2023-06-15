@@ -2,10 +2,10 @@
   "name": "mageplaza/module-extra-fee",
   "description": "Magento 2 Extra Fee Extension",
   "require": {
-    "mageplaza/module-core": "^1.4.12"
+    "mageplaza/module-core": "^1.5.3"
   },
   "type": "magento2-module",
-  "version": "4.2.0",
+  "version": "4.2.4",
   "license": "proprietary",
   "authors": [
     {

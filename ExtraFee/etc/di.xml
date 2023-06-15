@@ -68,9 +68,4 @@
     <type name="Magento\Multishipping\Model\Checkout\Type\Multishipping">
         <plugin name="mp_extra_fee_shipping" type="Mageplaza\ExtraFee\Plugin\Multishipping\Type\Multishipping"/>
     </type>
-
-    <type name="Magento\Payment\Model\MethodInterface">
-        <plugin name="ExtraFeeMethodInterface" type="Mageplaza\ExtraFee\Plugin\Payment\Model\MethodInterfacePlugin"/>
-    </type>
-
 </config>

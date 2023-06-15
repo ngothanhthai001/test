@@ -21,6 +21,7 @@
 
 namespace Mageplaza\ExtraFee\Model\Total\Quote;
 
+use DateTime;
 use Exception;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\RequestInterface;
@@ -134,8 +135,7 @@ class ExtraFee extends AbstractTotal
         parent::collect($quote, $shippingAssignment, $total);
         $fullActionName = $this->request->getFullActionName();
 
-        if (
-            !$this->helper->isEnabled()
+        if (!$this->helper->isEnabled()
             || ($quote->isVirtual() && $this->_getAddress()->getAddressType() === Address::ADDRESS_TYPE_SHIPPING)
             || (!$quote->isVirtual() && $this->_getAddress()->getAddressType() === Address::ADDRESS_TYPE_BILLING)
         ) {
@@ -227,7 +227,8 @@ class ExtraFee extends AbstractTotal
     public function checkApplyRule($quote, $area, $isMultiShipping = false)
     {
         $backendModelSession = $this->backendModelSession->getQuote();
-        $ruleCollection      = $this->ruleFactory->create()->getCollection()->setOrder('priority', 'ASC');
+
+        $ruleCollection = $this->helper->getRuleCollection();
         $defaults            = [];
         $applyRule           = [];
 
@@ -243,8 +244,7 @@ class ExtraFee extends AbstractTotal
                 $customerGroupId = 0;
             }
 
-            if (
-                !$rule->getStatus()
+            if (!$rule->getStatus()
                 || !in_array($customerGroupId, $customerGroups, false)
                 || !(in_array($quote->getStoreId(), $stores, false) || in_array('0', $stores, true))
             ) {
@@ -270,8 +270,7 @@ class ExtraFee extends AbstractTotal
                 }
 
                 $options = Data::jsonDecode($rule->getOptions());
-                if (
-                    !isset($options['option'])
+                if (!isset($options['option'])
                     || empty($options['option']['value'])
                     || !is_array($options['option']['value'])
                 ) {
@@ -313,12 +312,11 @@ class ExtraFee extends AbstractTotal
      */
     protected function getAddressToValidate($quote)
     {
-        if (
-            !$this->addressToValidate
+        if (!$this->addressToValidate
             || ($this->addressToValidate && !$this->addressToValidate->getData('total_qty'))
         ) {
             $this->addressToValidate =
-                clone ($quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress());
+                clone($quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress());
         }
 
         $defaultCountryId = $this->helper->getDefaultCountryId();
@@ -393,12 +391,17 @@ class ExtraFee extends AbstractTotal
                     $baseShippingInclTax = $quote->getShippingAddress()->getBaseShippingInclTax();
                 }
 
+                $totalInclTax = $quote->getBaseSubtotal() + ($quote->getBaseSubtotal() * $taxRate) / 100;
                 if (in_array(CalculateOptions::TAX, $calculateOptions, false)) {
-                    $baseRuleFeeAmount = $quote->getBaseSubtotal() + ($quote->getBaseSubtotal() * $taxRate) / 100;
+                    $baseRuleFeeAmount = $totalInclTax;
                     $shippingAmount    = $baseShippingInclTax;
                 }
                 if (in_array(CalculateOptions::DISCOUNT, $calculateOptions, false)) {
-                    $baseRuleFeeAmount += $quote->getBaseSubtotalWithDiscount() - $quote->getBaseSubtotal();
+                    if ($quote->getBaseSubtotalWithDiscount() != 0) {
+                        $baseRuleFeeAmount += $quote->getBaseSubtotalWithDiscount() - $quote->getBaseSubtotal();
+                    } else {
+                        $baseRuleFeeAmount += $quote->getBaseSubtotalWithDiscount() - $totalInclTax;
+                    }
                 }
                 if (in_array(CalculateOptions::SHIPPING_FEE, $calculateOptions, false)) {
                     $baseRuleFeeAmount += $shippingAmount;
@@ -443,8 +446,8 @@ class ExtraFee extends AbstractTotal
     public function calculateAutoExtraFee($quote, $isFetch = false, $isMultiShipping = false)
     {
         $backendModelSession = $this->backendModelSession->getQuote();
-        $ruleCollection      = $this->ruleFactory->create()->getCollection()
-            ->setOrder('priority', 'ASC');
+
+        $ruleCollection = $this->helper->getRuleCollection();
 
         $result = [];
         /** @var Rule $rule */
@@ -465,8 +468,7 @@ class ExtraFee extends AbstractTotal
                 $storeId = $quote->getQuote()->getStoreId();
             }
 
-            if (
-                !$rule->getStatus()
+            if (!$rule->getStatus()
                 || !in_array($customerGroupId, $customerGroups, false)
                 || !(in_array($storeId, $stores, false) || in_array('0', $stores, true))
             ) {
@@ -478,8 +480,6 @@ class ExtraFee extends AbstractTotal
                 $address = $this->getAddressToValidate($quote);
             }
 
-            /** product special = product category IdBook and not visible */
-           // $checkProductSpecial =  $this->helper->checkProductSpecial($quote);
             if ($rule->validate($address)) {
                 if ((int) $rule->getApplyType() !== ApplyType::AUTOMATIC) {
                     if ($rule->getStopFurtherProcessing()) {
@@ -533,7 +533,7 @@ class ExtraFee extends AbstractTotal
     ) {
         $this->helper->getConfigValue('');
         $label = isset(Data::jsonDecode($rule->getLabels())[$quote->getStoreId()])
-            ? Data::jsonDecode($rule->getLabels())[$quote->getStoreId()] : $rule->getName();
+            ? (Data::jsonDecode($rule->getLabels())[$quote->getStoreId()] ?: $rule->getName()) : $rule->getName();
 
         return [
             'code'                => "mp_extra_fee_rule_{$rule->getId()}_auto",
@@ -573,7 +573,7 @@ class ExtraFee extends AbstractTotal
     public function getAllApplyRule($quote)
     {
         $backendModelSession = $this->backendModelSession->getQuote();
-        $ruleCollection      = $this->ruleFactory->create()->getCollection()->setOrder('priority', 'ASC');
+        $ruleCollection = $this->helper->getRuleCollection();
         $applyRule           = [];
 
         /** @var Rule $rule */
@@ -587,8 +587,7 @@ class ExtraFee extends AbstractTotal
             } else {
                 $customerGroupId = 0;
             }
-            if (
-                !$rule->getStatus()
+            if (!$rule->getStatus()
                 || !in_array($customerGroupId, $customerGroups, false)
                 || !(in_array($quote->getStoreId(), $stores, false) || in_array('0', $stores, true))
             ) {
@@ -626,9 +625,9 @@ class ExtraFee extends AbstractTotal
     {
         $fullActionName = $this->request->getFullActionName();
         if (!$this->helper->isEnabled() || in_array($fullActionName, [
-            'multishipping_checkout_overview',
-            'multishipping_checkout_overviewPost'
-        ], true)) {
+                'multishipping_checkout_overview',
+                'multishipping_checkout_overviewPost'
+            ], true)) {
             $result             = [];
             $extraFee           = $this->helper->getMpExtraFee($total, 4);
             $extraFeeAmount     = 0;
@@ -637,7 +636,7 @@ class ExtraFee extends AbstractTotal
                 $extraFeeAmount     += $option['value'];
                 $baseExtraFeeAmount += $option['base_value'];
                 $option['title']    = $option['rule_label'] . (strpos($option['code'], 'auto') === false
-                    ? ' - ' . $option['label'] : $option['label']);
+                        ? ' - ' . $option['label'] : $option['label']);
                 $result[]           = $option;
                 $quote->setGrandTotal($quote->getOdGrandTotal() + $option['value_incl_tax']);
                 $quote->setBaseGrandTotal($quote->getOdBaseGrandTotal() + $option['base_value_incl_tax']);

@@ -25,6 +25,7 @@ use Mageplaza\ExtraFee\Model\Config\Source\DisplayArea;
 /** @var ExtraFee $block */
 $addresses      = $block->getShippingAddresses();
 $billingAddress = $block->getBillingAddress();
+$extraFeeNote   = $block->getExtraFeeNote();
 ?>
 <?php foreach ($addresses as $_index => $_address) : ?>
     <?php $shippingExtraFee = $block->getExtraFeeInfo($_address, DisplayArea::SHIPPING_METHOD) ?>
@@ -63,8 +64,8 @@ $billingAddress = $block->getBillingAddress();
         </div>
     <?php endif; ?>
     <?php
-    list($applyRule, $selectedOptions) = $block->getAppliedRule($_address, DisplayArea::CART_SUMMARY);
-    list($applyRule, $selectedOptions) = [$applyRule[0], $selectedOptions[0]];
+    [$applyRule, $selectedOptions] = $block->getAppliedRule($_address, DisplayArea::CART_SUMMARY);
+    [$applyRule, $selectedOptions] = [$applyRule[0], $selectedOptions[0]];
     ?>
     <?php if ($block->getAllApplyRule($_address, DisplayArea::CART_SUMMARY)) : ?>
     <div class="mp-extra-fee-multi-cart mp-extra-fee-multi-cart-<?= $block->escapeHtmlAttr($_index + 1) ?>">
@@ -156,6 +157,15 @@ $billingAddress = $block->getBillingAddress();
                                             </div>
                                         <?php endif; ?>
                                     </dd>
+                                    <dd>
+                                        <?php
+                                            $key = 'mp-extrafee-note-'. $rule['rule_id'] . '-' . $_address->getId();
+                                            $extraFeeNoteContent = isset ($extraFeeNote[$_address->getId()][$key])
+                                                ? $extraFeeNote[$_address->getId()][$key] : '';
+                                        ?>
+                                        <label for="<?= '#' . $key ?>"><?= $rule['message_title'] ?></label>
+                                        <textarea name="<?= $key ?>" id="<?= $key ?>" cols="30" rows="2"><?= $extraFeeNoteContent ?></textarea>
+                                    </dd>
                                 </div>
                             </dl>
                         <?php endforeach; ?>
@@ -185,8 +195,8 @@ $billingAddress = $block->getBillingAddress();
 <?php $paymentExtraFeeForVirtualItems = $block->getExtraFeeInfo($billingAddress, DisplayArea::PAYMENT_METHOD) ?>
 <?php $shippingExtraFeeForVirtualItems = $block->getExtraFeeInfo($billingAddress, DisplayArea::SHIPPING_METHOD) ?>
 <?php
-list($applyRule, $selectedOptions) = $block->getAppliedRule($billingAddress, DisplayArea::CART_SUMMARY);
-list($applyRule, $selectedOptions) = [$applyRule[0], $selectedOptions[0]];
+[$applyRule, $selectedOptions] = $block->getAppliedRule($billingAddress, DisplayArea::CART_SUMMARY);
+[$applyRule, $selectedOptions] = [$applyRule[0], $selectedOptions[0]];
 ?>
 <div class="mp-extra-fee-multi-payment-virtual">
     <?php if (count($paymentExtraFeeForVirtualItems) || count($shippingExtraFeeForVirtualItems)
@@ -293,6 +303,15 @@ list($applyRule, $selectedOptions) = [$applyRule[0], $selectedOptions[0]];
                                                 </select>
                                             </div>
                                         <?php endif; ?>
+                                    </dd>
+                                    <dd>
+                                        <?php
+                                            $key = 'mp-extrafee-note-'. $rule['rule_id'] . '-' . $billingAddress->getId();
+                                            $extraFeeNoteContent = isset ($extraFeeNote[$billingAddress->getId()][$key])
+                                                ? $extraFeeNote[$billingAddress->getId()][$key] : '';
+                                        ?>
+                                        <label for="<?= '#' . $key ?>"><?= $rule['message_title'] ?></label>
+                                        <textarea name="<?= $key ?>" id="<?= $key ?>" cols="30" rows="2"><?= $extraFeeNoteContent ?></textarea>
                                     </dd>
                                 </div>
                             </dl>

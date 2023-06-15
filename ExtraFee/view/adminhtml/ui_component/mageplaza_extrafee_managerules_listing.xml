@@ -250,6 +250,24 @@
                 </item>
             </argument>
         </column>
+        <column name="order_count" class="Mageplaza\ExtraFee\Ui\Component\Listing\Columns\OrderCount">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">textRange</item>
+                    <item name="sortable" xsi:type="boolean">true</item>
+                    <item name="label" xsi:type="string" translate="true">Total Number of Orders</item>
+                </item>
+            </argument>
+        </column>
+        <column name="revenue" class="Mageplaza\ExtraFee\Ui\Component\Listing\Columns\Revenue">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">textRange</item>
+                    <item name="sortable" xsi:type="boolean">true</item>
+                    <item name="label" xsi:type="string" translate="true">Total Extra Fee Revenue</item>
+                </item>
+            </argument>
+        </column>
         <column name="priority">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">

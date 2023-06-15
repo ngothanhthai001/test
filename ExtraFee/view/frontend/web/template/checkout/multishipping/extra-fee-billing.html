@@ -24,7 +24,7 @@
         <div data-bind="visible: $parent.convertObjectToArray(address).length">
             <div class="mp-extra-fee-multi-shipping-address">
                 <span class="label" data-bind="text: 'Extra Fee For Address '"></span><span
-                data-bind="text: $index() + 1"></span>
+                    data-bind="text: $index() + 1"></span>
             </div>
             <div class="mp-extra-fee-billing"
                  data-bind="foreach: { data : $parent.convertObjectToArray(address), as: 'rule' }">
@@ -92,6 +92,18 @@
                             <!-- ko text: title -->
                             <!-- /ko --></option>
                     </select>
+                    <!-- /ko -->
+                    <!-- ko if: rule.allow_note_message > 0 -->
+                    <dd>
+                        <label data-bind="text: rule.message_title, attr: {for: 'mp-extrafee-note-' + rule_id}"></label>
+                        <textarea cols="30" rows="2"
+                                  data-bind=" attr: {
+                            id: 'mp-extrafee-note-' + rule_id + '-' + rule.address_id,
+                            name: 'mp-extrafee-note-' + rule_id + '-' + rule.address_id
+                          },
+                          event: {change: $parents[1].changeOption},
+                          afterRender: $parents[1].getNoteMessage(rule.address_id, rule_id, 'mp-extrafee-note-' + rule_id + '-' + rule.address_id)"></textarea>
+                    </dd>
                     <!-- /ko -->
                 </div>
             </div>
@@ -170,6 +182,18 @@
                             <!-- ko text: title -->
                             <!-- /ko --></option>
                     </select>
+                    <!-- /ko -->
+                    <!-- ko if: rule.allow_note_message > 0 -->
+                    <dd>
+                        <label data-bind="text: rule.message_title, attr: {for: 'mp-extrafee-note-' + rule_id}"></label>
+                        <textarea cols="30" rows="2"
+                                  data-bind=" attr: {
+                            id: 'mp-extrafee-note-' + rule_id + '-' + rule.address_id,
+                            name: 'mp-extrafee-note-' + rule_id + '-' + rule.address_id
+                          },
+                          event: {change: $parents[1].changeOption},
+                          afterRender: $parents[1].getVirtualNoteMessage(rule.address_id, 'mp-extrafee-note-' + rule_id + '-' + rule.address_id)"></textarea>
+                    </dd>
                     <!-- /ko -->
                 </div>
             </div>

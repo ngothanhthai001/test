@@ -22,6 +22,7 @@
 namespace Mageplaza\ExtraFee\Block\Multishipping\Checkout;
 
 use Exception;
+use Magento\Checkout\Model\SessionFactory as CheckoutSession;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
@@ -67,6 +68,11 @@ class AbstractExtraFee extends Template
     protected $multishipping;
 
     /**
+     * @var CheckoutSession
+     */
+    protected $checkoutSession;
+
+    /**
      * AbstractExtraFee constructor.
      *
      * @param Context $context
@@ -75,6 +81,7 @@ class AbstractExtraFee extends Template
      * @param Shipping $shipping
      * @param Config $paymentConfig
      * @param Multishipping $multishipping
+     * @param CheckoutSession $checkoutSession
      * @param array $data
      */
     public function __construct(
@@ -84,6 +91,7 @@ class AbstractExtraFee extends Template
         Shipping $shipping,
         Config $paymentConfig,
         Multishipping $multishipping,
+        CheckoutSession $checkoutSession,
         array $data = []
     ) {
         $this->multiShippingExtraFee = $multiShippingExtraFee;
@@ -91,6 +99,7 @@ class AbstractExtraFee extends Template
         $this->shipping              = $shipping;
         $this->paymentConfig         = $paymentConfig;
         $this->multishipping         = $multishipping;
+        $this->checkoutSession       = $checkoutSession;
 
         parent::__construct($context, $data);
     }
@@ -182,5 +191,14 @@ class AbstractExtraFee extends Template
     public function getQuote()
     {
         return $this->multishipping->getQuote();
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtraFeeNote()
+    {
+        $checkoutSession = $this->checkoutSession->create();
+        return $checkoutSession->getExtraFeeMultiNote() ?: [];
     }
 }

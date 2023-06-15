@@ -86,7 +86,8 @@ class ExtraFee extends Template
                     'code'       => $extraFeeTotal['code'] . '_incl',
                     'value'      => $extraFeeTotal['value_incl_tax'],
                     'base_value' => $extraFeeTotal['base_value_incl_tax'],
-                    'label'      => ((strpos($extraFeeTotal['code'], 'auto') === false)
+                    'label'      => $extraFeeTotal['rule_label']
+                        . ((strpos($extraFeeTotal['code'], 'auto') === false)
                             ? ' - ' . $extraFeeTotal['label'] : $extraFeeTotal['label']) . __(' (Incl.Tax)'),
                 ]
             );
@@ -97,7 +98,8 @@ class ExtraFee extends Template
                         'code'       => $extraFeeTotal['code'],
                         'value'      => $extraFeeTotal['value_excl_tax'],
                         'base_value' => $extraFeeTotal['base_value'],
-                        'label'      => ((strpos($extraFeeTotal['code'], 'auto') === false)
+                        'label'      => $extraFeeTotal['rule_label']
+                            . ((strpos($extraFeeTotal['code'], 'auto') === false)
                                 ? ' - ' . $extraFeeTotal['label'] : $extraFeeTotal['label']) . __(' (Excl.Tax)'),
                     ]
                 );
@@ -110,7 +112,8 @@ class ExtraFee extends Template
                     'code'       => $extraFeeTotal['code'],
                     'value'      => $extraFeeTotal['value_excl_tax'],
                     'base_value' => $extraFeeTotal['base_value'],
-                    'label'      => ((strpos($extraFeeTotal['code'], 'auto') === false)
+                    'label'      => $extraFeeTotal['rule_label']
+                        . ((strpos($extraFeeTotal['code'], 'auto') === false)
                             ? ' - ' . $extraFeeTotal['label'] : $extraFeeTotal['label']),
                 ]), 'subtotal_incl');
             }

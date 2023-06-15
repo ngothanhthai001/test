@@ -26,6 +26,7 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Widget\Form\Generic;
 use Magento\Backend\Block\Widget\Tab\TabInterface;
 use Magento\Config\Model\Config\Source\Enabledisable;
+use Magento\Config\Model\Config\Source\Yesno;
 use Magento\Customer\Model\ResourceModel\Group\Collection as CustomerGroup;
 use Magento\Framework\Data\Form;
 use Magento\Framework\Data\Form\Element\Renderer\RendererInterface;
@@ -57,6 +58,11 @@ class General extends Generic implements TabInterface
     protected $customerGroup;
 
     /**
+     * @var Yesno
+     */
+    protected $yesno;
+
+    /**
      * General constructor.
      *
      * @param Context $context
@@ -64,6 +70,7 @@ class General extends Generic implements TabInterface
      * @param FormFactory $formFactory
      * @param Enabledisable $enableDisable
      * @param Store $systemStore
+     * @param Yesno $yesno
      * @param CustomerGroup $customerGroup
      * @param array $data
      */
@@ -73,12 +80,14 @@ class General extends Generic implements TabInterface
         FormFactory $formFactory,
         Enabledisable $enableDisable,
         Store $systemStore,
+        Yesno $yesno,
         CustomerGroup $customerGroup,
         array $data = []
     ) {
         $this->enabledisable = $enableDisable;
         $this->systemStore   = $systemStore;
         $this->customerGroup = $customerGroup;
+        $this->yesno         = $yesno;
 
         parent::__construct($context, $registry, $formFactory, $data);
     }
@@ -193,6 +202,36 @@ class General extends Generic implements TabInterface
             'required' => true
         ])->setSize(5);
 
+        $allowNote = $fieldset->addField('allow_note_message', 'select', [
+            'name'   => 'allow_note_message',
+            'label'  => __('Allow Customer Notes/Messages of Extra Fee'),
+            'title'  => __('Allow Customer Notes/Messages of Extra Fee'),
+            'values' => $this->yesno->toOptionArray(),
+            'value'  => 1,
+            'note'   => __('If yes, will display the message section with each extra fee in the frontend so that the customer can leave a note or message. Only apply to the Manual Type.')
+        ]);
+
+        $messageTitle = $fieldset->addField('message_title', 'text', [
+            'name'  => 'message_title',
+            'label' => __('Message Title'),
+            'title' => __('Message Title'),
+            'value' => __('Leave a message for the extra fee.')
+        ]);
+
+        $fieldset->addField('from_date', 'date', [
+            'name'        => 'from_date',
+            'label'       => __('From Date'),
+            'title'       => __('From Date'),
+            'date_format' => 'yyyy-MM-dd'
+        ]);
+
+        $fieldset->addField('to_date', 'date', [
+            'name'        => 'to_date',
+            'label'       => __('To Date'),
+            'title'       => __('To Date'),
+            'date_format' => 'yyyy-MM-dd'
+        ]);
+
         $fieldset->addField('priority', 'text', [
             'name'  => 'priority',
             'label' => __('Priority'),
@@ -202,6 +241,13 @@ class General extends Generic implements TabInterface
 
         $form->addValues($rule->getData());
         $this->setForm($form);
+
+        $blockDependence = $this->getLayout()->createBlock(\Magento\Backend\Block\Widget\Form\Element\Dependence::class);
+        $blockDependence->addFieldMap($allowNote->getHtmlId(), $allowNote->getName())
+            ->addFieldMap($messageTitle->getHtmlId(), $messageTitle->getName())
+            ->addFieldDependence($messageTitle->getName(), $allowNote->getName(), 1);
+
+        $this->setChild('form_after', $blockDependence);
 
         return parent::_prepareForm();
     }

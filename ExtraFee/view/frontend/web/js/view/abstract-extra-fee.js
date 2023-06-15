@@ -42,6 +42,7 @@ define([
             if (!extraFee.selectedOptions()['rule']) {
                 return;
             }
+
             var data = extraFee.selectedOptions()['rule'],
                 type = optionVal.display_type || optionVal.type;
 
@@ -111,6 +112,27 @@ define([
             }
 
             collectTotal(this.area);
+        },
+
+        isAllowNote: function (rule) {
+            return rule.allow_note_message > 0;
+        },
+
+        getNoteTitle: function (rule) {
+            return rule.message_title;
+        },
+
+        getNoteMessage: function (key) {
+            var ele = '#' + key;
+            if (extraFee.ruleConfig() && extraFee.selectedOptions()[key]) {
+                $(ele).val(extraFee.selectedOptions()[key]);
+            }
+            if (extraFee.shippingRuleConfig() && extraFee.shippingSelectedOptions()[key]) {
+                $(ele).val(extraFee.shippingSelectedOptions()[key]);
+            }
+            if (extraFee.billingRuleConfig() && extraFee.billingSelectedOptions()[key]) {
+                $(ele).val(extraFee.billingSelectedOptions()[key]);
+            }
         }
     });
 });

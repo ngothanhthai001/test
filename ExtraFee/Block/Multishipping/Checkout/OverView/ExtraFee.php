@@ -254,4 +254,14 @@ class ExtraFee extends Overview
     {
         return $this->multishipping->getQuote()->hasVirtualItems();
     }
+
+    /**
+     * @return array
+     */
+    public function getExtraFeeNote()
+    {
+        $checkoutSession = $this->helperData->getCheckoutSession();
+
+        return $checkoutSession->getExtraFeeMultiNote() ?: [];
+    }
 }
