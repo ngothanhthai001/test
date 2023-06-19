@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_AdminPermissions
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="mageplaza_admin_permissions" resource="default" engine="innodb" comment="Mageplaza Admin Permissions">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="int" name="role_id" padding="10" unsigned="true" nullable="false" comment="Role ID"/>
+        <column xsi:type="text" name="mp_store_ids" comment="Store Ids"/>
+        <column xsi:type="text" name="mp_sales_restriction"/>
+        <column xsi:type="text" name="mp_category_restriction"/>
+        <column xsi:type="text" name="mp_category_ids"/>
+        <column xsi:type="text" name="mp_product_restriction"/>
+        <column xsi:type="text" name="mp_product_apply_for"/>
+        <column xsi:type="text" name="mp_product_ids"/>
+        <column xsi:type="text" name="mp_customer_restriction"/>
+        <column xsi:type="text" name="mp_customer_ids"/>
+        <column xsi:type="text" name="mp_prodattr_restriction"/>
+        <column xsi:type="text" name="mp_prodattr_ids"/>
+        <column xsi:type="text" name="mp_user_role_restriction"/>
+        <column xsi:type="text" name="mp_user_role_ids"/>
+        <column xsi:type="text" name="mp_custom_enabled"/>
+        <column xsi:type="text" name="mp_custom_limit"/>
+        <column xsi:type="varchar" name="mp_period_days"/>
+        <column xsi:type="smallint" name="mp_limit_type" padding="2"/>
+        <column xsi:type="text" name="mp_period_from"/>
+        <column xsi:type="text" name="mp_period_to"/>
+        <column xsi:type="timestamp" name="mp_period_from_date"/>
+        <column xsi:type="timestamp" name="mp_period_to_date"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MAGEPLAZA_ADMIN_PERMISSIONS_INDEX"
+                    table="mageplaza_admin_permissions" column="role_id" referenceTable="authorization_role"
+                    referenceColumn="role_id"
+                    onDelete="CASCADE"/>
+        <index referenceId="MAGEPLAZA_ADMIN_PERMISSIONS_INDEX" indexType="btree">
+            <column name="id"/>
+        </index>
+    </table>
+    <table name="mageplaza_admin_permissions_custom" resource="default" engine="innodb" comment="Mageplaza Admin Permissions Customize">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="type" length="20" comment="Type"/>
+        <column xsi:type="mediumtext" name="class" comment="Class"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="MAGEPLAZA_ADMIN_PERMISSIONS_CUSTOM_INDEX" indexType="btree">
+            <column name="id"/>
+        </index>
+    </table>
+</schema>

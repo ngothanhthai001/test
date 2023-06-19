@@ -1,0 +1,38 @@
+<?php
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_AdminPermissions
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+?>
+<script>
+    require(['jquery','jquery/jquery.tabs'], function ($) {
+        'use strict';
+
+        $(function () {
+            var permissionTab = $('#role_info_tabs_mp_admin_permission_content .entry-edit.form-inline').children('div');
+
+            // hide all fieldset on first load
+            permissionTab.find('[data-toggle=collapse]').each(function () {
+                var target = $(this).attr('data-target');
+
+                $(target).data('collapsed',true);
+                $(target).collapse('hide');
+            });
+        });
+    });
+</script>

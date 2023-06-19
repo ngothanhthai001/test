@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_AdminPermissions
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Magento_Backend::system">
+                    <resource id="Magento_User::acl">
+                        <resource id="Magento_User::acl_roles">
+                            <resource id="Mageplaza_AdminPermissions::admin_permissions" title="Mageplaza Admin Permissions"/>
+                            <resource id="Mageplaza_AdminPermissions::role_actions" title="Actions">
+                                <resource id="Mageplaza_AdminPermissions::role_create" title="Create New"/>
+                                <resource id="Mageplaza_AdminPermissions::role_view" title="View"/>
+                                <resource id="Mageplaza_AdminPermissions::role_edit" title="Edit"/>
+                                <resource id="Mageplaza_AdminPermissions::role_delete" title="Delete"/>
+                            </resource>
+                        </resource>
+                    </resource>
+                </resource>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Mageplaza_AdminPermissions::configuration" title="Mageplaza Admin Permissions"/>
+                        </resource>
+                    </resource>
+                    <resource id="Magento_Backend::stores_attributes">
+                        <resource id="Magento_Catalog::attributes_attributes">
+                            <resource id="Mageplaza_AdminPermissions::product_attribute_actions" title="Actions">
+                                <resource id="Mageplaza_AdminPermissions::product_attribute_create" title="Create New"/>
+                                <resource id="Mageplaza_AdminPermissions::product_attribute_view" title="View"/>
+                                <resource id="Mageplaza_AdminPermissions::product_attribute_edit" title="Edit"/>
+                                <resource id="Mageplaza_AdminPermissions::product_attribute_delete" title="Delete"/>
+                            </resource>
+                        </resource>
+                    </resource>
+                </resource>
+                <resource id="Magento_Catalog::catalog">
+                    <resource id="Magento_Catalog::catalog_inventory">
+                        <resource id="Magento_Catalog::products">
+                            <resource id="Mageplaza_AdminPermissions::product_actions" title="Actions">
+                                <resource id="Mageplaza_AdminPermissions::product_create" title="Create New"/>
+                                <resource id="Mageplaza_AdminPermissions::product_view" title="View"/>
+                                <resource id="Mageplaza_AdminPermissions::product_edit" title="Edit"/>
+                                <resource id="Mageplaza_AdminPermissions::product_delete" title="Delete"/>
+                            </resource>
+                        </resource>
+                        <resource id="Magento_Catalog::categories">
+                            <resource id="Mageplaza_AdminPermissions::category_actions" title="Actions">
+                                <resource id="Mageplaza_AdminPermissions::category_create" title="Create New"/>
+                                <resource id="Mageplaza_AdminPermissions::category_view" title="View"/>
+                                <resource id="Mageplaza_AdminPermissions::category_edit" title="Edit"/>
+                                <resource id="Mageplaza_AdminPermissions::category_delete" title="Delete"/>
+                            </resource>
+                        </resource>
+                    </resource>
+                </resource>
+                <resource id="Magento_Customer::customer">
+                    <resource id="Magento_Customer::manage" title="All Customers" translate="title" sortOrder="10">
+                        <resource id="Magento_Customer::actions" title="Actions" translate="title" sortOrder="10">
+                            <resource id="Mageplaza_AdminPermissions::customer_create" title="Create New"/>
+                            <resource id="Mageplaza_AdminPermissions::customer_view" title="View"/>
+                            <resource id="Mageplaza_AdminPermissions::customer_edit" title="Edit"/>
+                            <resource id="Magento_Customer::delete" title="Delete" translate="title" sortOrder="10" />
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>
