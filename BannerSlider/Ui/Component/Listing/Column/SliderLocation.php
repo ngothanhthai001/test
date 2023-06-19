@@ -60,53 +60,54 @@ class SliderLocation extends Column
     public function getLocation($data)
     {
         $location = [];
-        $data = explode(',', $data);
-        foreach ($data as $item) {
-            switch ($item) {
-                case Location::ALLPAGE_CONTENT_BOTTOM:
-                case Location::ALLPAGE_PAGE_TOP:
-                case Location::ALLPAGE_PAGE_BOTTOM:
-                case Location::ALLPAGE_CONTENT_TOP:
-                    $location['type'][] = __('All Page');
-                    break;
-                case Location::HOMEPAGE_CONTENT_BOTTOM:
-                case Location::HOMEPAGE_PAGE_TOP:
-                case Location::HOMEPAGE_PAGE_BOTTOM:
-                case Location::HOMEPAGE_CONTENT_TOP:
-                    $location['type'][] = __('Home Page');
-                    break;
-                case Location::CATEGORY_SIDEBAR_BOTTOM:
-                case Location::CATEGORY_SIDEBAR_TOP:
-                case Location::CATEGORY_PAGE_BOTTOM:
-                case Location::CATEGORY_PAGE_TOP:
-                case Location::CATEGORY_CONTENT_BOTTOM:
-                case Location::CATEGORY_CONTENT_TOP:
-                    $location['type'][] = __('Category Page');
-                    break;
-                case Location::PRODUCT_PAGE_TOP:
-                case Location::PRODUCT_PAGE_BOTTOM:
-                case Location::PRODUCT_CONTENT_BOTTOM:
-                case Location::PRODUCT_CONTENT_TOP:
-                    $location['type'][] = __('Product Page');
-                    break;
-                case Location::BLOG_CONTENT_BOTTOM:
-                case Location::BLOG_PAGE_TOP:
-                case Location::BLOG_PAGE_BOTTOM:
-                case Location::BLOG_CONTENT_TOP:
-                    $location['type'][] = __('Blog Page');
-                    break;
-                case Location::PAGE_BOTTOM:
-                case Location::PAGE_TOP:
-                case Location::CONTENT_BOTTOM:
-                case Location::CONTENT_TOP:
-                    $location['type'][] = __('Url Location');
-                    break;
-                case Location::USING_SNIPPET_CODE:
-                    $location['type'][] = __('Custom');
-                    break;
+        if(!empty($data)){
+            $data = explode(',', $data);
+            foreach ($data as $item) {
+                switch ($item) {
+                    case Location::ALLPAGE_CONTENT_BOTTOM:
+                    case Location::ALLPAGE_PAGE_TOP:
+                    case Location::ALLPAGE_PAGE_BOTTOM:
+                    case Location::ALLPAGE_CONTENT_TOP:
+                        $location['type'][] = __('All Page');
+                        break;
+                    case Location::HOMEPAGE_CONTENT_BOTTOM:
+                    case Location::HOMEPAGE_PAGE_TOP:
+                    case Location::HOMEPAGE_PAGE_BOTTOM:
+                    case Location::HOMEPAGE_CONTENT_TOP:
+                        $location['type'][] = __('Home Page');
+                        break;
+                    case Location::CATEGORY_SIDEBAR_BOTTOM:
+                    case Location::CATEGORY_SIDEBAR_TOP:
+                    case Location::CATEGORY_PAGE_BOTTOM:
+                    case Location::CATEGORY_PAGE_TOP:
+                    case Location::CATEGORY_CONTENT_BOTTOM:
+                    case Location::CATEGORY_CONTENT_TOP:
+                        $location['type'][] = __('Category Page');
+                        break;
+                    case Location::PRODUCT_PAGE_TOP:
+                    case Location::PRODUCT_PAGE_BOTTOM:
+                    case Location::PRODUCT_CONTENT_BOTTOM:
+                    case Location::PRODUCT_CONTENT_TOP:
+                        $location['type'][] = __('Product Page');
+                        break;
+                    case Location::BLOG_CONTENT_BOTTOM:
+                    case Location::BLOG_PAGE_TOP:
+                    case Location::BLOG_PAGE_BOTTOM:
+                    case Location::BLOG_CONTENT_TOP:
+                        $location['type'][] = __('Blog Page');
+                        break;
+                    case Location::PAGE_BOTTOM:
+                    case Location::PAGE_TOP:
+                    case Location::CONTENT_BOTTOM:
+                    case Location::CONTENT_TOP:
+                        $location['type'][] = __('Url Location');
+                        break;
+                    case Location::USING_SNIPPET_CODE:
+                        $location['type'][] = __('Custom');
+                        break;
+                }
             }
         }
-
         return $location;
     }
 }
