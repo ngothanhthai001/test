@@ -26,4 +26,7 @@
     <event name="layout_load_before">
         <observer name="weltpixel_ga4" instance="WeltPixel\GA4\Observer\ServerSide\AddUpdateHandlesObserver" />
     </event>
+    <event name="multishipping_checkout_controller_success_action">
+        <observer name="weltpixel_ga4" instance="WeltPixel\GA4\Observer\MultiShippingSuccessPageViewObserver" />
+    </event>
 </config>

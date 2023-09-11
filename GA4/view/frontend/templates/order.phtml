@@ -17,7 +17,7 @@ $ga4ServerSideHelper = $this->helper('WeltPixel\GA4\Helper\ServerSideTracking');
         $helper->invalidateGA4CheckoutPaymentData();
     }
 
-    if ($this->isFreeOrderTrackingAllowedForGoogleAnalytics() && !($ga4ServerSideHelper->isServerSideTrakingEnabled() && $ga4ServerSideHelper->shouldEventBeTracked(\WeltPixel\GA4\Model\Config\Source\ServerSide\TrackingEvents::EVENT_PURCHASE)
+    if ($this->isOrderTrackingAllowedBasedOnOrderStatus($order) && $this->isFreeOrderTrackingAllowedForGoogleAnalytics() && !($ga4ServerSideHelper->isServerSideTrakingEnabled() && $ga4ServerSideHelper->shouldEventBeTracked(\WeltPixel\GA4\Model\Config\Source\ServerSide\TrackingEvents::EVENT_PURCHASE)
         && $ga4ServerSideHelper->isDataLayerEventDisabled())) :
         $products = $this->getProducts();
 
@@ -39,6 +39,20 @@ $ga4ServerSideHelper = $this->helper('WeltPixel\GA4\Helper\ServerSideTracking');
         $this->setDataLayerOption(\WeltPixel\GA4\Model\Api\ConversionTracking::FIELD_CONVERSION_TRACKING_CONVERSION_VALUE, $this->getOrderTotal());
         $this->setDataLayerOption(\WeltPixel\GA4\Model\Api\ConversionTracking::FIELD_CONVERSION_TRACKING_ORDER_ID, $order->getIncrementId());
     endif;
+
+    if ($helper->isAdWordConversionTrackingEnabled() && $helper->isEnhancedConversionsEnabled() ) :
+        $this->setDataLayerOption('customerEmail', $order->getCustomerEmail());
+        $billingAddress = $order->getBillingAddress();
+        if ($billingAddress) {
+            $this->setDataLayerOption('customerPhone', $billingAddress->getTelephone());
+        }
+    endif;
+
+    if ($helper->isAdWordConversionTrackingEnabled()&& $helper->isAdWordNewCustomerAcquisitionEnabled()) {
+        $conversionTrackingNewCustomer = $this->getAdwordNewCustomer();
+        $this->setDataLayerOption(\WeltPixel\GA4\Model\Api\ConversionTracking::FIELD_CONVERSION_TRACKING_NEW_CUSTOMER,$conversionTrackingNewCustomer);
+        $this->setDataLayerOption(\WeltPixel\GA4\Model\Api\ConversionTracking::FIELD_CONVERSION_TRACKING_CUSTOMER_LIFETIME_VALUE, $this->getAdwordCustomerLifetimeValue($conversionTrackingNewCustomer));
+    }
 
     if ($helper->isAdWordsRemarketingEnabled() && $this->isFreeOrderAllowedForAdwordsRemarketing()):
         $remarketingData = [];

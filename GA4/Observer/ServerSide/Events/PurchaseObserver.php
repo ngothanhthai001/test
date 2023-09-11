@@ -70,7 +70,7 @@ class PurchaseObserver implements ObserverInterface
 
 
             if (($this->state->getAreaCode() == 'adminhtml') &&  $this->ga4Helper->shouldEventBeTracked(\WeltPixel\GA4\Model\Config\Source\ServerSide\TrackingEvents::EVENT_PURCHASE)) {
-                if ($order) {
+                if ($order && $this->ga4Helper->isOrderTrackingAllowedBasedOnOrderStatus($order)) {
                     $purchaseEvent = $this->purchaseBuilder->getPurchaseEvent($order);
                     $this->ga4ServerSideApi->pushPurchaseEvent($purchaseEvent);
                 }

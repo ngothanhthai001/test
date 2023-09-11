@@ -15,6 +15,7 @@ define([
         measurementID = $('#weltpixel_ga4_api_measurement_id'),
         enableConversionTracking = $('#weltpixel_ga4_adwords_conversion_tracking_enable'),
         enableAdwordsRemarketing = $('#weltpixel_ga4_adwords_remarketing_enable'),
+        enableEnhancedConversion = $('#weltpixel_ga4_adwords_conversion_tracking_enable_enhanced_conversion'),
         jsonExportPublicId = $("#weltpixel_ga4_json_export_public_id"),
         formKey = $('#api_form_key');
 
@@ -32,6 +33,10 @@ define([
     var metaPixelEnableTracking = $('#weltpixel_ga4_meta_pixel_tracking_enable'),
         metaPixelTrackEventsMultiSelect = $('#weltpixel_ga4_meta_pixel_tracking_events'),
         metaPixelTrackEventsMultiSelectHidden = $('#weltpixel_ga4_meta_pixel_tracking_events_hidden');
+
+    var excludeOrderByStatus = $('#weltpixel_ga4_general_exclude_order_by_status_flag'),
+        excludeOrderByStatusMultiSelect = $('#weltpixel_ga4_general_exclude_order_by_statuses'),
+        excludeOrderByStatusMultiSelectHidden = $('#weltpixel_ga4_general_exclude_order_by_statuses_hidden');
 
 
         GTMGA4API.initializeJsonGeneration = function(itemJsonGenerationUrl) {
@@ -72,6 +77,7 @@ define([
                         'remarketing_enabled' : enableAdwordsRemarketing.val(),
                         'remarketing_conversion_code' : remarketingConversionCode.val().trim(),
                         'remarketing_conversion_label' : remarketingConversionLabel.val().trim(),
+                        'enable_enhanced_conversion' : enableEnhancedConversion.val(),
                         'public_id' : jsonExportPublicId.val().trim(),
                         'form_data' : optionsForm.serialize()
                     },
@@ -158,6 +164,9 @@ define([
         });
         metaPixelEnableTracking.on('change', function() {
             metaPixelTrackEventsMultiSelectHidden.val(metaPixelTrackEventsMultiSelect.val());
+        });
+        excludeOrderByStatus.on('change', function() {
+            excludeOrderByStatusMultiSelectHidden.val(excludeOrderByStatusMultiSelect.val());
         });
     };
 

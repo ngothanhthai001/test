@@ -63,6 +63,7 @@ class Generate extends Action
                     trim($params['remarketing_enabled'] ?? ''),
                     trim($params['remarketing_conversion_code'] ?? ''),
                     trim($params['remarketing_conversion_label'] ?? ''),
+                    trim($params['enable_enhanced_conversion'] ?? ''),
                     trim($params['public_id'] ?? '')
                 );
                 $msg[] = __('Json was generated successfully. You can download the file by clicking on the Download Json button.');

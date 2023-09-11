@@ -94,6 +94,34 @@ class Order extends \WeltPixel\GA4\Block\Core
     }
 
     /**
+     * @return bool|string
+     */
+    public function getAdwordNewCustomer()
+    {
+        $order =  $this->getOrder();
+        $customerId = $order->getCustomerId();
+        if (!$customerId) {
+            return '';
+        }
+
+        $customerOrderCount = $this->helper->getCustomerOrderCount($customerId);
+
+        return $customerOrderCount <= 1;
+    }
+
+    /**
+     * @param $conversionTrackingNewCustomer
+     * @return string
+     */
+    public function getAdwordCustomerLifetimeValue($conversionTrackingNewCustomer)
+    {
+        if ($conversionTrackingNewCustomer == true) {
+            return $this->getOrderTotal();
+        }
+        return '';
+    }
+
+    /**
      * Retuns the order total (subtotal or grandtotal)
      * @return float
      */
@@ -131,6 +159,15 @@ class Order extends \WeltPixel\GA4\Block\Core
     {
         $excludeFreeOrder = $this->helper->excludeFreeOrderFromPurchaseForGoogleAnalytics();
         return $this->isFreeOrderAllowed($excludeFreeOrder);
+    }
+
+    /**
+     * @param $order
+     * @return bool
+     */
+    public function isOrderTrackingAllowedBasedOnOrderStatus($order)
+    {
+        return $this->helper->isOrderTrackingAllowedBasedOnOrderStatus($order);
     }
 
     /**

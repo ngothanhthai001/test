@@ -53,7 +53,7 @@
                         <field id="enable">1</field>
                     </depends>
                 </field>
-                <field id="brand_attribute" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="brand_attribute" translate="label" type="select" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Brand Attribute</label>
                     <comment>Only attributes with Used in Product Listing set to Yes are available here.</comment>
                     <source_model>WeltPixel\GA4\Model\Config\Source\AttributeCollection</source_model>
@@ -62,21 +62,21 @@
                         <field id="enable">1</field>
                     </depends>
                 </field>
-                <field id="enable_variant" translate="label" type="select" sortOrder="63" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="enable_variant" translate="label" type="select" sortOrder="58" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Variant</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enable">1</field>
                     </depends>
                 </field>
-                <field id="order_total_calculation" translate="label" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="order_total_calculation" translate="label" type="select" sortOrder="59" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Order Success Page Total Calculation</label>
                     <source_model>WeltPixel\GA4\Model\Config\Source\OrderTotalCalculation</source_model>
                     <depends>
                         <field id="enable">1</field>
                     </depends>
                 </field>
-                <field id="exclude_tax_from_transaction" translate="label comment" type="select" sortOrder="66" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="exclude_tax_from_transaction" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Exclude Tax From Transaction</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
@@ -85,7 +85,7 @@
                     </depends>
                     <comment>Tax will be deduced from Grand Total</comment>
                 </field>
-                <field id="exclude_shipping_from_transaction" translate="label comment" type="select" sortOrder="67" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="exclude_shipping_from_transaction" translate="label comment" type="select" sortOrder="61" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Exclude Shipping From Transaction</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
@@ -94,7 +94,7 @@
                     </depends>
                     <comment>Shipping charges will deduced from Grand Total</comment>
                 </field>
-                <field id="exclude_shipping_from_transaction_including_tax" translate="label comment" type="select" sortOrder="68" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="exclude_shipping_from_transaction_including_tax" translate="label comment" type="select" sortOrder="62" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Exclude Shipping Including Tax</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
@@ -103,13 +103,29 @@
                         <field id="exclude_shipping_from_transaction">1</field>
                     </depends>
                 </field>
-                <field id="exclude_free_purchase" translate="label comment" type="select" sortOrder="68" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="exclude_free_purchase" translate="label comment" type="select" sortOrder="63" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Exclude Orders with 0 value</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enable">1</field>
                     </depends>
                     <comment>Orders with value 0.00 can be excluded from purchase transactions if you set this option to Yes</comment>
+                </field>
+                <field id="exclude_order_by_status_flag" translate="label comment" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Exclude Orders By Status</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="exclude_order_by_statuses" translate="label" type="multiselect" sortOrder="66" showInDefault="1" showInWebsite="1">
+                    <label>Exclude Orders with status</label>
+                    <source_model>WeltPixel\GA4\Model\Config\Source\OrderStatus</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <depends>
+                        <field id="enable">1</field>
+                        <field id="exclude_order_by_status_flag">1</field>
+                    </depends>
                 </field>
                 <field id="checkout_page_paths" translate="label comment" type="textarea" sortOrder="69" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Checkout Page Paths</label>
@@ -179,6 +195,7 @@ If Product Click Tracking is enabled this option rewrites Magento_Catalog::produ
                 <field id="separator_user_dimensions" translate="button_label" type="text" sortOrder="109" showInDefault="1" showInWebsite="1" showInStore="1">
                     <frontend_model>WeltPixel\GA4\Block\Adminhtml\System\Config\SeparatorElement</frontend_model>
                     <button_label>User Scoped Custom Dimensions</button_label>
+                    <button_url>https://support.weltpixel.com/hc/en-us/articles/12457440427666-Google-Analytics-4-Using-Custom-Dimensions</button_url>
                     <depends>
                         <field id="enable">1</field>
                     </depends>
@@ -492,6 +509,33 @@ If Product Click Tracking is enabled this option rewrites Magento_Catalog::produ
                         <field id="enable">1</field>
                     </depends>
                     <comment>Orders with value 0.00 can be excluded from conversion tracking if you set this option to Yes</comment>
+                </field>
+                <field id="enable_enhanced_conversion" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Enhanced Conversions</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                    <comment><![CDATA[If set to Yes, the dataLayer will be populated with the Email and Phone Number
+                     used in the checkout process, which are sent to Google Ads via the Google Ads Conversion Tracking tag.
+                      If you're enabling this feature after the initial configuration, please make sure you regenerate and
+                      reimport your Google Tag Manager JSON container file. More details about Enhanced Conversions can
+                      be found in the <a target="_blank" href="https://support.google.com/google-ads/answer/9888656?hl=en">Google Documentation</a>.]]></comment>
+                </field>
+                <field id="enable_new_customer_acquisition" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable New Customer Acquisition</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="purchase_day_lapse" translate="label" type="text" sortOrder="85" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Purchase Time Period (In Days)</label>
+                    <validate>required number</validate>
+                    <depends>
+                        <field id="enable">1</field>
+                        <field id="enable_new_customer_acquisition">1</field>
+                    </depends>
                 </field>
             </group>
             <group id="adwords_remarketing" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">

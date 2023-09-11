@@ -2,6 +2,8 @@
 
 namespace WeltPixel\GA4\Helper;
 
+use Magento\Store\Model\ScopeInterface;
+
 /**
  * @SuppressWarnings(PHPMD.TooManyFields)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -127,6 +129,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $objectFactory;
 
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
+    protected $resourceConnection;
+
     protected const XML_PATH_DEV_MOVE_JS_TO_BOTTOM = 'dev/js/move_script_to_bottom';
 
     /**
@@ -153,6 +160,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\Session\SessionManagerInterface $session
      * @param \Magento\Framework\Stdlib\CookieManagerInterface $cookieManager
      * @param \Magento\Framework\DataObject\Factory $objectFactory
+     * @param \Magento\Framework\App\ResourceConnection $resourceConnection
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -176,7 +184,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Framework\Session\SessionManagerInterface $session,
         \Magento\Framework\Stdlib\CookieManagerInterface $cookieManager,
-        \Magento\Framework\DataObject\Factory $objectFactory
+        \Magento\Framework\DataObject\Factory $objectFactory,
+        \Magento\Framework\App\ResourceConnection $resourceConnection
     ) {
         parent::__construct($context);
         $this->_gtmOptions = $this->scopeConfig->getValue('weltpixel_ga4', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -202,6 +211,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->session = $session;
         $this->cookieManager = $cookieManager;
         $this->objectFactory = $objectFactory;
+        $this->resourceConnection = $resourceConnection;
     }
 
     /**
@@ -340,6 +350,51 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @return boolean
      */
+    public function excludeOrderByStatusFlag($storeId = null)
+    {
+        return $this->scopeConfig->getValue(
+            'weltpixel_ga4/general/exclude_order_by_status_flag',
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getExcludeOrderByStatuses($storeId = null)
+    {
+        $excludedOrdersStatuses = $this->scopeConfig->getValue(
+            'weltpixel_ga4/general/exclude_order_by_statuses',
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?? '';
+        return explode(',', $excludedOrdersStatuses);
+    }
+
+    /**
+     * @param $order
+     * @return bool
+     */
+    public function isOrderTrackingAllowedBasedOnOrderStatus($order)
+    {
+        $orderStatuses = $this->getExcludeOrderByStatuses($order->getStoreId());
+        $excludeOrderByStatusFlag = $this->excludeOrderByStatusFlag($order->getStoreId());
+
+        if (!$excludeOrderByStatusFlag) {
+            return true;
+        }
+
+        if (!empty($orderStatuses) && in_array($order->getStatus(), $orderStatuses)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return boolean
+     */
     public function excludeFreeOrderFromAdwordsConversionTracking()
     {
         return $this->_gtmOptions['adwords_conversion_tracking']['exclude_free_purchase'];
@@ -462,6 +517,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return false;
+    }
+
+    /**
+     * @param $blockName
+     * @param $template
+     * @return bool
+     */
+    public function createGA4Block($blockName, $templae)
+    {
+        return $this->createBlock($blockName, $templae);
     }
 
     /**
@@ -1448,6 +1513,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @return boolean
      */
+    public function isEnhancedConversionsEnabled()
+    {
+        return $this->_gtmOptions['adwords_conversion_tracking']['enable_enhanced_conversion'];
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isAdWordNewCustomerAcquisitionEnabled()
+    {
+        return $this->_gtmOptions['adwords_conversion_tracking']['enable_new_customer_acquisition'];
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomerPurchaseDayLapse()
+    {
+        return (int)$this->_gtmOptions['adwords_conversion_tracking']['purchase_day_lapse'] ?? 540;
+    }
+
+    /**
+     * @return boolean
+     */
     public function isAdWordsRemarketingEnabled()
     {
         return $this->_gtmOptions['adwords_remarketing']['enable'];
@@ -1712,5 +1801,65 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function invalidateGA4CheckoutPaymentData()
     {
         $this->checkoutSession->setGA4CheckoutPaymentData(null);
+    }
+
+    /**
+     * @param string $storageKey
+     * @param string $storageValue
+     * @return void
+     */
+    public function setStorageData($storageKey, $storageValue)
+    {
+        $this->storage->setData($storageKey, $storageValue);
+    }
+
+    /**
+     * @return array|mixed|null
+     */
+    public function getStorageData()
+    {
+        return $this->storage->getData();
+    }
+
+    /**
+     * @return void
+     */
+    public function unsetStorageData()
+    {
+        $this->storage->unsetData();
+    }
+
+    /**
+     * @param $dataLayerData
+     * @return $this
+     */
+    public function setAdditionalDataLayerData($dataLayerData) {
+        $additionalDataLayerData = $this->storage->getData('additional_datalayer_option');
+        if (!$additionalDataLayerData) {
+            $additionalDataLayerData = [];
+        }
+        $additionalDataLayerData[] = $dataLayerData;
+        $this->storage->setData('additional_datalayer_option', $additionalDataLayerData);
+        return $this;
+    }
+
+    /**
+     * @param integer $customerId
+     * @return integer
+     */
+    public function getCustomerOrderCount($customerId)
+    {
+        $customerPurchaseDaylapse = $this->getCustomerPurchaseDayLapse();
+        $connection = $this->resourceConnection->getConnection();
+        $date = date('Y-m-d H:i:s', strtotime("-$customerPurchaseDaylapse days"));
+
+        $tableName = $this->resourceConnection->getTableName('sales_order');
+        $query = "
+        SELECT COUNT(*) AS total_orders
+        FROM `" . $tableName . "`
+        WHERE `created_at` > '" . $date . "' AND `customer_id` = " . $customerId;
+
+        $result = $connection->fetchOne($query);
+        return $result;
     }
 }

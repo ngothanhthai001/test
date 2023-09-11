@@ -76,6 +76,11 @@ class JsonGenerator extends \Magento\Framework\Model\AbstractModel
     protected $remarketingEnabled;
 
     /**
+     * @var boolean
+     */
+    protected $enableEnhancedConversion;
+
+    /**
      * @var string
      */
     protected $remarketingConversionCode;
@@ -135,6 +140,7 @@ class JsonGenerator extends \Magento\Framework\Model\AbstractModel
      * @param $remarketingEnabled
      * @param $remarketingConversionCode
      * @param $remarketingConversionLabel
+     * @param $enableEnhancedConversion
      * @param $publicId
      * @return string
      */
@@ -149,6 +155,7 @@ class JsonGenerator extends \Magento\Framework\Model\AbstractModel
         $remarketingEnabled,
         $remarketingConversionCode,
         $remarketingConversionLabel,
+        $enableEnhancedConversion,
         $publicId
     ) {
         $this->fingerprint = time();
@@ -162,6 +169,7 @@ class JsonGenerator extends \Magento\Framework\Model\AbstractModel
         $this->remarketingEnabled = $remarketingEnabled;
         $this->remarketingConversionCode = $remarketingConversionCode;
         $this->remarketingConversionLabel = $remarketingConversionLabel;
+        $this->enableEnhancedConversion = $enableEnhancedConversion;
         $this->publicId = $publicId;
 
         $variables = $this->getVariablesForJsonGeneration();
@@ -255,6 +263,9 @@ class JsonGenerator extends \Magento\Framework\Model\AbstractModel
         $variablesToCreate = $this->apiCore->getVariablesList($this->measurementId);
         if ($this->conversionEnabled) {
             $variablesToCreate = array_merge($variablesToCreate, $this->apiConversionTracking->getConversionVariablesList());
+            if ($this->enableEnhancedConversion) {
+                $variablesToCreate = array_merge($variablesToCreate, $this->apiConversionTracking->getEnhancedConversionVariablesList());
+            }
         }
         if ($this->remarketingEnabled) {
             $variablesToCreate = array_merge($variablesToCreate, $this->apiRemarketing->getRemarketingVariablesList());
@@ -354,7 +365,8 @@ class JsonGenerator extends \Magento\Framework\Model\AbstractModel
             $params = [
                 'conversion_id' => $this->conversionId,
                 'conversion_currency_code' => $this->conversionCurrencyCode,
-                'conversion_label' => $this->conversionLabel
+                'conversion_label' => $this->conversionLabel,
+                'enable_enhanced_conversion' => $this->enableEnhancedConversion
             ];
             $tagsToCreate = array_merge($tagsToCreate, $this->apiConversionTracking->getConversionTagsList($triggersMap, $params));
         }

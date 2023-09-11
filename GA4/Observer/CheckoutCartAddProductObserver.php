@@ -16,9 +16,9 @@ class CheckoutCartAddProductObserver implements ObserverInterface
     protected $ga4ServerSideHelper;
 
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var \Magento\Framework\Locale\ResolverInterface
      */
-    protected $_objectManager;
+    protected $localeResolver;
 
     /**
      * @var \Magento\Checkout\Model\Session
@@ -29,17 +29,17 @@ class CheckoutCartAddProductObserver implements ObserverInterface
     /**
      * @param \WeltPixel\GA4\Helper\Data $helper
      * @param \WeltPixel\GA4\Helper\ServerSideTracking $ga4ServerSideHelper
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Framework\Locale\ResolverInterface $localeResolver
      * @param \Magento\Checkout\Model\Session $_checkoutSession
      */
     public function __construct(\WeltPixel\GA4\Helper\Data $helper,
                                 \WeltPixel\GA4\Helper\ServerSideTracking $ga4ServerSideHelper,
-                                \Magento\Framework\ObjectManagerInterface $objectManager,
+                                \Magento\Framework\Locale\ResolverInterface $localeResolver,
                                 \Magento\Checkout\Model\Session $_checkoutSession)
     {
         $this->helper = $helper;
         $this->ga4ServerSideHelper = $ga4ServerSideHelper;
-        $this->_objectManager = $objectManager;
+        $this->localeResolver = $localeResolver;
         $this->_checkoutSession = $_checkoutSession;
     }
 
@@ -65,7 +65,7 @@ class CheckoutCartAddProductObserver implements ObserverInterface
 
         if (isset($params['qty'])) {
             $filter = new \Magento\Framework\Filter\LocalizedToNormalized(
-                ['locale' => $this->_objectManager->get('Magento\Framework\Locale\ResolverInterface')->getLocale()]
+                ['locale' => $this->localeResolver->getLocale()]
             );
             $qty = $filter->filter($params['qty']);
         } else {

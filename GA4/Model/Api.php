@@ -12,6 +12,7 @@ class Api extends \Magento\Framework\Model\AbstractModel
      */
     const TYPE_VARIABLE_DATALAYER = 'v';
     const TYPE_VARIABLE_CONSTANT = 'c';
+    const TYPE_VARIABLE_AWEC = 'awec';
     const TYPE_TRIGGER_CUSTOM_EVENT = 'customEvent';
     const TYPE_TRIGGER_PAGEVIEW = 'pageview';
     const TYPE_TAG_GAAWC = 'gaawc';

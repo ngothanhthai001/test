@@ -31,10 +31,39 @@ class Category extends \WeltPixel\GA4\Block\Core
             return [];
         }
 
-        $categoryProductListBlock->toHtml();
         // Fetch the current collection from the block and set pagination
         $collection = clone $categoryProductListBlock->getLoadedProductCollection();
         $collection->setCurPage($this->getCurrentPage())->setPageSize($this->getLimit());
+
+        $blockName = $categoryProductListBlock->getToolbarBlockName();
+        $toolbarLayout = false;
+
+
+        if ($blockName) {
+            $toolbarLayout = $this->_layout->getBlock($blockName);
+        }
+
+        if ($toolbarLayout) {
+            // use sortable parameters
+            $orders = $categoryProductListBlock->getAvailableOrders();
+            if ($orders) {
+                $toolbarLayout->setAvailableOrders($orders);
+            }
+            $sort = $categoryProductListBlock->getSortBy();
+            if ($sort) {
+                $toolbarLayout->setDefaultOrder($sort);
+            }
+            $dir = $categoryProductListBlock->getDefaultDirection();
+            if ($dir) {
+                $toolbarLayout->setDefaultDirection($dir);
+            }
+            $modes = $categoryProductListBlock->getModes();
+            if ($modes) {
+                $toolbarLayout->setModes($modes);
+            }
+            $toolbarLayout->setCollection($collection);
+        }
+
 
         $this->_productCollection = $collection;
         return $collection;

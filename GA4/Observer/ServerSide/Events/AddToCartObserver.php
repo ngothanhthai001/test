@@ -17,27 +17,27 @@ class AddToCartObserver implements ObserverInterface
     protected $ga4ServerSideApi;
 
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var \Magento\Framework\Locale\ResolverInterface
      */
-    protected $_objectManager;
+    protected $localeResolver;
 
     /**
      * @param \WeltPixel\GA4\Helper\ServerSideTracking $ga4Helper
      * @param \WeltPixel\GA4\Api\ServerSide\Events\AddToCartBuilderInterface $addToCartBuilder
      * @param \WeltPixel\GA4\Model\ServerSide\Api $ga4ServerSideApi
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Framework\Locale\ResolverInterface $localeResolver
      */
     public function __construct(
         \WeltPixel\GA4\Helper\ServerSideTracking $ga4Helper,
         \WeltPixel\GA4\Api\ServerSide\Events\AddToCartBuilderInterface $addToCartBuilder,
         \WeltPixel\GA4\Model\ServerSide\Api $ga4ServerSideApi,
-        \Magento\Framework\ObjectManagerInterface $objectManager
+        \Magento\Framework\Locale\ResolverInterface $localeResolver
     )
     {
         $this->ga4Helper = $ga4Helper;
         $this->addToCartBuilder = $addToCartBuilder;
         $this->ga4ServerSideApi = $ga4ServerSideApi;
-        $this->_objectManager = $objectManager;
+        $this->localeResolver = $localeResolver;
     }
 
     /**
@@ -57,7 +57,7 @@ class AddToCartObserver implements ObserverInterface
 
         if (isset($params['qty'])) {
             $filter = new \Magento\Framework\Filter\LocalizedToNormalized(
-                ['locale' => $this->_objectManager->get('Magento\Framework\Locale\ResolverInterface')->getLocale()]
+                ['locale' => $this->localeResolver->getLocale()]
             );
             $qty = $filter->filter($params['qty']);
         } else {

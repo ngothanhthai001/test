@@ -20,17 +20,20 @@ class Order extends \Magento\Framework\View\Element\Template
      * @pqram \WeltPixel\GA4\Api\ServerSide\Events\PurchaseBuilderInterface $purchaseBuilder
      * @param \WeltPixel\GA4\Model\ServerSide\Api $ga4ServerSideApi
      * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \WeltPixel\GA4\Helper\ServerSideTracking $ga4ServerSideHelper
      * @param array $data
      */
     public function __construct(
         \WeltPixel\GA4\Api\ServerSide\Events\PurchaseBuilderInterface $purchaseBuilder,
         \WeltPixel\GA4\Model\ServerSide\Api $ga4ServerSideApi,
         \Magento\Framework\View\Element\Template\Context $context,
+        \WeltPixel\GA4\Helper\ServerSideTracking $ga4ServerSideHelper,
         array $data = []
     )
     {
         $this->purchaseBuilder = $purchaseBuilder;
         $this->ga4ServerSideApi = $ga4ServerSideApi;
+        $this->ga4ServerSideHelper = $ga4ServerSideHelper;
         parent::__construct($context, $data);
     }
 
@@ -41,7 +44,7 @@ class Order extends \Magento\Framework\View\Element\Template
     public function pushPurchaseEvent()
     {
         $order = $this->getOrder();
-        if ($order) {
+        if ($order && $this->ga4ServerSideHelper->isOrderTrackingAllowedBasedOnOrderStatus($order)) {
             $purchaseEvent = $this->purchaseBuilder->getPurchaseEvent($order);
             $this->ga4ServerSideApi->pushPurchaseEvent($purchaseEvent);
         }
